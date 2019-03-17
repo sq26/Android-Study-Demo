@@ -43,5 +43,4 @@ dependencies {
     implementation 'com.alibaba:fastjson:1.2.41'
     //Fresco图片控件
     implementation 'com.facebook.fresco:fresco:1.13.0'
-    implementation 'com.inuker.bluetooth:library:1.4.0'
 }

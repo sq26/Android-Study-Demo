@@ -3,17 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sq26.androidstudydemo">
     <!-- 网络权限 -->
-    <uses-permission android:name="android.permission.INTERNET" />
-    <!--允许程序连接到已配对的蓝牙设备-->
-    <uses-permission android:name="android.permission.BLUETOOTH" />
-    <!--允许程序发现和配对蓝牙设备-->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <!--允许程序发现和配对蓝牙设备-->
-    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_PRIVILEGED" />
-    <!--允许程序通过WiFi或移动基站的方式获取用户错略的经纬度信息-->
-    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <!--允许程序读取或写入登记check-in数据库属性表的权限-->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 允许程序连接到已配对的蓝牙设备 -->
+    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- 允许程序发现和配对蓝牙设备 -->
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 允许程序发现和配对蓝牙设备 -->
+    <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_PRIVILEGED" /> <!-- 允许程序通过WiFi或移动基站的方式获取用户错略的经纬度信息 -->
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 允许程序读取或写入登记check-in数据库属性表的权限 -->
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
     <application
         android:allowBackup="true"
@@ -23,10 +20,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
+        <activity android:name=".activity.BluetoothServiceActivity"></activity>
+        <activity android:name=".activity.BluetoothInfoActivity" />
         <activity
             android:name=".activity.BluetoothManageActivity"
-            android:configChanges="fontScale|keyboard|keyboardHidden|locale|orientation|screenLayout|uiMode|screenSize|navigation"
-            ></activity>
+            android:configChanges="fontScale|keyboard|keyboardHidden|locale|orientation|screenLayout|uiMode|screenSize|navigation" />
         <activity android:name=".activity.AudioControllerActivity" />
         <activity android:name=".activity.RecyclerViewActivity" />
         <activity android:name=".MainActivity">
