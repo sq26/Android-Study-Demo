@@ -5,18 +5,17 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sq26.androidstudydemo.R;
-import com.sq26.androidstudydemo.util.StringToAscii;
-import com.sq26.androidstudydemo.util.StringToHex;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,7 +26,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class BluetoothInfoActivity extends AppCompatActivity {
+public class BluetoothInfoDemoActivity extends AppCompatActivity {
 
     @BindView(R.id.name)
     TextView name;
@@ -43,6 +42,8 @@ public class BluetoothInfoActivity extends AppCompatActivity {
     TextView textView8;
     @BindView(R.id.editText2)
     EditText editText2;
+    @BindView(R.id.textView5)
+    TextView textView5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,18 +68,41 @@ public class BluetoothInfoActivity extends AppCompatActivity {
 
     private BluetoothGatt mBluetoothGatt;
 
-    @OnClick({R.id.button3, R.id.button7, R.id.cllog})
+    @OnClick({R.id.button3, R.id.button7, R.id.cllog, R.id.textView5, R.id.button4})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.button3:
                 connect();
                 break;
             case R.id.button7:
-                new OutThread().start();
+                connect();
                 break;
             case R.id.cllog:
                 buffer = new StringBuffer();
                 updateLog("");
+                break;
+            case R.id.textView5:
+                String[] com = new String[20];
+                for (int i = 0; i < com.length; i++) {
+                    com[i] = "COM" + i;
+                }
+                new AlertDialog.Builder(this)
+                        .setItems(com, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                textView5.setText(com[which]);
+                            }
+                        }).show();
+                break;
+            case R.id.button4:
+                String[] codeName = new String[]{"remote", "assetsInfo", "sn"};
+                new AlertDialog.Builder(this)
+                        .setItems(codeName, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                editText2.setText(codeName[which]);
+                            }
+                        }).show();
                 break;
         }
     }
@@ -154,7 +178,9 @@ public class BluetoothInfoActivity extends AppCompatActivity {
     private void manageConnectedSocket(BluetoothSocket socket) {
         bluetoothSocketOne = socket;
         updateLog("成功与服务器连接");
+
         new InputThread().start();
+//        new OutThread().start();
     }
 
     private StringBuffer buffer = new StringBuffer();
@@ -179,18 +205,43 @@ public class BluetoothInfoActivity extends AppCompatActivity {
         }
 
         public void run() {
-
+            OutputStream outStream = null;
+            try {
+                outStream = bluetoothSocketOne.getOutputStream();
+                byte[] bytes = editText2.getText().toString().getBytes();
+                JSONObject jsonObject = new JSONObject();
+                switch (editText2.getText().toString()) {
+                    case "remote":
+                        jsonObject.put("code", "72 65 6D 6F 74 65 0D 0A");
+                        break;
+                    case "assetsInfo":
+                        jsonObject.put("code", "69 64 65 6E 74 0D 0A");
+                        break;
+                    case "sn":
+                        jsonObject.put("code", "73 6E 0D 0A");
+                        break;
+                    default:
+                        jsonObject.put("code", editText2.getText().toString());
+                        break;
+                }
+                jsonObject.put("comName", textView5.getText().toString());
+                updateLog("发送消息:" + jsonObject.toJSONString());
+                outStream.write(jsonObject.toJSONString().getBytes("UTF-8"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             while (b) {
                 InputStream inputStream = null;
                 try {
                     inputStream = bluetoothSocketOne.getInputStream();
                     if (inputStream != null) {
-                        if(inputStream.available() > 0){
+                        if (inputStream.available() > 0) {
                             byte[] bytes = new byte[inputStream.available()];
                             inputStream.read(bytes);
-                            String str = new String(bytes,"UTF-8");
+                            String str = new String(bytes, "UTF-8");
                             if (!str.isEmpty()) {
                                 updateLog("从服务端接收到的消息str:" + str);
+                                bluetoothSocketOne.close();
 //                            String hexString = StringToAscii.bytesToHex(bytes);
 //                            if (hexString.length() == 12 && hexString.substring(0, 2).equals("aa") && hexString.substring(10, 12).equals("55")) {
 //                                updateLog("从服务端接收到的消息str:" + hexString);
@@ -214,9 +265,6 @@ public class BluetoothInfoActivity extends AppCompatActivity {
 
                     }
                 } catch (IOException e) {
-                    updateLog("接收消息失败");
-                    updateLog("服务可能已经断开");
-                    updateLog("请重新连接服务");
                     b = false;
                     e.printStackTrace();
                 } finally {

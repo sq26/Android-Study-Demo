@@ -288,7 +288,7 @@ public class BluetoothManageActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         } else {
-            Intent intent1 = new Intent(BluetoothManageActivity.this, BluetoothInfoActivity.class);
+            Intent intent1 = new Intent(BluetoothManageActivity.this, BluetoothInfoDemo2Activity.class);
             intent1.putExtra("mac", device.getAddress());
             startActivity(intent1);
         }

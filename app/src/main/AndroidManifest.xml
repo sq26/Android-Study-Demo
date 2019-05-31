@@ -9,9 +9,11 @@
     <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_PRIVILEGED" /> <!-- 允许程序通过WiFi或移动基站的方式获取用户错略的经纬度信息 -->
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 允许程序读取或写入登记check-in数据库属性表的权限 -->
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--nfc-->
+    <uses-permission android:name="android.permission.NFC" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -20,8 +22,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
-        <activity android:name=".activity.BluetoothServiceActivity"></activity>
+        <activity android:name=".activity.NFCActivity"></activity>
+        <activity android:name=".activity.BluetoothServiceActivity" />
         <activity android:name=".activity.BluetoothInfoActivity" />
+        <activity android:name=".activity.BluetoothInfoDemoActivity" />
+        <activity android:name=".activity.BluetoothInfoDemo2Activity" />
         <activity
             android:name=".activity.BluetoothManageActivity"
             android:configChanges="fontScale|keyboard|keyboardHidden|locale|orientation|screenLayout|uiMode|screenSize|navigation" />

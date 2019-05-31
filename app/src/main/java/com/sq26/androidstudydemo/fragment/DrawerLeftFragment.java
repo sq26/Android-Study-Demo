@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import com.sq26.androidstudydemo.R;
 import com.sq26.androidstudydemo.activity.AudioControllerActivity;
 import com.sq26.androidstudydemo.activity.BluetoothManageActivity;
+import com.sq26.androidstudydemo.activity.NFCActivity;
 import com.sq26.androidstudydemo.activity.QrcodeActivity;
 import com.sq26.androidstudydemo.activity.RecyclerViewActivity;
 import com.sq26.androidstudydemo.activity.StatusBarActivity;
@@ -38,7 +39,7 @@ public class DrawerLeftFragment extends Fragment {
         unbinder.unbind();
     }
 
-    @OnClick({R.id.statusBar, R.id.qrcode, R.id.webView, R.id.recyclerView, R.id.audioController,R.id.bluetooth})
+    @OnClick({R.id.statusBar, R.id.qrcode, R.id.webView, R.id.recyclerView, R.id.audioController, R.id.bluetooth, R.id.nfc})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.statusBar:
@@ -58,6 +59,9 @@ public class DrawerLeftFragment extends Fragment {
                 break;
             case R.id.bluetooth:
                 startActivity(new Intent(getActivity(), BluetoothManageActivity.class));
+                break;
+            case R.id.nfc:
+                startActivity(new Intent(getActivity(), NFCActivity.class));
                 break;
         }
     }
