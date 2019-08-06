@@ -1,5 +1,6 @@
 package com.sq26.experience.ui.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -36,37 +37,72 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-        List<JSONObject> list = new ArrayList<>();
         JSONArray jsonArray = new JSONArray();
-        for (int i = 1; i < 10; i++) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("text", i);
-            jsonArray.add(jsonObject);
-        }
+
+        jsonArray.add(initItem("", "java技术", 0));
+        jsonArray.add(initItem("rxjava", "RXjava的使用", 1));
+
+
+        jsonArray.add(initItem("", "功能", 0));
+        jsonArray.add(initItem("qrcode", "qrcode识别", 1));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-//        RecyclerViewAdapter<JSONObject> adapter = new RecyclerViewAdapter<JSONObject>(R.layout.item_recyclerview, list) {
-//
-//            @Override
-//            protected void createViewHolder(ViewHolder viewHolder, JSONObject object, int position) {
-//                viewHolder.setText(R.id.text, object.getString("text"));
-//            }
-//        };
-
-        RecyclerViewJsonArrayAdapter arrayAdapter = new RecyclerViewJsonArrayAdapter(R.layout.item_recyclerview, jsonArray) {
+        RecyclerViewJsonArrayAdapter arrayAdapter = new RecyclerViewJsonArrayAdapter(jsonArray) {
             @Override
-            protected void createViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
-                viewHolder.setText(R.id.text, jsonObject.getString("text"));
+            protected int createViewHolder(int viewType) {
+                int LAYOUT_ID = R.layout.item_recyclerview;
+                switch (viewType) {
+                    case 0:
+                        LAYOUT_ID = R.layout.item_recyclerview_head;
+                        break;
+                    case 1:
+                        LAYOUT_ID = R.layout.item_recyclerview;
+                        break;
+                }
+                return LAYOUT_ID;
+            }
+
+            @Override
+            protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
+                switch (jsonObject.getInteger("viewType")) {
+                    case 0:
+                        viewHolder.setText(R.id.typeName, jsonObject.getString("name"));
+                        break;
+                    case 1:
+                        viewHolder.setText(R.id.text, jsonObject.getString("name"));
+                        break;
+                }
             }
         };
         recyclerView.setAdapter(arrayAdapter);
         arrayAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.Click() {
             @Override
             public void onClick(int position) {
-                Log.d("点击",jsonArray.getJSONObject(position).getString("text"));
+                Log.d("点击", jsonArray.getJSONObject(position).getString("name"));
+                menuClick(jsonArray.getJSONObject(position).getString("id"));
             }
         });
 
 //        adapter.notifyDataSetChanged();
+    }
+
+    private void menuClick(String id) {
+        switch (id) {
+            case "rxjava":
+                startActivity(new Intent(this,RXJavaActivity.class));
+                break;
+            case "qrcode":
+                startActivity(new Intent(this,RXJavaActivity.class));
+                break;
+        }
+    }
+
+
+    private JSONObject initItem(String id, String name, int type) {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        jsonObject.put("name", name);
+        jsonObject.put("viewType", type);
+        return jsonObject;
     }
 }

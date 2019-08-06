@@ -11,20 +11,24 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public abstract class RecyclerViewJsonArrayAdapter extends RecyclerView.Adapter<ViewHolder> {
-    private int LAYOUT_ID;//要使用的layout布局
     private JSONArray array;//数据集合
     private Click click;//点击事件
 
     /**
      * 构造器
      *
-     * @param layoutId  ui布局的id
      * @param jsonArray 数据集合
      */
-    protected RecyclerViewJsonArrayAdapter(int layoutId, JSONArray jsonArray) {
+    protected RecyclerViewJsonArrayAdapter(JSONArray jsonArray) {
         this.array = jsonArray;
-        this.LAYOUT_ID = layoutId;
     }
+
+    /**
+     * 定义抽象方法,用于在使用层定义view内容
+     *
+     * @param viewType 视图类型
+     */
+    protected abstract int createViewHolder(int viewType);
 
     /**
      * 定义抽象方法,用于在使用层定义view内容
@@ -33,12 +37,14 @@ public abstract class RecyclerViewJsonArrayAdapter extends RecyclerView.Adapter<
      * @param jsonObject 对应下标的单条jsonObject
      * @param position   数据下标
      */
-    protected abstract void createViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position);
+    protected abstract void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position);
 
     //在这里创建生成页面布局
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        //使用抽象方法从使用层获取布局(设置布局放在使用层,可以动态配置多种item)
+        int LAYOUT_ID = createViewHolder(viewType);
         //LayoutInflater.from指定写法
         View v = LayoutInflater.from(parent.getContext()).inflate(LAYOUT_ID, parent, false);
         return new ViewHolder(v);
@@ -48,7 +54,7 @@ public abstract class RecyclerViewJsonArrayAdapter extends RecyclerView.Adapter<
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         //利用抽象方法,让使用层去实现设置业务数据
-        createViewHolder(holder, array.getJSONObject(position), position);
+        bindViewHolder(holder, array.getJSONObject(position), position);
         //判断有没有设置点击事件
         if (click != null) {
             //有点击事件就去注册点击事件
@@ -61,6 +67,19 @@ public abstract class RecyclerViewJsonArrayAdapter extends RecyclerView.Adapter<
             });
         }
 
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (array.getJSONObject(position) != null) {
+            if (array.getJSONObject(position).getInteger("viewType") != null) {
+                return array.getJSONObject(position).getInteger("viewType");
+            } else {
+                return super.getItemViewType(position);
+            }
+        } else {
+            return super.getItemViewType(position);
+        }
     }
 
     //设置iten的数据长度
