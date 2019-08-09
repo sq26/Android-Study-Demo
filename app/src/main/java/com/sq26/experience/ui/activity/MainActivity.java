@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this,RXJavaActivity.class));
                 break;
             case "qrcode":
-                startActivity(new Intent(this,RXJavaActivity.class));
+                startActivity(new Intent(this,QrCodeDemoActivity.class));
                 break;
         }
     }

@@ -1,11 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
         applicationId "com.sq26.experience"
         minSdkVersion 21
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -42,4 +42,5 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.11'
     //zxing框架
     implementation 'com.google.zxing:core:3.3.3'
+    implementation project(path: ':zxinglib')
 }
