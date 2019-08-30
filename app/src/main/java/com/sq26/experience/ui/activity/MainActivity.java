@@ -41,10 +41,15 @@ public class MainActivity extends AppCompatActivity {
 
         jsonArray.add(initItem("", "java技术", 0));
         jsonArray.add(initItem("rxjava", "RXjava的使用", 1));
+        jsonArray.add(initItem("测试", "用来做一些技术测试", 1));
 
 
         jsonArray.add(initItem("", "功能", 0));
         jsonArray.add(initItem("qrcode", "qrcode识别", 1));
+        jsonArray.add(initItem("camera", "相机", 1));
+        jsonArray.add(initItem("statusBar", "侵入式体验", 1));
+        jsonArray.add(initItem("authorizedOperation", "授权操作", 1));
+
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         RecyclerViewJsonArrayAdapter arrayAdapter = new RecyclerViewJsonArrayAdapter(jsonArray) {
@@ -89,10 +94,22 @@ public class MainActivity extends AppCompatActivity {
     private void menuClick(String id) {
         switch (id) {
             case "rxjava":
-                startActivity(new Intent(this,RXJavaActivity.class));
+                startActivity(new Intent(this, RXJavaActivity.class));
+                break;
+            case "测试":
+                startActivity(new Intent(this, TestActivity.class));
                 break;
             case "qrcode":
-                startActivity(new Intent(this,QrCodeDemoActivity.class));
+                startActivity(new Intent(this, QrCodeDemoActivity.class));
+                break;
+            case "camera":
+                startActivity(new Intent(this, CameraActivity.class));
+                break;
+            case "statusBar":
+                startActivity(new Intent(this, StatusBarActivity.class));
+                break;
+            case "authorizedOperation":
+                startActivity(new Intent(this, AuthorizedOperationActivity.class));
                 break;
         }
     }

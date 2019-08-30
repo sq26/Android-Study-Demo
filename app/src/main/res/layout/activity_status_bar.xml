@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg"
+    tools:context=".ui.activity.StatusBarActivity">
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="确定"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <CheckBox
+            android:id="@+id/checkbox1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="弱化状态栏和导航栏的图标(设置状态栏和导航栏中的图标变小，变模糊或者弱化其效果。这个标志一般用于游戏，电子书，视频，或者不需要去分散用户注意力的应用软件)" />
+
+        <CheckBox
+            android:id="@+id/checkbox2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="隐藏导航栏，点击屏幕任意区域，导航栏将重新出现，并且不会自动消失" />
+
+        <CheckBox
+            android:id="@+id/checkbox3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="隐藏状态栏(点击屏幕区域不会出现，需要从状态栏位置下拉才会出现,并且不会自动消失)" />
+
+        <CheckBox
+            android:id="@+id/checkbox4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="拓展布局到导航栏后面(将布局内容拓展到导航栏的后面)" />
+
+        <CheckBox
+            android:id="@+id/checkbox5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="拓展布局到状态栏后面(将布局内容拓展到状态的后面)" />
+
+        <CheckBox
+            android:id="@+id/checkbox6"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="稳定的布局，不会随系统栏的隐藏、显示而变化(主要是在全屏和非全屏切换时，布局不要有大的变化。一般和隐藏导航栏、隐藏状态栏搭配使用)" />
+
+        <CheckBox
+            android:id="@+id/checkbox7"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="沉浸模式，用户可以交互的界面(使状态栏和导航栏真正的进入沉浸模式,即全屏模式，如果没有设置这个标志，设置全屏时，我们点击屏幕的任意位置，就会恢复为正常模式,一般和隐藏导航栏、隐藏状态栏搭配使用)" />
+
+        <CheckBox
+            android:id="@+id/checkbox8"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="沉浸模式，用户可以交互的界面。同时，用户上下拉系统栏时，会自动隐藏系统栏(它的效果跟View.SYSTEM_UI_FLAG_IMMERSIVE一样。但是，它在全屏模式下，用户上下拉状态栏或者导航栏时，这些系统栏只是以半透明的状态显示出来，并且在一定时间后会自动消失)" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
