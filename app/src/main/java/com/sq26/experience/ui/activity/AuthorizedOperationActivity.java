@@ -17,7 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.google.zxing.client.android.CaptureActivity;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.ViewHolder;

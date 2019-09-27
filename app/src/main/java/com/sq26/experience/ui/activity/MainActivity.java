@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         jsonArray.add(initItem("camera", "相机", 1));
         jsonArray.add(initItem("statusBar", "侵入式体验", 1));
         jsonArray.add(initItem("authorizedOperation", "授权操作", 1));
+        jsonArray.add(initItem("fileManagement", "文件管理", 1));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -111,6 +112,10 @@ public class MainActivity extends AppCompatActivity {
             case "authorizedOperation":
                 startActivity(new Intent(this, AuthorizedOperationActivity.class));
                 break;
+            case "fileManagement":
+                startActivity(new Intent(this, FileManagementActivity.class));
+                break;
+
         }
     }
 

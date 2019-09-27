@@ -6,15 +6,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.zxing.client.android.CaptureActivity;
 import com.sq26.experience.R;
-import com.sq26.experience.ui.util.ScanCodeActivity;
 import com.sq26.experience.util.permissions.JPermissions;
-
-import java.security.Permission;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,7 +39,6 @@ public class QrCodeDemoActivity extends AppCompatActivity {
                     @Override
                     public void success() {
                         Log.e("success", "成功");
-                        startActivity(new Intent(QrCodeDemoActivity.this, CaptureActivity.class));
                     }
                 })
                 //不完全成功的回调

@@ -1,7 +1,11 @@
 package com.sq26.experience.util.permissions;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
+import android.provider.Settings;
 
 import androidx.annotation.RequiresApi;
 
@@ -105,8 +109,14 @@ public class PermissionUtil {
         public static final String STORAGE = Manifest.permission_group.STORAGE;
     }
 
-    //打开到对应的设置界面
-
+    //打开到应用的设置界面
+    public static void open(Context context) {
+        Intent intent = new Intent();
+        intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+        intent.setData(uri);
+        context.startActivity(intent);
+    }
 
 
 }
