@@ -18,10 +18,9 @@ import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
-import com.sq26.experience.util.permissions.AppUtils;
+import com.sq26.experience.util.AppUtils;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
 import butterknife.BindView;

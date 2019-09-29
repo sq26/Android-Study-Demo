@@ -1,4 +1,4 @@
-package com.sq26.experience.util.permissions;
+package com.sq26.experience.util;
 
 import java.text.DecimalFormat;
 

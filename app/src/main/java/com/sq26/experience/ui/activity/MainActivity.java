@@ -37,19 +37,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        //菜单列表
         JSONArray jsonArray = new JSONArray();
-
-        jsonArray.add(initItem("", "java技术", 0));
-        jsonArray.add(initItem("rxjava", "RXjava的使用", 1));
+        //id是点击事件的id,(使用string类型是为了方便阅读代码)
+        //name是显示在界面上的内容
+        //type是显示的布局类型,0是类型,1是条目
+        jsonArray.add(initItem("", getString(R.string.Java_technology), 0));
+        jsonArray.add(initItem("RxJava", getString(R.string.Use_of_RxJava), 1));
         jsonArray.add(initItem("测试", "用来做一些技术测试", 1));
 
-
-        jsonArray.add(initItem("", "功能", 0));
-        jsonArray.add(initItem("qrcode", "qrcode识别", 1));
-        jsonArray.add(initItem("camera", "相机", 1));
-        jsonArray.add(initItem("statusBar", "侵入式体验", 1));
-        jsonArray.add(initItem("authorizedOperation", "授权操作", 1));
-        jsonArray.add(initItem("fileManagement", "文件管理", 1));
+        jsonArray.add(initItem("", getString(R.string.Features), 0));
+        jsonArray.add(initItem("QRCode", getString(R.string.QRCode_recognition), 1));
+        jsonArray.add(initItem("camera", getString(R.string.camera), 1));
+        jsonArray.add(initItem("statusBar", getString(R.string.Invasive_experience), 1));
+        jsonArray.add(initItem("authorizedOperation", getString(R.string.Authorized_operation), 1));
+        jsonArray.add(initItem("fileManagement", getString(R.string.file_management), 1));
+        jsonArray.add(initItem("mediaManagement", getString(R.string.media_management), 1));
+        jsonArray.add(initItem("downloadManagement", getString(R.string.download_management), 1));
+        jsonArray.add(initItem("databaseManagement", getString(R.string.Database_operation), 1));
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -94,13 +99,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void menuClick(String id) {
         switch (id) {
-            case "rxjava":
+            case "RxJava":
                 startActivity(new Intent(this, RXJavaActivity.class));
                 break;
             case "测试":
                 startActivity(new Intent(this, TestActivity.class));
                 break;
-            case "qrcode":
+            case "QRCode":
                 startActivity(new Intent(this, QrCodeDemoActivity.class));
                 break;
             case "camera":
@@ -114,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "fileManagement":
                 startActivity(new Intent(this, FileManagementActivity.class));
+                break;
+            case "mediaManagement":
+                startActivity(new Intent(this, MediaManagementActivity.class));
                 break;
 
         }

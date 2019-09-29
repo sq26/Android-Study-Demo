@@ -21,8 +21,8 @@ public class JPermissions {
     //构造器类
     public static class Builder {
         private AppCompatActivity contents;
-        private JPermissions.SuccessCallback successCallback;
-        private JPermissions.FailureCallback failureCallback;
+        private SuccessCallback successCallback;
+        private FailureCallback failureCallback;
 
         private RequestFragment requestFragment;
         private String[] requestPermissions;
@@ -36,12 +36,12 @@ public class JPermissions {
             return this;
         }
         //设置成功的回调
-        public Builder success(JPermissions.SuccessCallback callback) {
+        public Builder success(SuccessCallback callback) {
             successCallback = callback;
             return this;
         }
         //设置失败的回调
-        public Builder failure(JPermissions.FailureCallback callback) {
+        public Builder failure(FailureCallback callback) {
             failureCallback = callback;
             return this;
         }
