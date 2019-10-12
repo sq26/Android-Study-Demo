@@ -1,6 +1,7 @@
 package com.sq26.experience.util.media;
 
 import android.content.DialogInterface;
+import android.view.Window;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,6 +9,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.sq26.experience.R;
+import com.sq26.experience.util.permissions.JPermissions;
+import com.sq26.experience.util.permissions.PermissionUtil;
 
 
 public class JImage {
@@ -61,26 +64,62 @@ public class JImage {
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     switch (i) {
                                         case 0:
+                                            //更改来源为拍照
                                             sourceType = PHOTO;
                                             break;
                                         case 1:
+                                            //更改来源为相册
                                             sourceType = ALBUM;
                                             break;
                                     }
-                                    startFragment();
+                                    //判断有没有权限没有就申请权限
+                                    requestPermissions();
                                 }
                             }).show();
                 } else {
-                    startFragment();
+                    //判断有没有权限没有就申请权限
+                    requestPermissions();
                 }
             }
         }
 
+        //申请权限
+        private void requestPermissions() {
+            String[] permissions;
+            //判断是不是拍照
+            if (sourceType == PHOTO)
+                //选择拍照申请拍照的权限
+                permissions = PermissionUtil.Group.CAMERA;
+            else
+                //否则就是相册的权限,也就是储存权限
+                permissions = PermissionUtil.Group.STORAGE;
+            //开始调用权限申请
+            JPermissions.init(contents)
+                    .permissions(permissions)
+                    .success(new JPermissions.SuccessCallback() {
+                        @Override
+                        public void success() {
+                            //成功后去执行fragment,进去内容获取操作
+                            startFragment();
+                        }
+                    })
+                    .failure(new JPermissions.FailureCallback() {
+                        @Override
+                        public void failure(String[] successArray, String[] failureArray, String[] noPromptArray) {
+                            //失败后弹出提示(暂时没想好怎么提示)
+                        }
+                    })
+                    .start();
+        }
+
         private void startFragment() {
+            //创建可选择图片的fragment,并初始化回调
             imageFragment = new ImageFragment(sourceType, new ImageFragment.OnImageReturnCallback() {
                 @Override
                 public void success(String... paths) {
+                    //成功获取到图片后的回调
                     successCallback.success(paths);
+                    //移除创建的fragment
                     removeFragment();
                 }
             });

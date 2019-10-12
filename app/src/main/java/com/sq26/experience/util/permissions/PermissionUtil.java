@@ -70,7 +70,8 @@ public class PermissionUtil {
         public static final String CALENDAR = Manifest.permission_group.CALENDAR;
         //相机
         //android.permission.CAMERA
-        public static final String CAMERA = Manifest.permission_group.CAMERA;
+//        public static final String CAMERA = Manifest.permission_group.CAMERA;
+        public static final String[] CAMERA = new String[]{Manifest.permission.CAMERA};
         //联系人
         //android.permission.READ_CONTACTS
         //android.permission.WRITE_CONTACTS
@@ -106,7 +107,8 @@ public class PermissionUtil {
         //存储
         //android.permission.READ_EXTERNAL_STORAGE
         //android.permission.WRITE_EXTERNAL_STORAGE
-        public static final String STORAGE = Manifest.permission_group.STORAGE;
+//        public static final String STORAGE = Manifest.permission_group.STORAGE;
+        public static final String[] STORAGE = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     }
 
     //打开到应用的设置界面

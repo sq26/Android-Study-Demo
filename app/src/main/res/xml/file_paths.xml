@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+    path：需要临时授权访问的路径（.代表在相机调用时候访问的是所有路径，而文件写入时访问的路径是Android/data/com.ijuyin.prints.news/）
+    name： 是你为设置的这个访问路径起的名字
+    -->
+    <!--files-path:对应内部内存卡根目录：Context.getFileDir()-->
+    <!--    /data/user/0/com.sq26.experience/files-->
+    <files-path
+        name="int_root"
+        path="/" />
+
+    <!--cache-path:对应应用默认缓存根目录：Context.getCacheDir()-->
+    <!--    /data/user/0/com.sq26.experience/cache-->
+    <cache-path
+        name="app_cache"
+        path="/" />
+
+    <!--external-path:对应外部内存卡根目录：Environment.getExternalStorageDirectory()-->
+    <!--    /storage/emulated/0-->
+    <external-path
+        name="ext_root"
+        path="." />
+
+    <!--external-files-path:对应外部内存卡根目录下的APP公共目录：Context.getExternalFileDir(String)-->
+    <!--    /storage/emulated/0/Android/data/com.sq26.experience/files-->
+    <external-files-path
+        name="ext_pub"
+        path="/" />
+    <!--external-cache-path:对应外部内存卡根目录下的APP缓存目录：Context.getExternalCacheDir()-->
+    <!--    /storage/emulated/0/Android/data/com.sq26.experience/cache-->
+    <external-cache-path
+        name="ext_cache"
+        path="/" />
+</paths>

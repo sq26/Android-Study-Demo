@@ -1,15 +1,66 @@
 <resources>
 
     <!-- Base application theme. -->
+    <!--    基础应用主题-->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+        <!-- 在这里自定义主题。. -->
+        <!--        应用的主要色调，actionBar默认使用该颜色，Toolbar导航栏的底色-->
         <item name="colorPrimary">@color/colorPrimary</item>
+        <!--        应用的主要暗色调，statusBarColor默认使用该颜色-->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <!--        状态栏颜色，默认使用colorPrimaryDark-->
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <!--        窗口背景颜色-->
+        <item name="android:windowBackground">@color/windowBackground</item>
+        <!--        底部导航栏栏颜色-->
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <!--        应用的前景色，ListView的分割线，switch滑动区默认使用该颜色-->
+        <!--        <item name="android:colorForeground"></item>-->
+        <!--        应用的背景色，popMenu的背景默认使用该颜色-->
+        <!--        <item name="android:colorBackground"></item>-->
+        <!--        CheckBox，RadioButton，SwitchCompat等一般控件的选中效果默认采用该颜色-->
         <item name="colorAccent">@color/colorAccent</item>
+        <!--        CheckBox，RadioButton，SwitchCompat等默认状态的颜色。-->
+        <!--        <item name="colorControlNormal"></item>-->
+        <!--        <item name="android:colorControlNormal"></item>-->
+        <!--        控件按压时的色调-->
+        <!--        <item name="colorControlHighlight"></item>-->
+        <!--        <item name="android:colorControlHighlight"></item>-->
+        <!--        控件选中时的颜色，默认使用colorAccent   -->
+        <!--        <item name="colorControlActivated"></item>-->
+        <!--        <item name="android:colorControlActivated"></item>-->
+        <!--        默认按钮的背景颜色-->
+        <!--        <item name="colorButtonNormal"></item>-->
+        <!--        <item name="android:colorButtonNormal"></item>-->
+        <!--        默认EditView输入框字体的颜色-->
+        <!--        <item name="editTextColor"></item>-->
+        <!--        <item name="android:editTextColor"></item>-->
+        <!--        Button，textView的文字颜色-->
+        <!--        <item name="android:textColor"></item>-->
+        <!--        RadioButton checkbox等控件的文字颜色-->
+        <!--        <item name="android:textColorPrimaryDisableOnly"></item>-->
+        <!--        应用的主要文字颜色，actionBar的标题文字默认使用该颜色-->
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <!--        switch thumbs 默认状态的颜色. (switch off)-->
+        <!--        <item name="colorSwitchThumbNormal"></item>-->
 
+        <!--        不要ActionBar(要使用toolbar需要去除ActionBar)-->
         <item name="windowActionBar">false</item>
+        <!--        不要窗口标题-->
         <item name="windowNoTitle">true</item>
-        <item name="android:windowNoTitle">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <!--    toolbar主题-->
+    <style name="ToolBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        <!--        toolbar背景色-->
+        <item name="android:background">@color/colorPrimary</item>
+        <!--        toolbar主要文字颜色-->
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <!--        toolbar副标题文字颜色-->
+        <item name="subtitleTextColor">@android:color/white</item>
+        <!--        解决Toolbar的Title与NavigationIcon距离过宽-->
+        <item name="contentInsetStartWithNavigation">0dp</item>
     </style>
 
 </resources>

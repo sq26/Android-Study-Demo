@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.WRITE_PROFILE" /> <!-- 允许程序写入外部存储,如SD卡上写文件 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 写入联系人,但不可读取 -->
     <uses-permission android:name="android.permission.WRITE_CONTACTS" /> <!-- 允许程序写入（但是不能读）用户的联系人数据 -->
+    <uses-permission android:name="android.permission.PERMISSIONS_STORAGE"/> <!-- 允许程序进行外部储存操作 -->
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" /> <!-- 允许程序写入日程，但不可读取 -->
     <uses-permission android:name="android.permission.WRITE_CALENDAR" /> <!-- 允许程序在手机屏幕关闭后后台进程仍然运行 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 允许程序振动 -->
@@ -135,7 +136,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activity.MediaManagementActivity"></activity>
+        <activity android:name=".ui.util.SelectImageActivity"></activity>
+        <activity android:name=".ui.activity.MediaManagementActivity" />
         <activity android:name=".ui.activity.FileManagementActivity" />
         <activity android:name=".ui.activity.AuthorizedOperationActivity" />
         <activity android:name=".ui.activity.StatusBarActivity" />
@@ -151,6 +153,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--
+        authorities：是该项目的包名+provider
+        grantUriPermissions：必须是true，表示授予 URI 临时访问权限
+        exported：必须是false
+        resource：中的@xml/file_paths是我们接下来要在资源文件目录下添加的文件
+        -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.FileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!--
+    shape:// 定义形状,可选值["rectangle(矩形)" | "oval(圆形)" | "line(线型)" | "ring(圆环)"]
+    corners //圆角属性
+    radius:圆角的大小
+    solid //填充属性
+    solid android:color//填充颜色
+    -->
+    <corners android:radius="200dp" />
+    <solid android:color="@color/colorAccent" />
+</shape>

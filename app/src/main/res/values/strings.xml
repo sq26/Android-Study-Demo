@@ -16,4 +16,7 @@
 
     <string name="Take_a_photo">拍照</string>
     <string name="Album">相册</string>
+
+    <string name="determine">确定</string>
+
 </resources>

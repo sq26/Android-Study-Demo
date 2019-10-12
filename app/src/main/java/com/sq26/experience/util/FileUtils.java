@@ -3,7 +3,7 @@ package com.sq26.experience.util;
 import java.text.DecimalFormat;
 
 //app工具类
-public class AppUtils {
+public class FileUtils {
     public static String getFileSizeStr(Long size) {
         DecimalFormat df = new DecimalFormat("0.00");//设置保留位数
         String str;
@@ -21,5 +21,21 @@ public class AppUtils {
             str = size + "B";
         }
         return str;
+    }
+
+    //根据文件路径获取文件名称(包含后缀)
+    public static String getFileName(String path) {
+        return path.substring(path.lastIndexOf("/") + 1);
+    }
+
+    //根据文件路径获取文件所在的文件夹路径
+    public static String getFileParentFolderPath(String path) {
+        return path.substring(0, path.lastIndexOf("/"));
+    }
+
+    //根据文件路径获取文件的父文件夹名称
+    public static String getParentFileName(String path) {
+        String[] s = path.split("/");
+        return s[s.length - 2];
     }
 }

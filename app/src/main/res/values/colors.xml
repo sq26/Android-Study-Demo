@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--    主要颜色-->
     <color name="colorPrimary">#008577</color>
+    <!--    主要颜色(暗)-->
     <color name="colorPrimaryDark">#00574B</color>
+    <!--    控件选中的颜色-->
     <color name="colorAccent">#D81B60</color>
+    <!--    窗口背景色-->
+    <color name="windowBackground">#F4F4F4</color>
+
+    <!--完全透明色-->
+    <color name="transparent">@android:color/transparent</color>
 </resources>

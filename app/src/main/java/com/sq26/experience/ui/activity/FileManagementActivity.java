@@ -1,6 +1,7 @@
 package com.sq26.experience.ui.activity;
 
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -18,7 +19,7 @@ import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
-import com.sq26.experience.util.AppUtils;
+import com.sq26.experience.util.FileUtils;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -44,6 +45,32 @@ public class FileManagementActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         init();
+        Log.d("DIRECTORY_ALARMS",getExternalFilesDir(Environment.DIRECTORY_ALARMS).getAbsolutePath());
+//        Log.d("DIRECTORY_AUDIOBOOKS",getExternalFilesDir(Environment.DIRECTORY_AUDIOBOOKS).getAbsolutePath());
+        Log.d("DIRECTORY_DCIM",getExternalFilesDir(Environment.DIRECTORY_DCIM).getAbsolutePath());
+        Log.d("DIRECTORY_DOCUMENTS",getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS).getAbsolutePath());
+        Log.d("DIRECTORY_DOWNLOADS",getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath());
+        Log.d("DIRECTORY_MOVIES",getExternalFilesDir(Environment.DIRECTORY_MOVIES).getAbsolutePath());
+        Log.d("DIRECTORY_MUSIC",getExternalFilesDir(Environment.DIRECTORY_MUSIC).getAbsolutePath());
+        Log.d("DIRECTORY_NOTIFICATIONS",getExternalFilesDir(Environment.DIRECTORY_NOTIFICATIONS).getAbsolutePath());
+        Log.d("DIRECTORY_PICTURES",getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath());
+        Log.d("DIRECTORY_PODCASTS",getExternalFilesDir(Environment.DIRECTORY_PODCASTS).getAbsolutePath());
+        Log.d("DIRECTORY_RINGTONES",getExternalFilesDir(Environment.DIRECTORY_RINGTONES).getAbsolutePath());
+//        Log.d("DIRECTORY_SCREENSHOTS",getExternalFilesDir(Environment.DIRECTORY_SCREENSHOTS).getAbsolutePath());
+
+        Log.d("MEDIA_BAD_REMOVAL",getExternalFilesDir(Environment.MEDIA_BAD_REMOVAL).getAbsolutePath());
+        Log.d("MEDIA_CHECKING",getExternalFilesDir(Environment.MEDIA_CHECKING).getAbsolutePath());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Log.d("MEDIA_EJECTING",getExternalFilesDir(Environment.MEDIA_EJECTING).getAbsolutePath());
+        }
+        Log.d("MEDIA_MOUNTED",getExternalFilesDir(Environment.MEDIA_MOUNTED).getAbsolutePath());
+        Log.d("MEDIA_MOUNTED_READ_ONLY",getExternalFilesDir(Environment.MEDIA_MOUNTED_READ_ONLY).getAbsolutePath());
+        Log.d("MEDIA_NOFS",getExternalFilesDir(Environment.MEDIA_NOFS).getAbsolutePath());
+        Log.d("MEDIA_REMOVED",getExternalFilesDir(Environment.MEDIA_REMOVED).getAbsolutePath());
+        Log.d("MEDIA_SHARED",getExternalFilesDir(Environment.MEDIA_SHARED).getAbsolutePath());
+        Log.d("MEDIA_UNKNOWN",getExternalFilesDir(Environment.MEDIA_UNKNOWN).getAbsolutePath());
+        Log.d("MEDIA_UNMOUNTABLE",getExternalFilesDir(Environment.MEDIA_UNMOUNTABLE).getAbsolutePath());
+        Log.d("MEDIA_UNMOUNTED",getExternalFilesDir(Environment.MEDIA_UNMOUNTED).getAbsolutePath());
     }
 
     private void init() {
@@ -101,7 +128,7 @@ public class FileManagementActivity extends AppCompatActivity {
             fileJsonObject.put("dateTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(f.lastModified()));
             if (f.isFile()) {
                 fileJsonObject.put("img", R.drawable.ic_insert_drive_file_black_24dp);
-                fileJsonObject.put("remark", AppUtils.getFileSizeStr(f.length()));
+                fileJsonObject.put("remark", FileUtils.getFileSizeStr(f.length()));
             } else {
                 fileJsonObject.put("img", R.drawable.ic_folder_open_black_24dp);
                 if (f.list() != null) {
