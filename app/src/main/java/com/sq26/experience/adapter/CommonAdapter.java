@@ -1,7 +1,6 @@
 package com.sq26.experience.adapter;
 
 import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 
 public abstract class CommonAdapter extends RecyclerViewJsonArrayAdapter {
     private int LAYOUT_ID;

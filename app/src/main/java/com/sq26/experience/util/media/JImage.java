@@ -1,7 +1,6 @@
 package com.sq26.experience.util.media;
 
 import android.content.DialogInterface;
-import android.view.Window;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;

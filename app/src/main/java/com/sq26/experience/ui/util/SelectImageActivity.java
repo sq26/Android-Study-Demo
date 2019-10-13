@@ -1,5 +1,6 @@
 package com.sq26.experience.ui.util;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -21,14 +22,24 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.controller.BaseControllerListener;
+import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.image.ImageInfo;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
+import com.sq26.experience.util.DensityUtil;
 import com.sq26.experience.util.FileUtils;
 
+import java.net.URL;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -54,8 +65,14 @@ public class SelectImageActivity extends AppCompatActivity {
     private JSONArray imageArray = new JSONArray();
     //用于展示当前文件夹图片的适配器
     private CommonAdapter imageAdapter;
-
+    //用于记录全局选中的图片的路径和编号,key为路径,value为编号
     private JSONObject SelectedItem = new JSONObject(new LinkedHashMap<>());
+    //用于记录当前文件夹中选中的图片的路径和下标,key为路径,value为下标
+    private JSONObject SelectedItemIndex = new JSONObject();
+    //用于记录全局选中的文件夹的下标,默认为0
+    private int selectFolderArrayIndex = 0;
+    //用于方便设置activity上下文
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,38 +88,67 @@ public class SelectImageActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        toolbar.setTitle("");
+        //设置当前activity的上下文
+        context = this;
+        //设置toolbar为actionbar
         setSupportActionBar(toolbar);
-
+        //设置不显示toolbar标题
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
+        //创建显示图片列表的内容适配器
         imageAdapter = new CommonAdapter(R.layout.item_select_image, imageArray) {
             @Override
             protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
-                viewHolder.setImageURI(R.id.image, "file://" + jsonObject.getString(MediaStore.Images.Media.DATA));
+                //给图片视图设置图片路径
+                setDraweeController("file://" + jsonObject.getString(MediaStore.Images.Media.DATA), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 180), DensityUtil.dip2px(context, 180));
+                //判断有没有选中过
                 if (SelectedItem.containsKey(jsonObject.getString(MediaStore.Images.Media.DATA))) {
+                    //选中过就设置当前选中的编号
                     viewHolder.setText(R.id.count, SelectedItem.getString(jsonObject.getString(MediaStore.Images.Media.DATA)));
+                    //并把背景颜色改为选中色
                     viewHolder.setBackgroundResource(R.id.count, R.drawable.bg_corners_all);
+                    //被选中过就保存一下该文件在当前文件夹中的下标,用于保存新文件夹中已选中的文件的下标(虽然在这里调用会重复保存造成些许多余的性能流失,但暂时找不到更高效的保存方法)
+                    SelectedItemIndex.put(jsonObject.getString(MediaStore.Images.Media.DATA), position);
                 } else {
+                    //没有选中就把编号设置为空字符
                     viewHolder.setText(R.id.count, "");
+                    //并把背景色改为白色圆环
                     viewHolder.setBackgroundResource(R.id.count, R.drawable.bg_ring_white);
                 }
+                //给编号视图添加点击事件,用来记录选中状态
                 viewHolder.setOnClickListener(R.id.count, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        //判断有没有选中过
                         if (SelectedItem.containsKey(jsonObject.getString(MediaStore.Images.Media.DATA))) {
+                            //有选中过
+                            //移除选中记录
                             SelectedItem.remove(jsonObject.getString(MediaStore.Images.Media.DATA));
+                            //移除下标记录
+                            SelectedItemIndex.remove(jsonObject.getString(MediaStore.Images.Media.DATA));
+                            //刷新刚取消选中的视图的下标=
+                            notifyItemChanged(position);
+                            //初始化编号标记
                             int index = 1;
+                            //重新遍历,计算新的编号
                             for (String s : SelectedItem.keySet()) {
+                                //设置新的编号
                                 SelectedItem.put(s, index);
+                                //刷新所有选中的视图(重新计算过编号信息后的),指定下标
+                                notifyItemChanged(SelectedItemIndex.getInteger(s));
+                                //每设置好,编号增加一位
                                 index++;
                             }
                         } else {
+                            //没有选中过就直接加入记录,并设置编号为总选中数量加1
                             SelectedItem.put(jsonObject.getString(MediaStore.Images.Media.DATA), (SelectedItem.size() + 1) + "");
+                            //刷新指定下标的item视图
+                            notifyItemChanged(position);
                         }
-                        notifyDataSetChanged();
                     }
                 });
             }
         };
+        //给显示图片列表的视图设置内容适配器
         imageRecyclerView.setAdapter(imageAdapter);
     }
 
@@ -172,7 +218,7 @@ public class SelectImageActivity extends AppCompatActivity {
             jsonObject.put("array", jsonArray);
             //加入到全局文件夹jsonArray
             selectFolderArray.add(jsonObject);
-
+            //遍历保存的父文件夹
             for (String key : parentJsonObject.keySet()) {
                 jsonObject = new JSONObject();
                 //设置标题(取列表第一条数据里父文件夹名称)
@@ -186,7 +232,9 @@ public class SelectImageActivity extends AppCompatActivity {
                 //加入到全局文件夹jsonArray
                 selectFolderArray.add(jsonObject);
             }
+            //将全部图片列表加入到当前显示图片视图列表中
             imageArray.addAll(jsonArray);
+            //刷新图片视图列表
             imageAdapter.notifyDataSetChanged();
             Log.d("jsonArray", jsonArray.toJSONString());
         } else {
@@ -207,7 +255,7 @@ public class SelectImageActivity extends AppCompatActivity {
                 viewHolder.setText(R.id.text, jsonObject.getString("title")
                         + "(" + jsonObject.getString("count") + ")");
                 //设置预览的第一张图片
-                viewHolder.setImageURI(R.id.image, "file://" + jsonObject.getString("image"));
+                setDraweeController("file://" + jsonObject.getString("image"), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 48), DensityUtil.dip2px(context, 48));
             }
         };
         //设置适配器
@@ -216,14 +264,24 @@ public class SelectImageActivity extends AppCompatActivity {
         commonAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.Click() {
             @Override
             public void onClick(int position) {
-                //在toolbar设置当前文件夹名称
-                pathType.setText(selectFolderArray.getJSONObject(position).getString("title")
-                        + "(" + selectFolderArray.getJSONObject(position).getString("count") + ")");
-                //隐藏selectFolderPopupWindow
-                selectFolderPopupWindow.dismiss();
-                imageArray.clear();
-                imageArray.addAll(selectFolderArray.getJSONObject(position).getJSONArray("array"));
-                imageAdapter.notifyDataSetChanged();
+                //判断当前选择的文件夹的下标是不是当前显示的文件夹的标(简单点说就是重复选择)
+                if (selectFolderArrayIndex != position) {
+                    //不是重复选择,记录当前悬着的文件夹的下标
+                    selectFolderArrayIndex = position;
+                    //在toolbar设置当前文件夹名称
+                    pathType.setText(selectFolderArray.getJSONObject(position).getString("title")
+                            + "(" + selectFolderArray.getJSONObject(position).getString("count") + ")");
+                    //隐藏selectFolderPopupWindow
+                    selectFolderPopupWindow.dismiss();
+                    //清空当前显示的图片列表
+                    imageArray.clear();
+                    //添加选中的图片列表
+                    imageArray.addAll(selectFolderArray.getJSONObject(position).getJSONArray("array"));
+                    //清空已选中列表
+                    SelectedItemIndex.clear();
+                    //刷新图片列表视图
+                    imageAdapter.notifyDataSetChanged();
+                }
             }
         });
         //创建selectFolderPopupWindow
@@ -245,14 +303,21 @@ public class SelectImageActivity extends AppCompatActivity {
 
     @OnClick(R.id.selectFolder)
     public void onViewClicked() {
-        //将selectFolderPopupWindow依附于selectFolder显示
-        selectFolderPopupWindow.showAsDropDown(selectFolder);
-        //将箭头旋转180度
-        arrowDrop.animate().rotation(180).setDuration(500).start();
+        Log.d("selectFolder",selectFolderPopupWindow.isShowing()+"");
+        if (selectFolderPopupWindow.isShowing()) {
+            //隐藏selectFolderPopupWindow
+            selectFolderPopupWindow.dismiss();
+        } else {
+            //将selectFolderPopupWindow依附于selectFolder显示
+            selectFolderPopupWindow.showAsDropDown(selectFolder);
+            //将箭头旋转180度
+            arrowDrop.animate().rotation(180).setDuration(500).start();
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        //设置toolbar上的菜单按钮,设置了一个确定按钮
         getMenuInflater().inflate(R.menu.menu_determine, menu);
         return true;
     }
@@ -261,22 +326,49 @@ public class SelectImageActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                //调用返回按钮
                 onBackPressed();
                 break;
             case R.id.action_determine:
+                //获取已选中的图片路径
                 String[] paths = SelectedItem.keySet().toArray(new String[0]);
+                //判断有没有选择
                 if (paths.length > 0) {
+                    //有选择
+                    //做遍历打印所有已选中的图片路径
                     for (String s : paths)
                         Log.d("paths", s);
+                    //创建intent对象
                     Intent data = new Intent();
+                    //设置选中的数据
                     data.putExtra("paths", paths);
+                    //设置返回的intent对象
                     setResult(RESULT_OK, data);
+                    //关闭当前页面
                     finish();
                 } else {
+                    //没选择
+                    //直接关闭
                     finish();
                 }
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setDraweeController(String uri, SimpleDraweeView simpleDraweeView, int width, int height) {
+        //创建一个ImageRequest用于获取图片内容,并设置图片链接
+        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
+                //设置图片尺寸
+                .setResizeOptions(new ResizeOptions(width, height))
+                //创建
+                .build();
+        //创建一个DraweeController,对加载显示的图片做更多的控制和定制
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                //指定配置,使用旧的配置,不新建
+                .setOldController(simpleDraweeView.getController())
+                .setImageRequest(request)
+                .build();
+        simpleDraweeView.setController(controller);
     }
 }

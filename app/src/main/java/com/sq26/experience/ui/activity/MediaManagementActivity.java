@@ -1,7 +1,6 @@
 package com.sq26.experience.ui.activity;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 

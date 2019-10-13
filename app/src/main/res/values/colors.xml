@@ -10,5 +10,4 @@
     <color name="windowBackground">#F4F4F4</color>
 
     <!--完全透明色-->
-    <color name="transparent">@android:color/transparent</color>
 </resources>
