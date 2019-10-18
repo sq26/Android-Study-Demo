@@ -1,5 +1,6 @@
 package com.sq26.experience.ui.util;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,6 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
@@ -19,15 +23,15 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.controller.BaseControllerListener;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.image.ImageInfo;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.sq26.experience.R;
@@ -37,8 +41,9 @@ import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.util.DensityUtil;
 import com.sq26.experience.util.FileUtils;
 
-import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Objects;
 
 import butterknife.BindView;
@@ -57,6 +62,10 @@ public class SelectImageActivity extends AppCompatActivity {
     Toolbar toolbar;
     @BindView(R.id.imageRecyclerView)
     RecyclerView imageRecyclerView;
+    @BindView(R.id.preview)
+    TextView preview;
+    @BindView(R.id.originalImage)
+    CheckBox originalImage;
     //全局文件夹分类jsonArray
     private JSONArray selectFolderArray = new JSONArray();
     //弹出式窗口
@@ -144,6 +153,13 @@ public class SelectImageActivity extends AppCompatActivity {
                             //刷新指定下标的item视图
                             notifyItemChanged(position);
                         }
+                    }
+                });
+                //给图片添加点击事件
+                viewHolder.setOnClickListener(R.id.image, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showFullscreenDialog(false);
                     }
                 });
             }
@@ -300,18 +316,164 @@ public class SelectImageActivity extends AppCompatActivity {
         });
     }
 
+    @OnClick({R.id.selectFolder, R.id.preview})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.selectFolder:
+                Log.d("selectFolder", selectFolderPopupWindow.isShowing() + "");
+                if (selectFolderPopupWindow.isShowing()) {
+                    //隐藏selectFolderPopupWindow
+                    selectFolderPopupWindow.dismiss();
+                } else {
+                    //将selectFolderPopupWindow依附于selectFolder显示
+                    selectFolderPopupWindow.showAsDropDown(selectFolder);
+                    //将箭头旋转180度
+                    arrowDrop.animate().rotation(180).setDuration(500).start();
+                }
+                break;
+            case R.id.preview:
+                //显示全屏dialog
+                if (SelectedItem.size() > 0)
+                    showFullscreenDialog(true);
+                break;
+        }
+    }
 
-    @OnClick(R.id.selectFolder)
-    public void onViewClicked() {
-        Log.d("selectFolder",selectFolderPopupWindow.isShowing()+"");
-        if (selectFolderPopupWindow.isShowing()) {
-            //隐藏selectFolderPopupWindow
-            selectFolderPopupWindow.dismiss();
+    private void setDraweeController(String uri, SimpleDraweeView simpleDraweeView, int width, int height) {
+        //创建一个ImageRequest用于获取图片内容,并设置图片链接
+        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
+                //设置图片尺寸
+                .setResizeOptions(new ResizeOptions(width, height))
+                //创建
+                .build();
+        //创建一个DraweeController,对加载显示的图片做更多的控制和定制
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                //指定配置,使用旧的配置,不新建
+                .setOldController(simpleDraweeView.getController())
+                .setImageRequest(request)
+                .build();
+        simpleDraweeView.setController(controller);
+    }
+
+    //显示全屏dialog
+    //isChosen 是否是显示已选择列表,true 就显示已选择列表,否是就显示当前文件夹列表
+    private void showFullscreenDialog(boolean isChosen) {
+        //创建基础dialog,并设置全屏dialog基础样式
+        Dialog dialog = new Dialog(this, R.style.DialogFullscreen);
+        //设置内容布局
+        dialog.setContentView(R.layout.dialog_preview_image_array);
+        //获取子控件,顶部Toolbar
+        Toolbar dialogToolbar = dialog.findViewById(R.id.dialogToolbar);
+        //设置顶部Toolbar右边返回按钮的点击事件
+        dialogToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //点击后关闭dialog
+                dialog.dismiss();
+            }
+        });
+        //设置顶部Toolbar右边的菜单点击事件
+        dialogToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                //点击确定将数据返回上级界面
+                if (item.getItemId() == R.id.action_determine)
+                    determine();
+                return false;
+            }
+        });
+        //是否原图
+        CheckBox dialogOriginalImage = dialog.findViewById(R.id.originalImage);
+        //将activity的选中状态设置到dialog
+        dialogOriginalImage.setChecked(originalImage.isChecked());
+        dialogOriginalImage.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                //把选择的结果设置到activity的是否原图
+                originalImage.setChecked(b);
+            }
+        });
+        ViewPager viewPager = dialog.findViewById(R.id.viewPager);
+        //是否选择
+        CheckBox select = dialog.findViewById(R.id.select);
+        select.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+
+                Log.d("viewPager", viewPager.getCurrentItem() + "");
+            }
+        });
+
+        List<String> imageList = new ArrayList<>();
+        if (isChosen) {
+            imageList.addAll(SelectedItem.keySet());
+            //设置Toolbar标题
+            dialogToolbar.setTitle("1/" + imageList.size());
+            //即将要显示的第一张图片肯定是选中(刚从选中列表遍历出来怎么可能没选中)
+            select.setChecked(true);
         } else {
-            //将selectFolderPopupWindow依附于selectFolder显示
-            selectFolderPopupWindow.showAsDropDown(selectFolder);
-            //将箭头旋转180度
-            arrowDrop.animate().rotation(180).setDuration(500).start();
+
+        }
+        viewPager.setAdapter(new ImagePagerAdapter(imageList));
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            /**
+             * 滑动监听
+             * @param position 滑动的界面位置（viewpager界面排序为0.1.2.3....）
+             * @param positionOffset 滑动的页面占整个屏幕的百分比
+             * @param positionOffsetPixels 屏幕像素位置
+             */
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            /**
+             *  滑动完成后的调用
+             * @param position 跳转完成后的页面位置
+             */
+            @Override
+            public void onPageSelected(int position) {
+                //设置Toolbar标题
+                dialogToolbar.setTitle((position + 1) + "/" + imageList.size());
+                select.setChecked(SelectedItem.containsKey(imageList.get(position)));
+            }
+
+            /**
+             * 滑动状态监听
+             * @param state 当页面停止的时候该参数为0，页面开始滑动的时候变成了1，
+             *              当手指从屏幕上抬起变为了2（无论页面是否从1跳到了2），当页面静止后又变成了0
+             */
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        //创建并显示dialog
+        dialog.show();
+    }
+
+    //将选择的图片返回到上级页面
+    private void determine() {
+        //获取已选中的图片路径
+        String[] paths = SelectedItem.keySet().toArray(new String[0]);
+        //判断有没有选择
+        if (paths.length > 0) {
+            //有选择
+            //做遍历打印所有已选中的图片路径
+            for (String s : paths)
+                Log.d("paths", s);
+            //创建intent对象
+            Intent data = new Intent();
+            //设置选中的数据
+            data.putExtra("paths", paths);
+            //设置返回的intent对象
+            setResult(RESULT_OK, data);
+            //关闭当前页面
+            finish();
+        } else {
+            //没选择
+            //直接关闭
+            finish();
         }
     }
 
@@ -330,45 +492,47 @@ public class SelectImageActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
             case R.id.action_determine:
-                //获取已选中的图片路径
-                String[] paths = SelectedItem.keySet().toArray(new String[0]);
-                //判断有没有选择
-                if (paths.length > 0) {
-                    //有选择
-                    //做遍历打印所有已选中的图片路径
-                    for (String s : paths)
-                        Log.d("paths", s);
-                    //创建intent对象
-                    Intent data = new Intent();
-                    //设置选中的数据
-                    data.putExtra("paths", paths);
-                    //设置返回的intent对象
-                    setResult(RESULT_OK, data);
-                    //关闭当前页面
-                    finish();
-                } else {
-                    //没选择
-                    //直接关闭
-                    finish();
-                }
+                determine();
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void setDraweeController(String uri, SimpleDraweeView simpleDraweeView, int width, int height) {
-        //创建一个ImageRequest用于获取图片内容,并设置图片链接
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
-                //设置图片尺寸
-                .setResizeOptions(new ResizeOptions(width, height))
-                //创建
-                .build();
-        //创建一个DraweeController,对加载显示的图片做更多的控制和定制
-        DraweeController controller = Fresco.newDraweeControllerBuilder()
-                //指定配置,使用旧的配置,不新建
-                .setOldController(simpleDraweeView.getController())
-                .setImageRequest(request)
-                .build();
-        simpleDraweeView.setController(controller);
+
+    class ImagePagerAdapter extends PagerAdapter {
+        private List<String> imageList;
+
+        ImagePagerAdapter(List<String> imageList) {
+            this.imageList = imageList;
+        }
+
+        //返回viewpager页面的个数
+        @Override
+        public int getCount() {
+            return imageList.size();
+        }
+
+        //判断是否为同一个视图
+        @Override
+        public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+            return view == object;
+        }
+
+        //是用于往viewpage中添加控件，添加内容
+        @NonNull
+        @Override
+        public Object instantiateItem(@NonNull ViewGroup container, int position) {
+            SimpleDraweeView simpleDraweeView = new SimpleDraweeView(context);
+            simpleDraweeView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            simpleDraweeView.setImageURI("file://" + imageList.get(position));
+            container.addView(simpleDraweeView);
+            return simpleDraweeView;
+        }
+
+        //是加入页面的时候，默认缓存三个，如不做处理，滑多了程序就会蹦
+        @Override
+        public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
+            container.removeView((View) object);
+        }
     }
 }

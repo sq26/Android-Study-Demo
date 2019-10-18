@@ -63,4 +63,13 @@
         <item name="contentInsetStartWithNavigation">0dp</item>
     </style>
 
+    <!--    全屏dialog-->
+    <style name="DialogFullscreen" parent="@android:style/Theme.Material.Light.DialogWhenLarge">
+        <!--        不要窗口标题-->
+        <item name="android:windowNoTitle">true</item>
+        <!--        状态栏颜色，默认使用colorPrimaryDark-->
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <!--        设置默认Dialog动画-->
+        <item name="android:windowAnimationStyle">@android:style/Animation.Dialog</item>
+    </style>
 </resources>
