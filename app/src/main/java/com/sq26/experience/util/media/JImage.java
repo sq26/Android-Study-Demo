@@ -32,6 +32,8 @@ public class JImage {
         private Integer sourceType;
         private SuccessCallback successCallback;
         private ImageFragment imageFragment;
+        //最大图片数量,默认是0,表示不限制
+        private int maxCount = 0;
 
         //构建
         public Builder(AppCompatActivity contents) {
@@ -41,6 +43,12 @@ public class JImage {
         //设置图片来源(从相册还是拍照)
         public Builder setImageSource(Integer sourceType) {
             this.sourceType = sourceType;
+            return this;
+        }
+
+        //设置图片来源(从相册还是拍照)
+        public Builder setMaxCount(int maxCount) {
+            this.maxCount = maxCount;
             return this;
         }
 
@@ -113,7 +121,7 @@ public class JImage {
 
         private void startFragment() {
             //创建可选择图片的fragment,并初始化回调
-            imageFragment = new ImageFragment(sourceType, new ImageFragment.OnImageReturnCallback() {
+            imageFragment = new ImageFragment(sourceType, maxCount, new ImageFragment.OnImageReturnCallback() {
                 @Override
                 public void success(String... paths) {
                     //成功获取到图片后的回调

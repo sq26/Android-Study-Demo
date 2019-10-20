@@ -20,7 +20,9 @@
     <string name="determine">确定</string>
     <string name="Preview">预览</string>
     <string name="Preview_d">预览(%1$d)</string>
+    <string name="Preview_2d">预览(%1$d/%2$d)</string>
     <string name="Original_image">原图</string>
     <string name="select">选择</string>
+    <string name="fileNameAndCount">%1$s(%2$s)</string>
 
 </resources>

@@ -24,11 +24,13 @@ import java.util.Objects;
 
 public class ImageFragment extends Fragment {
     private Integer sourceType;
+    private int maxCount;
     private OnImageReturnCallback onImageReturnCallback;
 
     //构造初始化
-    ImageFragment(Integer sourceType, OnImageReturnCallback onImageReturnCallback) {
+    ImageFragment(Integer sourceType, int maxCount, OnImageReturnCallback onImageReturnCallback) {
         this.sourceType = sourceType;
+        this.maxCount = maxCount;
         this.onImageReturnCallback = onImageReturnCallback;
     }
 
@@ -62,7 +64,7 @@ public class ImageFragment extends Fragment {
             startActivityForResult(intent, JImage.PHOTO);
         } else if (sourceType == JImage.ALBUM) {
             Intent intent = new Intent(getActivity(), SelectImageActivity.class);
-            intent.putExtra("maxNum", 9);
+            intent.putExtra("maxCount", maxCount);
             startActivityForResult(intent, JImage.ALBUM);
         }
     }

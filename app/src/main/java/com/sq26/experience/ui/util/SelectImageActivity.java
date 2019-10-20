@@ -2,6 +2,7 @@ package com.sq26.experience.ui.util;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -38,6 +39,9 @@ import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
+import com.sq26.experience.ui.view.zoomable.DoubleTapGestureListener;
+import com.sq26.experience.ui.view.zoomable.ZoomableDraweeView;
+import com.sq26.experience.util.AntiShake;
 import com.sq26.experience.util.DensityUtil;
 import com.sq26.experience.util.FileUtils;
 
@@ -75,11 +79,13 @@ public class SelectImageActivity extends AppCompatActivity {
     //用于展示当前文件夹图片的适配器
     private CommonAdapter imageAdapter;
     //用于记录全局选中的图片的路径和编号,key为路径,value为编号
-    private JSONObject SelectedItem = new JSONObject(new LinkedHashMap<>());
+    private JSONObject selectedItem = new JSONObject(new LinkedHashMap<>());
     //用于记录当前文件夹中选中的图片的路径和下标,key为路径,value为下标
-    private JSONObject SelectedItemIndex = new JSONObject();
+    private JSONObject selectedItemIndex = new JSONObject();
     //用于记录全局选中的文件夹的下标,默认为0
     private int selectFolderArrayIndex = 0;
+    //设置最大选择图片上限(默认0表示无上限)
+    private int maxCount = 0;
     //用于方便设置activity上下文
     private Context context;
 
@@ -99,6 +105,8 @@ public class SelectImageActivity extends AppCompatActivity {
     private void initView() {
         //设置当前activity的上下文
         context = this;
+        //设置最大选择数量
+        maxCount = getIntent().getIntExtra("maxCount", 0);
         //设置toolbar为actionbar
         setSupportActionBar(toolbar);
         //设置不显示toolbar标题
@@ -110,13 +118,13 @@ public class SelectImageActivity extends AppCompatActivity {
                 //给图片视图设置图片路径
                 setDraweeController("file://" + jsonObject.getString(MediaStore.Images.Media.DATA), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 180), DensityUtil.dip2px(context, 180));
                 //判断有没有选中过
-                if (SelectedItem.containsKey(jsonObject.getString(MediaStore.Images.Media.DATA))) {
+                if (selectedItem.containsKey(jsonObject.getString(MediaStore.Images.Media.DATA))) {
                     //选中过就设置当前选中的编号
-                    viewHolder.setText(R.id.count, SelectedItem.getString(jsonObject.getString(MediaStore.Images.Media.DATA)));
+                    viewHolder.setText(R.id.count, selectedItem.getString(jsonObject.getString(MediaStore.Images.Media.DATA)));
                     //并把背景颜色改为选中色
                     viewHolder.setBackgroundResource(R.id.count, R.drawable.bg_corners_all);
                     //被选中过就保存一下该文件在当前文件夹中的下标,用于保存新文件夹中已选中的文件的下标(虽然在这里调用会重复保存造成些许多余的性能流失,但暂时找不到更高效的保存方法)
-                    SelectedItemIndex.put(jsonObject.getString(MediaStore.Images.Media.DATA), position);
+                    selectedItemIndex.put(jsonObject.getString(MediaStore.Images.Media.DATA), position);
                 } else {
                     //没有选中就把编号设置为空字符
                     viewHolder.setText(R.id.count, "");
@@ -128,38 +136,44 @@ public class SelectImageActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         //判断有没有选中过
-                        if (SelectedItem.containsKey(jsonObject.getString(MediaStore.Images.Media.DATA))) {
+                        if (selectedItem.containsKey(jsonObject.getString(MediaStore.Images.Media.DATA))) {
                             //有选中过
                             //移除选中记录
-                            SelectedItem.remove(jsonObject.getString(MediaStore.Images.Media.DATA));
+                            selectedItem.remove(jsonObject.getString(MediaStore.Images.Media.DATA));
                             //移除下标记录
-                            SelectedItemIndex.remove(jsonObject.getString(MediaStore.Images.Media.DATA));
-                            //刷新刚取消选中的视图的下标=
+                            selectedItemIndex.remove(jsonObject.getString(MediaStore.Images.Media.DATA));
+                            //刷新刚取消选中的视图的下标
                             notifyItemChanged(position);
                             //初始化编号标记
                             int index = 1;
                             //重新遍历,计算新的编号
-                            for (String s : SelectedItem.keySet()) {
+                            for (String s : selectedItem.keySet()) {
                                 //设置新的编号
-                                SelectedItem.put(s, index);
+                                selectedItem.put(s, index);
                                 //刷新所有选中的视图(重新计算过编号信息后的),指定下标
-                                notifyItemChanged(SelectedItemIndex.getInteger(s));
+                                notifyItemChanged(selectedItemIndex.getInteger(s));
                                 //每设置好,编号增加一位
                                 index++;
                             }
                         } else {
-                            //没有选中过就直接加入记录,并设置编号为总选中数量加1
-                            SelectedItem.put(jsonObject.getString(MediaStore.Images.Media.DATA), (SelectedItem.size() + 1) + "");
-                            //刷新指定下标的item视图
-                            notifyItemChanged(position);
+                            //判断是否到达已选择图片数量的上限
+                            if (maxCount == 0 || selectedItem.size() < maxCount) {
+                                //没有选中过就直接加入记录,并设置编号为总选中数量加1
+                                selectedItem.put(jsonObject.getString(MediaStore.Images.Media.DATA), (selectedItem.size() + 1) + "");
+                                //刷新指定下标的item视图
+                                notifyItemChanged(position);
+                            }
                         }
+                        //刷新预览按钮文本
+                        updatePreviewButton();
                     }
                 });
                 //给图片添加点击事件
                 viewHolder.setOnClickListener(R.id.image, new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        showFullscreenDialog(false);
+                        //显示当前文件夹图片列表的dialog,并指定要显示的下标
+                        showFullscreenDialog(false, position);
                     }
                 });
             }
@@ -216,13 +230,15 @@ public class SelectImageActivity extends AppCompatActivity {
                     //存在就把jsonObject加入对应的value中
                     parentJsonObject.getJSONArray(jsonObject.getString("parentFilePath")).add(jsonObject);
                 } else {
-                    //不存在就创建以父文件夹路径作为key的jsonArray,并加入第一条数据
+                    //不存在就以父文件夹路径作为key创建jsonArray,并加入第一条数据
                     JSONArray newJsonArray = new JSONArray();
                     newJsonArray.add(jsonObject);
                     parentJsonObject.put(jsonObject.getString("parentFilePath"), newJsonArray);
                 }
             }
-
+            //关闭链接
+            cursor.close();
+            //创建一个新的JSONObject
             jsonObject = new JSONObject();
             //设置标题
             jsonObject.put("title", "全部图片");
@@ -285,8 +301,8 @@ public class SelectImageActivity extends AppCompatActivity {
                     //不是重复选择,记录当前悬着的文件夹的下标
                     selectFolderArrayIndex = position;
                     //在toolbar设置当前文件夹名称
-                    pathType.setText(selectFolderArray.getJSONObject(position).getString("title")
-                            + "(" + selectFolderArray.getJSONObject(position).getString("count") + ")");
+                    pathType.setText(getString(R.string.fileNameAndCount, selectFolderArray.getJSONObject(position).getString("title"),
+                            selectFolderArray.getJSONObject(position).getString("count")));
                     //隐藏selectFolderPopupWindow
                     selectFolderPopupWindow.dismiss();
                     //清空当前显示的图片列表
@@ -294,7 +310,7 @@ public class SelectImageActivity extends AppCompatActivity {
                     //添加选中的图片列表
                     imageArray.addAll(selectFolderArray.getJSONObject(position).getJSONArray("array"));
                     //清空已选中列表
-                    SelectedItemIndex.clear();
+                    selectedItemIndex.clear();
                     //刷新图片列表视图
                     imageAdapter.notifyDataSetChanged();
                 }
@@ -310,6 +326,9 @@ public class SelectImageActivity extends AppCompatActivity {
         selectFolderPopupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
+                //这里加入重复点击判断,是为了保存一次点击记录,
+                // 这样可以解决在PopupWindow已展开时点击selectFolder造成PopupWindow刚关闭就又瞬间显示的问题,一秒的重复判定可以让刚关闭后的点击无效
+                AntiShake.check(selectFolder.getId());
                 //检测到selectFolderPopupWindow隐藏就将箭头还原
                 arrowDrop.animate().rotation(0).setDuration(500).start();
             }
@@ -318,13 +337,13 @@ public class SelectImageActivity extends AppCompatActivity {
 
     @OnClick({R.id.selectFolder, R.id.preview})
     public void onViewClicked(View view) {
+        //判断是否重复点击
+        if (AntiShake.check(view.getId()))
+            return;
         switch (view.getId()) {
             case R.id.selectFolder:
                 Log.d("selectFolder", selectFolderPopupWindow.isShowing() + "");
-                if (selectFolderPopupWindow.isShowing()) {
-                    //隐藏selectFolderPopupWindow
-                    selectFolderPopupWindow.dismiss();
-                } else {
+                if (!selectFolderPopupWindow.isShowing()) {
                     //将selectFolderPopupWindow依附于selectFolder显示
                     selectFolderPopupWindow.showAsDropDown(selectFolder);
                     //将箭头旋转180度
@@ -333,8 +352,8 @@ public class SelectImageActivity extends AppCompatActivity {
                 break;
             case R.id.preview:
                 //显示全屏dialog
-                if (SelectedItem.size() > 0)
-                    showFullscreenDialog(true);
+                if (selectedItem.size() > 0)
+                    showFullscreenDialog(true, 0);
                 break;
         }
     }
@@ -357,7 +376,7 @@ public class SelectImageActivity extends AppCompatActivity {
 
     //显示全屏dialog
     //isChosen 是否是显示已选择列表,true 就显示已选择列表,否是就显示当前文件夹列表
-    private void showFullscreenDialog(boolean isChosen) {
+    private void showFullscreenDialog(boolean isChosen, int index) {
         //创建基础dialog,并设置全屏dialog基础样式
         Dialog dialog = new Dialog(this, R.style.DialogFullscreen);
         //设置内容布局
@@ -396,25 +415,79 @@ public class SelectImageActivity extends AppCompatActivity {
         ViewPager viewPager = dialog.findViewById(R.id.viewPager);
         //是否选择
         CheckBox select = dialog.findViewById(R.id.select);
-        select.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-
-                Log.d("viewPager", viewPager.getCurrentItem() + "");
-            }
-        });
-
+        //要显示的图片的列表
         List<String> imageList = new ArrayList<>();
+        //判断是否是已选中列表
         if (isChosen) {
-            imageList.addAll(SelectedItem.keySet());
+            //已选中列表
+            imageList.addAll(selectedItem.keySet());
             //设置Toolbar标题
             dialogToolbar.setTitle("1/" + imageList.size());
             //即将要显示的第一张图片肯定是选中(刚从选中列表遍历出来怎么可能没选中)
             select.setChecked(true);
         } else {
-
+            //当前文件夹图片列表
+            //遍历当前显示文件夹imageArray,
+            for (JSONObject jsonObject : imageArray.toArray(new JSONObject[0]))
+                //把当前显示文件夹的所有图片路径加入imageList
+                imageList.add(jsonObject.getString(MediaStore.Images.Media.DATA));
+            //设置当前dialog显示的图片是否选中
+            select.setChecked(selectedItem.containsKey(imageList.get(index)));
+            //设置Toolbar标题
+            dialogToolbar.setTitle((index + 1) + "/" + imageList.size());
         }
+        //是否选择的点击事件
+        select.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //获取当前显示的图片的路径
+                String path = imageList.get(viewPager.getCurrentItem());
+                //已选中列表
+                //判断该路径是否选中
+                if (selectedItem.containsKey(path)) {
+                    //已选中,移除当前选中
+                    selectedItem.remove(path);
+                    //判断是否是文件夹列表
+                    if (!isChosen) {//不是已选中列表就是文件夹列表
+                        //移除当前文件夹的选中下标记录
+                        selectedItemIndex.remove(path);
+                        //刷新当前文件夹的被移除选中的记录的item
+                        imageAdapter.notifyItemChanged(viewPager.getCurrentItem());
+                    }
+                    //初始化编号标记
+                    int index = 1;
+                    //重新遍历,计算新的编号
+                    for (String s : selectedItem.keySet()) {
+                        //设置新的编号
+                        selectedItem.put(s, index);
+                        //每设置好,编号增加一位
+                        index++;
+                    }
+                } else {
+                    //判断是否到达已选择图片数量的上限
+                    if (maxCount == 0 || selectedItem.size() < maxCount) {
+                        //未选中(这种操作,只有反复横跳,才会出现)
+                        selectedItem.put(path, (selectedItem.size() + 1) + "");
+                        //判断是否是文件夹列表
+                        if (!isChosen) {//不是已选中列表就是文件夹列表
+                            //保存一下该图片在当前文件夹中的下标
+                            selectedItemIndex.put(path, viewPager.getCurrentItem());
+                        }
+                    } else {
+                        //这里要添加已到上限的提醒
+                        select.setChecked(false);
+                    }
+                }
+                //刷新预览按钮文本
+                updatePreviewButton();
+                Log.d("selectedItem", selectedItem.toJSONString());
+            }
+        });
+        //设置图片列表适配器
         viewPager.setAdapter(new ImagePagerAdapter(imageList));
+        //指定显示的图片的下标
+        viewPager.setCurrentItem(index);
+        //设置滑动监听
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             /**
              * 滑动监听
@@ -424,7 +497,7 @@ public class SelectImageActivity extends AppCompatActivity {
              */
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
+                //这里用不上这个方法
             }
 
             /**
@@ -435,7 +508,8 @@ public class SelectImageActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 //设置Toolbar标题
                 dialogToolbar.setTitle((position + 1) + "/" + imageList.size());
-                select.setChecked(SelectedItem.containsKey(imageList.get(position)));
+                //设置当前显示的图片的选中状态
+                select.setChecked(selectedItem.containsKey(imageList.get(position)));
             }
 
             /**
@@ -445,7 +519,17 @@ public class SelectImageActivity extends AppCompatActivity {
              */
             @Override
             public void onPageScrollStateChanged(int state) {
-
+                //这里用不上这个方法
+            }
+        });
+        //监听dialog的关闭事件
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialogInterface) {
+                //遍历当前文件夹中选中的图片的路径和下标
+                for (String s : selectedItemIndex.keySet())
+                    //刷新当前文件夹中记录过的下标
+                    imageAdapter.notifyItemChanged(selectedItemIndex.getInteger(s));
             }
         });
         //创建并显示dialog
@@ -455,7 +539,7 @@ public class SelectImageActivity extends AppCompatActivity {
     //将选择的图片返回到上级页面
     private void determine() {
         //获取已选中的图片路径
-        String[] paths = SelectedItem.keySet().toArray(new String[0]);
+        String[] paths = selectedItem.keySet().toArray(new String[0]);
         //判断有没有选择
         if (paths.length > 0) {
             //有选择
@@ -474,6 +558,25 @@ public class SelectImageActivity extends AppCompatActivity {
             //没选择
             //直接关闭
             finish();
+        }
+    }
+
+    //更新预览按钮的文字
+    private void updatePreviewButton() {
+        //判断有没有选择
+        if (selectedItem.size() == 0) {
+            //没选择统一只显示预览
+            preview.setText(R.string.Preview);
+        } else {
+            //有选中
+            //判断有没有设置数量上限
+            if (maxCount == 0) {
+                //没有上限,只显示预览和已选择的数量
+                preview.setText(getString(R.string.Preview_d, selectedItem.size()));
+            } else {
+                //有上限,显示预览加已选择的数量和上限数量
+                preview.setText(getString(R.string.Preview_2d, selectedItem.size(), maxCount));
+            }
         }
     }
 
@@ -498,7 +601,7 @@ public class SelectImageActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
+    //自定义全屏dialog中的viewPager的适配器
     class ImagePagerAdapter extends PagerAdapter {
         private List<String> imageList;
 
@@ -522,11 +625,26 @@ public class SelectImageActivity extends AppCompatActivity {
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
-            SimpleDraweeView simpleDraweeView = new SimpleDraweeView(context);
-            simpleDraweeView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-            simpleDraweeView.setImageURI("file://" + imageList.get(position));
-            container.addView(simpleDraweeView);
-            return simpleDraweeView;
+            //创建可以缩放的图片控件
+            ZoomableDraweeView zoomableDraweeView = new ZoomableDraweeView(context);
+            //允许缩放时切换
+            zoomableDraweeView.setAllowTouchInterceptionWhileZoomed(true);
+            //设置是否长按启用
+            zoomableDraweeView.setIsLongpressEnabled(false);
+            //双击击放大或缩小(这句要放在最后,以上都是设置),设置最大缩放倍数也要在DoubleTapGestureListener中
+            zoomableDraweeView.setTapListener(new DoubleTapGestureListener(zoomableDraweeView));
+            //加载图片
+            DraweeController draweeController = Fresco.newDraweeControllerBuilder()
+                    //指定配置,使用旧的配置,不新建
+                    .setOldController(zoomableDraweeView.getController())
+                    .setUri("file://" + imageList.get(position))
+                    .build();
+            //设置配置
+            zoomableDraweeView.setController(draweeController);
+            //加入ViewGroup
+            container.addView(zoomableDraweeView);
+            //返回图像控件
+            return zoomableDraweeView;
         }
 
         //是加入页面的时候，默认缓存三个，如不做处理，滑多了程序就会蹦
