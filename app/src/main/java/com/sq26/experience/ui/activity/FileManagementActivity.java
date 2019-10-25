@@ -84,9 +84,9 @@ public class FileManagementActivity extends AppCompatActivity {
                 simpleDraweeView.setImageResource(jsonObject.getInteger("img"));
             }
         };
-        commonAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.Click() {
+        commonAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.OnClick() {
             @Override
-            public void onClick(int position) {
+            public void click(int position) {
                 String path = fileArray.getJSONObject(position).getString("path");
                 File file = new File(path);
                 if (file.isFile()) {

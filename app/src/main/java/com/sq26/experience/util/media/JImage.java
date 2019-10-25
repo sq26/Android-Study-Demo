@@ -21,14 +21,14 @@ public class JImage {
     public static final int ALBUM = 2;
 
     //初始化,创建构造器
-    public static Builder initialize(AppCompatActivity c) {
-        Builder builder = new Builder(c);
+    public static Builder initialize(AppCompatActivity appCompatActivity) {
+        Builder builder = new Builder(appCompatActivity);
         return builder;
     }
 
     //构造器类
     public static class Builder {
-        private AppCompatActivity contents;
+        private AppCompatActivity context;
         private Integer sourceType;
         private SuccessCallback successCallback;
         private ImageFragment imageFragment;
@@ -36,8 +36,8 @@ public class JImage {
         private int maxCount = 0;
 
         //构建
-        public Builder(AppCompatActivity contents) {
-            this.contents = contents;
+        public Builder(AppCompatActivity context) {
+            this.context = context;
         }
 
         //设置图片来源(从相册还是拍照)
@@ -65,8 +65,8 @@ public class JImage {
                 //判断来源类型是否为全部
                 if (sourceType == ALL) {
                     //弹出选择框,选拍照还是相册
-                    new AlertDialog.Builder(contents)
-                            .setItems(new String[]{contents.getString(R.string.Take_a_photo), contents.getString(R.string.Album)}, new DialogInterface.OnClickListener() {
+                    new AlertDialog.Builder(context)
+                            .setItems(new String[]{context.getString(R.string.Take_a_photo), context.getString(R.string.Album)}, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     switch (i) {
@@ -101,7 +101,7 @@ public class JImage {
                 //否则就是相册的权限,也就是储存权限
                 permissions = PermissionUtil.Group.STORAGE;
             //开始调用权限申请
-            JPermissions.init(contents)
+            JPermissions.init(context)
                     .permissions(permissions)
                     .success(new JPermissions.SuccessCallback() {
                         @Override
@@ -129,9 +129,15 @@ public class JImage {
                     //移除创建的fragment
                     removeFragment();
                 }
+
+                @Override
+                public void canceled() {
+                    //移除创建的fragment
+                    removeFragment();
+                }
             });
             //获取FragmentManager
-            FragmentManager fragmentManager = contents.getSupportFragmentManager();
+            FragmentManager fragmentManager = context.getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             //将fragment加入到activity中
             fragmentTransaction.add(imageFragment, "imageFragment");
@@ -141,10 +147,11 @@ public class JImage {
 
         //移除请求权限的fragment
         private void removeFragment() {
-            FragmentManager fragmentManager = contents.getSupportFragmentManager();
+            FragmentManager fragmentManager = context.getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             //将fragment从activity中移除
             fragmentTransaction.remove(imageFragment);
+            //提交
             fragmentTransaction.commit();
         }
     }

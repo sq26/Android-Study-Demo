@@ -24,5 +24,10 @@
     <string name="Original_image">原图</string>
     <string name="select">选择</string>
     <string name="fileNameAndCount">%1$s(%2$s)</string>
+    <string name="Loading">加载中…</string>
+    <string name="Compressing_2d">正在压缩(%1$d/%2$d)</string>
+
+    <string name="view">视图</string>
+    <string name="PullDownToRefresh">下拉刷新,上拉加载更多</string>
 
 </resources>

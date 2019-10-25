@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 
 public abstract class RecyclerViewJsonArrayAdapter extends RecyclerView.Adapter<ViewHolder> {
     private JSONArray array;//数据集合
-    private Click click;//点击事件
+    private OnClick onClick;//点击事件
 
     /**
      * 构造器
@@ -56,13 +56,17 @@ public abstract class RecyclerViewJsonArrayAdapter extends RecyclerView.Adapter<
         //利用抽象方法,让使用层去实现设置业务数据
         bindViewHolder(holder, array.getJSONObject(position), position);
         //判断有没有设置点击事件
-        if (click != null) {
+        if (onClick != null) {
             //有点击事件就去注册点击事件
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //获得点击事件后,回调给使用层
-                    click.onClick(position);
+                    //这里的判断是为了预防一个特殊的bug,当正在刷新列表的时候点击了item中的某个条目,
+                    // 这时列表数据改变了,界面还没有刷新,会导致数组下标越界,这个判断只能预防这个错误,并不能有效解决,
+                    //还是有可能进入错误的item
+                    if (position < array.size())
+                        //获得点击事件后,回调给使用层
+                        onClick.click(position);
                 }
             });
         }
@@ -71,13 +75,18 @@ public abstract class RecyclerViewJsonArrayAdapter extends RecyclerView.Adapter<
 
     @Override
     public int getItemViewType(int position) {
+        //判断item是不是null
         if (array.getJSONObject(position) != null) {
+            //判断有没有设置type类型
             if (array.getJSONObject(position).getInteger("viewType") != null) {
+                //有设置返回指定的视图类型
                 return array.getJSONObject(position).getInteger("viewType");
             } else {
+                //没有设置返回默认值0
                 return super.getItemViewType(position);
             }
         } else {
+            //空的设置返回默认值0
             return super.getItemViewType(position);
         }
     }
@@ -89,12 +98,12 @@ public abstract class RecyclerViewJsonArrayAdapter extends RecyclerView.Adapter<
     }
 
     //设置点击事件的方法
-    public void setOnClick(Click callback) {
-        this.click = callback;
+    public void setOnClick(OnClick callback) {
+        this.onClick = callback;
     }
 
     //点击事件的接口,由使用层去实现
-    public interface Click {
-        abstract void onClick(int position);
+    public interface OnClick {
+        abstract void click(int position);
     }
 }

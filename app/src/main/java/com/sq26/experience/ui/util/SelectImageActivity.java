@@ -293,9 +293,9 @@ public class SelectImageActivity extends AppCompatActivity {
         //设置适配器
         recyclerView.setAdapter(commonAdapter);
         //给适配器加上点击事件
-        commonAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.Click() {
+        commonAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.OnClick() {
             @Override
-            public void onClick(int position) {
+            public void click(int position) {
                 //判断当前选择的文件夹的下标是不是当前显示的文件夹的标(简单点说就是重复选择)
                 if (selectFolderArrayIndex != position) {
                     //不是重复选择,记录当前悬着的文件夹的下标
@@ -396,8 +396,11 @@ public class SelectImageActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 //点击确定将数据返回上级界面
-                if (item.getItemId() == R.id.action_determine)
+                if (item.getItemId() == R.id.action_determine) {
+                    //点击后关闭dialog
+                    dialog.dismiss();
                     determine();
+                }
                 return false;
             }
         });
@@ -541,24 +544,21 @@ public class SelectImageActivity extends AppCompatActivity {
         //获取已选中的图片路径
         String[] paths = selectedItem.keySet().toArray(new String[0]);
         //判断有没有选择
-        if (paths.length > 0) {
+        if (paths.length > 0)
             //有选择
             //做遍历打印所有已选中的图片路径
             for (String s : paths)
                 Log.d("paths", s);
-            //创建intent对象
-            Intent data = new Intent();
-            //设置选中的数据
-            data.putExtra("paths", paths);
-            //设置返回的intent对象
-            setResult(RESULT_OK, data);
-            //关闭当前页面
-            finish();
-        } else {
-            //没选择
-            //直接关闭
-            finish();
-        }
+        //创建intent对象
+        Intent data = new Intent();
+        //设置选中的数据
+        data.putExtra("paths", paths);
+        //设置设置是否原图
+        data.putExtra("isOriginal", originalImage.isChecked());
+        //设置返回的intent对象
+        setResult(RESULT_OK, data);
+        //关闭当前页面
+        finish();
     }
 
     //更新预览按钮的文字
@@ -652,5 +652,13 @@ public class SelectImageActivity extends AppCompatActivity {
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
             container.removeView((View) object);
         }
+    }
+
+    //点击back键
+    @Override
+    public void onBackPressed() {
+        //在每次点击返回键时做一次保存返回值的操作确保页面关闭前可以返回已选数据
+        setResult(RESULT_CANCELED);
+        super.onBackPressed();
     }
 }

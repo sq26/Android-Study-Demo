@@ -52,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         jsonArray.add(initItem("downloadManagement", getString(R.string.download_management), 1));
         jsonArray.add(initItem("databaseManagement", getString(R.string.Database_operation), 1));
 
+        jsonArray.add(initItem("", getString(R.string.view), 0));
+        jsonArray.add(initItem("pullToRefresh", getString(R.string.PullDownToRefresh), 1));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         RecyclerViewJsonArrayAdapter arrayAdapter = new RecyclerViewJsonArrayAdapter(jsonArray) {
@@ -82,9 +84,9 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         recyclerView.setAdapter(arrayAdapter);
-        arrayAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.Click() {
+        arrayAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.OnClick() {
             @Override
-            public void onClick(int position) {
+            public void click(int position) {
                 Log.d("点击", jsonArray.getJSONObject(position).getString("name"));
                 menuClick(jsonArray.getJSONObject(position).getString("id"));
             }
@@ -118,6 +120,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "mediaManagement":
                 startActivity(new Intent(this, MediaManagementActivity.class));
+                break;
+            case "downloadManagement":
+                startActivity(new Intent(this, DownloadManagementActivity.class));
+                break;
+            case "pullToRefresh":
+                startActivity(new Intent(this, PullToRefreshActivity.class));
                 break;
 
         }

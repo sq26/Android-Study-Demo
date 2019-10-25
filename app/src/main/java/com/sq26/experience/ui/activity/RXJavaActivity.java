@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.sq26.experience.R;
+import com.sq26.experience.ui.dialog.ProgressDialog;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,7 +33,6 @@ public class RXJavaActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         progressBar.setMax(100);
 
-
         //Observable:被观察者
         //通过create方法生成对象
         //ObservableOnSubscribe<T>:可以理解为一个计划表,T是要处理的对象类型
@@ -48,6 +48,7 @@ public class RXJavaActivity extends AppCompatActivity {
         //subscribe:被观察者绑定观察者的方法
         //onSubscribe:这里可以获取到观察者对象,可以调用Disposable.dispose()取消订阅,此时被观察者依然在执行,观察者已不再处理任何发射的信息
         //onNext、onError、onComplete都是跟被观察者发射的方法一一对应的
+
         Observable.create(new ObservableOnSubscribe<Integer>() {
             @Override
             public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {

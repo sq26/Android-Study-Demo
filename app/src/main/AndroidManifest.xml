@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.sq26.experience">
     <!-- 允许应用程序向用户词典中写入新词 -->
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" /> <!-- 写入Google在线同步设置 -->
@@ -9,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_PROFILE" /> <!-- 允许程序写入外部存储,如SD卡上写文件 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 写入联系人,但不可读取 -->
     <uses-permission android:name="android.permission.WRITE_CONTACTS" /> <!-- 允许程序写入（但是不能读）用户的联系人数据 -->
-    <uses-permission android:name="android.permission.PERMISSIONS_STORAGE"/> <!-- 允许程序进行外部储存操作 -->
+    <uses-permission android:name="android.permission.PERMISSIONS_STORAGE" /> <!-- 允许程序进行外部储存操作 -->
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" /> <!-- 允许程序写入日程，但不可读取 -->
     <uses-permission android:name="android.permission.WRITE_CALENDAR" /> <!-- 允许程序在手机屏幕关闭后后台进程仍然运行 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 允许程序振动 -->
@@ -136,7 +137,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.util.SelectImageActivity"></activity>
+        <activity android:name=".ui.activity.DownloadManagementActivity"></activity>
+        <activity android:name=".ui.activity.PullToRefreshActivity" /> <!-- 可以打开文本文件的activity -->
+        <activity android:name=".ui.util.TextActivity">
+
+            <!-- ignore忽略app链接错误 -->
+            <intent-filter tools:ignore="AppLinkUrlError">
+
+                <!-- 设置为,显示数据给用户 -->
+                <action android:name="android.intent.action.VIEW" />
+                <!-- 分类设置匹配所有 -->
+                <category android:name="android.intent.category.DEFAULT" />
+                <!-- 数据设置为匹配纯文本 -->
+                <data android:mimeType="text/plain" />
+                <!-- 数据设置为匹配纯文本 -->
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.util.SelectImageActivity" />
         <activity android:name=".ui.activity.MediaManagementActivity" />
         <activity android:name=".ui.activity.FileManagementActivity" />
         <activity android:name=".ui.activity.AuthorizedOperationActivity" />
@@ -147,9 +165,10 @@
         <activity android:name=".ui.activity.RXJavaActivity" />
         <activity android:name=".ui.activity.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW" />
 
+                <!-- 应用程序入口 -->
+                <action android:name="android.intent.action.MAIN" />
+                <!-- 表示activity应该被列入系统的启动器(launcher)(允许用户启动它)。Launcher是安卓系统中的桌面启动器，是桌面UI的统称。 -->
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
