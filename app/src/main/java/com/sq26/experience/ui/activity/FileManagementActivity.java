@@ -19,7 +19,7 @@ import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
-import com.sq26.experience.util.FileUtils;
+import com.sq26.experience.util.FileUtil;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -128,7 +128,7 @@ public class FileManagementActivity extends AppCompatActivity {
             fileJsonObject.put("dateTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(f.lastModified()));
             if (f.isFile()) {
                 fileJsonObject.put("img", R.drawable.ic_insert_drive_file_black_24dp);
-                fileJsonObject.put("remark", FileUtils.getFileSizeStr(f.length()));
+                fileJsonObject.put("remark", FileUtil.getFileSizeStr(f.length()));
             } else {
                 fileJsonObject.put("img", R.drawable.ic_folder_open_black_24dp);
                 if (f.list() != null) {

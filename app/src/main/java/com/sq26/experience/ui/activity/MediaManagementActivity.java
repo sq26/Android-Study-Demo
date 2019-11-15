@@ -1,12 +1,9 @@
 package com.sq26.experience.ui.activity;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -19,8 +16,7 @@ import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.ui.dialog.ProgressDialog;
-import com.sq26.experience.util.FileUtils;
-import com.sq26.experience.util.ImageCompressionUtil;
+import com.sq26.experience.util.FileUtil;
 import com.sq26.experience.util.media.JImage;
 
 import butterknife.BindView;
@@ -75,7 +71,7 @@ public class MediaManagementActivity extends AppCompatActivity {
                                 for (String p : path) {
                                     Log.d("getImage", p);
                                     item = new JSONObject();
-                                    item.put("name", FileUtils.getFileName(p));
+                                    item.put("name", FileUtil.getFileName(p));
                                     item.put("path", p);
                                     imageArray.add(item);
                                 }

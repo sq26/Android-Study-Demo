@@ -43,7 +43,7 @@ import com.sq26.experience.ui.view.zoomable.DoubleTapGestureListener;
 import com.sq26.experience.ui.view.zoomable.ZoomableDraweeView;
 import com.sq26.experience.util.AntiShake;
 import com.sq26.experience.util.DensityUtil;
-import com.sq26.experience.util.FileUtils;
+import com.sq26.experience.util.FileUtil;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -233,9 +233,9 @@ public class SelectImageActivity extends AppCompatActivity {
                             jsonObject.put(projection[i], cursor.getString(i));
                         }
                         //获取父文件夹路径
-                        jsonObject.put("parentFilePath", FileUtils.getFileParentFolderPath(jsonObject.getString(MediaStore.Images.Media.DATA)));
+                        jsonObject.put("parentFilePath", FileUtil.getFileParentFolderPath(jsonObject.getString(MediaStore.Images.Media.DATA)));
                         //获取父文件夹名称
-                        jsonObject.put("parentFileName", FileUtils.getParentFileName(jsonObject.getString(MediaStore.Images.Media.DATA)));
+                        jsonObject.put("parentFileName", FileUtil.getParentFileName(jsonObject.getString(MediaStore.Images.Media.DATA)));
                         //加入到全图片列表中
                         jsonArray.add(jsonObject);
                         //判断以父文件夹路径作为key的jsonArray是否存在
