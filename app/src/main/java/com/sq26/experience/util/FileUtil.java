@@ -61,8 +61,13 @@ public class FileUtil {
 
     //根据文件路径判断文件是否存在,true代表存在
     public static boolean isFileExists(String path) {
-        File file = new File(path);
-        return file.exists();
+        if (path != null && !path.isEmpty()) {
+            File file = new File(path);
+            return file.exists();
+        } else {
+            return false;
+        }
+
     }
 
     //根据文件路径获取文件的mimeType类型

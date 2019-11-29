@@ -32,4 +32,7 @@
 
     <string name="There_is_no_application_that_can_open_this_file">没有可以打开此文件的应用程序!</string>
     <string name="File_has_been_downloaded">文件已经下载!</string>
+    <string name="File_Download_in_progress">文件下载进行中!</string>
+    <string name="File_download_waiting_to_start">文件下载等待启动!</string>
+
 </resources>

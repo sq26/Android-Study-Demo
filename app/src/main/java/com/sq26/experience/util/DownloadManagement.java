@@ -14,10 +14,21 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSONObject;
 import com.sq26.experience.R;
+import com.sq26.experience.entity.ProgressEntity;
 import com.sq26.experience.util.permissions.JPermissions;
 import com.sq26.experience.util.permissions.PermissionUtil;
 
 import java.util.Map;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
+
+import static java.lang.Thread.sleep;
 
 
 /**
@@ -69,7 +80,11 @@ public class DownloadManagement {
         private Map<String, String> requestHeaders;
         //设置下载完成的回调
         private OnComplete onComplete;
-
+        //设置实时下载进度的回调
+        private OnProgress onProgress;
+        //设置下载失败的回调
+        private OnFailure onFailure;
+        //下载id
         private Long downloadId;
 
         //构建
@@ -149,8 +164,20 @@ public class DownloadManagement {
             return this;
         }
 
-        //设置下载文件的MimeType
+        //设置实时下载进度的监听
+        public Builder setOnProgress(OnProgress onProgress) {
+            this.onProgress = onProgress;
+            return this;
+        }
+
+        //设置下载完成的监听
         public Builder setOnComplete(OnComplete onComplete) {
+            this.onComplete = onComplete;
+            return this;
+        }
+
+        //设置下载完成的监听
+        public Builder setOnFailure(OnComplete onComplete) {
             this.onComplete = onComplete;
             return this;
         }
@@ -168,20 +195,85 @@ public class DownloadManagement {
                 requestPermissions();
             } else {
                 //有下载过
-                //判断文件路径是否还存在
-                if (FileUtil.isFileExists(jsonObject.getString("path"))) {
-                    //存在
-                    //判读是否自动打开文件
-                    if (isOpenFile)
-                        FileUtil.openFile(context, jsonObject.getString("path"));
-                    else {
-                        if (onComplete != null)
-                            onComplete.complete(jsonObject.getString("path"));
-                        else
-                            AppUtil.showToast(context, R.string.File_has_been_downloaded);
+                //判读有没有下载id
+                if (jsonObject.getLong("id") != null) {
+                    //判断当前下载计划的状态
+                    //STATUS_FAILED下载失败（并不会重试）
+                    //STATUS_PAUSED下载正在等待重试或恢复。
+                    //STATUS_PENDING下载等待启动。
+                    //STATUS_RUNNING正在运行下载。
+                    //STATUS_SUCCESSFUL下载成功完成。
+                    switch (getDownloadManagerStatus(context, jsonObject.getLong("id"))) {
+                        //当下载失败（并不会重试）。
+                        case DownloadManager.STATUS_FAILED:
+                            //设置下载失败的回调
+                            if (onFailure != null)
+                                onFailure.failure(DownloadManager.STATUS_FAILED);
+                            break;
+                        //当下载正在等待重试或恢复。
+                        case DownloadManager.STATUS_PAUSED:
+                            //设置下载失败的回调
+                            if (onFailure != null)
+                                onFailure.failure(DownloadManager.STATUS_PAUSED);
+                            break;
+                        //当下载等待启动。
+                        case DownloadManager.STATUS_PENDING:
+                            AppUtil.showToast(context, R.string.File_download_waiting_to_start);
+                            downloadId = jsonObject.getLong("id");
+                            //开始进行实时查询
+                            startProgress();
+                            break;
+                        //当前正在运行下载中。
+                        case DownloadManager.STATUS_RUNNING:
+                            AppUtil.showToast(context, R.string.File_Download_in_progress);
+                            downloadId = jsonObject.getLong("id");
+                            //开始进行实时查询
+                            startProgress();
+                            break;
+                        //当下载成功完成。
+                        case DownloadManager.STATUS_SUCCESSFUL:
+                            //判断文件路径是否存在
+                            if (FileUtil.isFileExists(jsonObject.getString("path"))) {
+                                //存在
+                                //判断是否自动打开文件
+                                if (isOpenFile)
+                                    //调用系统打开方式打开文件
+                                    FileUtil.openFile(context, jsonObject.getString("path"));
+                                //判断有没有设置完成回调
+                                if (onComplete != null)
+                                    //回调完成状态
+                                    onComplete.complete(jsonObject.getString("path"));
+                            } else {
+                                //不存在
+                                //判断系统下载记录里的文件是否存在
+                                String path = getDownloadManagerFilePath(context, jsonObject.getLong("id"));
+                                if (FileUtil.isFileExists(path)) {
+                                    //存在
+                                    //更新本地下载记录
+                                    DownloadManagementHelperUtil.update(context, url, jsonObject.getLong("id"), path);
+                                    //判断是否自动打开文件
+                                    if (isOpenFile)
+                                        //调用系统打开方式打开文件
+                                        FileUtil.openFile(context, jsonObject.getString("path"));
+                                    //判断有没有设置完成回调
+                                    if (onComplete != null)
+                                        //回调完成状态
+                                        onComplete.complete(jsonObject.getString("path"));
+                                } else {
+                                    //不存在
+                                    //申请权限
+                                    requestPermissions();
+                                }
+                            }
+                            break;
+                        //其他情况
+                        default:
+                            //申请权限
+                            requestPermissions();
+                            break;
                     }
                 } else {
-                    //不存在
+                    //没有下载id,重下
                     //申请权限
                     requestPermissions();
                 }
@@ -191,10 +283,8 @@ public class DownloadManagement {
 
         //申请权限
         private void requestPermissions() {
-            //判断是否时保存私有文件
+            //判断是否保存私有文件
             if (isSavePrivateFile) {
-                //打开广播接收器,监听下载成功
-                openCompleteReceiver();
                 //启动下载
                 download();
             } else {
@@ -206,8 +296,6 @@ public class DownloadManagement {
                         .success(new JPermissions.SuccessCallback() {
                             @Override
                             public void success() {
-                                //打开广播接收器,监听下载成功(应为授权不一定会成功所以没有放在最外边)
-                                openCompleteReceiver();
                                 //启动下载
                                 download();
                             }
@@ -270,6 +358,127 @@ public class DownloadManagement {
                     request.addRequestHeader(key, requestHeaders.get(key));
             //启动下载并获取下载链接
             downloadId = downloadManager.enqueue(request);
+            //更新一下下载id
+            DownloadManagementHelperUtil.update(context, url, downloadId, "");
+            //开始进行实时查询
+            startProgress();
+        }
+
+        private void startProgress() {
+            //获取系统下载管理器
+            DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+            //获取下载管理器的查询类
+            DownloadManager.Query query = new DownloadManager.Query();
+            //设置要查询的下载id
+            query.setFilterById(downloadId);
+            //开始实时查询下载状态
+            Observable.create(new ObservableOnSubscribe<ProgressEntity>() {
+                @Override
+                public void subscribe(ObservableEmitter<ProgressEntity> emitter) throws Exception {
+                    //判断循环是否继续
+                    boolean isContinue = true;
+                    //开始循环,间隔300毫秒一次
+                    while (isContinue) {
+                        //执行查询并获取游标
+                        Cursor cursor = downloadManager.query(query);
+                        //判断数据数量是否大于0
+                        if (cursor.getCount() > 0) {
+                            //大于零说明有数据
+                            //把游标移动到第一条数据(这绝对只有一条数据,下载id是不可能重复的)
+                            cursor.moveToPosition(0);
+                            //到目前为止下载的字节数。
+                            long COLUMN_BYTES_DOWNLOADED_SO_FAR = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                            //下载的总大小（以字节为单位）。
+                            long COLUMN_TOTAL_SIZE_BYTES = cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                            //下载的当前状态，为STATUS_ *常量之一。
+                            //STATUS_FAILED下载失败（并不会重试）
+                            //STATUS_PAUSED下载正在等待重试或恢复。
+                            //STATUS_PENDING下载等待启动。
+                            //STATUS_RUNNING正在运行下载。
+                            //STATUS_SUCCESSFUL下载成功完成。
+                            int COLUMN_STATUS = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                            ProgressEntity progressEntity = new ProgressEntity();
+                            progressEntity.setCurrent(COLUMN_BYTES_DOWNLOADED_SO_FAR);
+                            progressEntity.setTotal(COLUMN_TOTAL_SIZE_BYTES);
+                            emitter.onNext(progressEntity);
+                            //判断下载状态是否是已完成状态
+                            if (COLUMN_STATUS == DownloadManager.STATUS_SUCCESSFUL) {
+                                //已完成就终止循环
+                                isContinue = false;
+                            } else if (COLUMN_STATUS == DownloadManager.STATUS_FAILED ||
+                                    COLUMN_STATUS == DownloadManager.STATUS_PAUSED) {
+                                //失败就终止循环
+                                isContinue = false;
+                            }
+                        }
+                        //关闭游标
+                        cursor.close();
+                        //暂停线程300毫秒
+                        sleep(300);
+                    }
+                    //调用下载完成的回调
+                    emitter.onComplete();
+                }
+            }).observeOn(AndroidSchedulers.mainThread())
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Observer<ProgressEntity>() {
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
+                        }
+
+                        @Override
+                        public void onNext(ProgressEntity progressEntity) {
+                            //判读有没有设置实时下载监听
+                            if (onProgress != null)
+                                //回调实时下载监听
+                                onProgress.progress(progressEntity.getCurrent(), progressEntity.getTotal());
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            //执行查询并获取游标
+                            Cursor cursor = downloadManager.query(query);
+                            //判断数据数量是否大于0
+                            if (cursor.getCount() > 0) {
+                                //大于零说明有数据
+                                //把游标移动到第一条数据(这绝对只有一条数据,下载id是不可能重复的)
+                                cursor.moveToPosition(0);
+                                //下载的当前状态，为STATUS_ *常量之一。
+                                //STATUS_FAILED下载失败（并不会重试）
+                                //STATUS_PAUSED下载正在等待重试或恢复。
+                                //STATUS_PENDING下载等待启动。
+                                //STATUS_RUNNING正在运行下载。
+                                //STATUS_SUCCESSFUL下载成功完成。
+                                int COLUMN_STATUS = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                                //判断是否下载完成
+                                if (COLUMN_STATUS == DownloadManager.STATUS_SUCCESSFUL) {
+                                    //获取文件的本地保存路径(文件路径有前缀,暴力替换感觉不行,暂时没有更好的方法)
+                                    String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "");
+                                    //更新下载记录
+                                    DownloadManagementHelperUtil.update(context, url, downloadId, path);
+                                    //判读有没有注册下载完成监听
+                                    if (onComplete != null)
+                                        //回调下载完成监听
+                                        onComplete.complete(path);
+                                    //判断是否打开文件
+                                    if (isOpenFile) {
+                                        //打开文件
+                                        FileUtil.openFile(context, path);
+                                    }
+                                } else {
+                                    //设置下载失败的回调
+                                    if (onFailure != null)
+                                        onFailure.failure(COLUMN_STATUS);
+                                }
+                            }
+                        }
+                    });
         }
 
         private void openCompleteReceiver() {
@@ -342,9 +551,85 @@ public class DownloadManagement {
 
     }
 
-    //下载的回调接口
+    public static int getDownloadManagerStatus(Context context, Long downloadId) {
+        //获取系统下载管理器
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        //获取下载管理器的查询类
+        DownloadManager.Query query = new DownloadManager.Query();
+        //设置要查询的下载id
+        query.setFilterById(downloadId);
+//执行查询并获取游标
+        Cursor cursor = downloadManager.query(query);
+        //判断数据数量是否大于0
+        if (cursor.getCount() > 0) {
+            //大于零说明有数据
+            //把游标移动到第一条数据(这绝对只有一条数据,下载id是不可能重复的)
+            cursor.moveToPosition(0);
+            //下载的当前状态，为STATUS_ *常量之一。
+            //STATUS_FAILED下载失败（并不会重试）
+            //STATUS_PAUSED下载正在等待重试或恢复。
+            //STATUS_PENDING下载等待启动。
+            //STATUS_RUNNING正在运行下载。
+            //STATUS_SUCCESSFUL下载成功完成。
+            return cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+        }
+        return 0;
+    }
+
+    public static String getDownloadManagerFilePath(Context context, Long downloadId) {
+        //获取系统下载管理器
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        //获取下载管理器的查询类
+        DownloadManager.Query query = new DownloadManager.Query();
+        //设置要查询的下载id
+        query.setFilterById(downloadId);
+//执行查询并获取游标
+        Cursor cursor = downloadManager.query(query);
+        //判断数据数量是否大于0
+        if (cursor.getCount() > 0) {
+            //大于零说明有数据
+            //把游标移动到第一条数据(这绝对只有一条数据,下载id是不可能重复的)
+            cursor.moveToPosition(0);
+            //下载的当前状态，为STATUS_ *常量之一。
+            //STATUS_FAILED下载失败（并不会重试）
+            //STATUS_PAUSED下载正在等待重试或恢复。
+            //STATUS_PENDING下载等待启动。
+            //STATUS_RUNNING正在运行下载。
+            //STATUS_SUCCESSFUL下载成功完成。
+
+            //获取文件的本地保存路径(文件路径有前缀,暴力替换感觉不行,暂时没有更好的方法)
+            return cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "");
+        }
+        return "";
+    }
+
+    //移除指定的下载任务
+    public static boolean removeDownload(Context context, Long downloadId) {
+        //获取系统下载管理器
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        //移除任务
+        if (downloadManager.remove(downloadId) == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //下载完成的回调接口
     public interface OnComplete {
         //下载成功的回调方法
         abstract void complete(String path);
+    }
+
+    //下载失败的回调接口
+    public interface OnFailure {
+        //下载成功的回调方法
+        abstract void failure(int status);
+    }
+
+    //实时下载进度的回调接口
+    public interface OnProgress {
+        //下载成功的回调方法
+        abstract void progress(Long current, Long total);
     }
 }

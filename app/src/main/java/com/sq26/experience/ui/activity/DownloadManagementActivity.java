@@ -23,7 +23,7 @@ public class DownloadManagementActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_management);
         ButterKnife.bind(this);
-        uriText.setText("http://192.168.137.53:8080/tomcat.png");
+        uriText.setText("http://192.168.137.53:8080/123.exe");
     }
 
     @OnClick({R.id.button1, R.id.button2, R.id.button3})
