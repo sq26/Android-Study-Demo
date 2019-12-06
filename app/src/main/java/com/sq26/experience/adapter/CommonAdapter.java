@@ -2,7 +2,7 @@ package com.sq26.experience.adapter;
 
 import com.alibaba.fastjson.JSONArray;
 
-public abstract class CommonAdapter extends RecyclerViewJsonArrayAdapter {
+public abstract class CommonAdapter extends RecyclerViewAdapter {
     private int LAYOUT_ID;
 
     /**

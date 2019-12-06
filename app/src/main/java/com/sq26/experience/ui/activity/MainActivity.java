@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sq26.experience.R;
-import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
+import com.sq26.experience.adapter.RecyclerViewAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 
 import butterknife.BindView;
@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         //type是显示的布局类型,0是类型,1是条目
         jsonArray.add(initItem("", getString(R.string.Java_technology), 0));
         jsonArray.add(initItem("RxJava", getString(R.string.Use_of_RxJava), 1));
+        jsonArray.add(initItem("encryption", getString(R.string.Symmetric_and_asymmetric_encryption), 1));
         jsonArray.add(initItem("测试", "用来做一些技术测试", 1));
 
         jsonArray.add(initItem("", getString(R.string.Features), 0));
@@ -54,9 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
         jsonArray.add(initItem("", getString(R.string.view), 0));
         jsonArray.add(initItem("pullToRefresh", getString(R.string.PullDownToRefresh), 1));
+        jsonArray.add(initItem("RecyclerView", getString(R.string.RecyclerView_use), 1));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        RecyclerViewJsonArrayAdapter arrayAdapter = new RecyclerViewJsonArrayAdapter(jsonArray) {
+        RecyclerViewAdapter arrayAdapter = new RecyclerViewAdapter(jsonArray) {
             @Override
             protected int createViewHolder(int viewType) {
                 int LAYOUT_ID = R.layout.item_recyclerview;
@@ -84,11 +86,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         recyclerView.setAdapter(arrayAdapter);
-        arrayAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.OnClick() {
+        arrayAdapter.setOnClick(new RecyclerViewAdapter.OnClick() {
             @Override
-            public void click(int position) {
-                Log.d("点击", jsonArray.getJSONObject(position).getString("name"));
-                menuClick(jsonArray.getJSONObject(position).getString("id"));
+            public void click(JSONObject jsonObject, int position) {
+                Log.d("点击", jsonObject.getString("name"));
+                menuClick(jsonObject.getString("id"));
             }
         });
 
@@ -126,6 +128,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "pullToRefresh":
                 startActivity(new Intent(this, PullToRefreshActivity.class));
+                break;
+            case "RecyclerView":
+                startActivity(new Intent(this, RecyclerViewActivity.class));
+                break;
+            case "encryption":
+                startActivity(new Intent(this, EncryptionActivity.class));
                 break;
 
         }

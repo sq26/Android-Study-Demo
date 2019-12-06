@@ -18,6 +18,7 @@
     <string name="Album">相册</string>
 
     <string name="determine">确定</string>
+    <string name="look_over">查看</string>
     <string name="Preview">预览</string>
     <string name="Preview_d">预览(%1$d)</string>
     <string name="Preview_2d">预览(%1$d/%2$d)</string>
@@ -29,6 +30,13 @@
 
     <string name="view">视图</string>
     <string name="PullDownToRefresh">下拉刷新,上拉加载更多</string>
+    <string name="RecyclerView_use">RecyclerView的使用</string>
+    <string name="Symmetric_and_asymmetric_encryption">对称和非对称加密</string>
+    <string name="encryption">加密</string>
+    <string name="Decrypt">解密</string>
+    <string name="Plaintext">明文</string>
+    <string name="Ciphertext">密文</string>
+    <string name="Key">密钥</string>
 
     <string name="There_is_no_application_that_can_open_this_file">没有可以打开此文件的应用程序!</string>
     <string name="File_has_been_downloaded">文件已经下载!</string>

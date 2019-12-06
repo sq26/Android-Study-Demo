@@ -37,7 +37,7 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
-import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
+import com.sq26.experience.adapter.RecyclerViewAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.ui.view.zoomable.DoubleTapGestureListener;
 import com.sq26.experience.ui.view.zoomable.ZoomableDraweeView;
@@ -334,9 +334,9 @@ public class SelectImageActivity extends AppCompatActivity {
         //设置适配器
         recyclerView.setAdapter(commonAdapter);
         //给适配器加上点击事件
-        commonAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.OnClick() {
+        commonAdapter.setOnClick(new RecyclerViewAdapter.OnClick() {
             @Override
-            public void click(int position) {
+            public void click(JSONObject jsonObject, int position) {
                 //判断当前选择的文件夹的下标是不是当前显示的文件夹的标(简单点说就是重复选择)
                 if (selectFolderArrayIndex != position) {
                     //不是重复选择,记录当前悬着的文件夹的下标

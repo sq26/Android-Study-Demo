@@ -13,7 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
-import com.sq26.experience.adapter.RecyclerViewJsonArrayAdapter;
+import com.sq26.experience.adapter.RecyclerViewAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.ui.dialog.ProgressDialog;
 import com.sq26.experience.util.FileUtil;
@@ -50,10 +50,10 @@ public class MediaManagementActivity extends AppCompatActivity {
         };
         imageRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         imageRecyclerView.setAdapter(imageAdapter);
-        imageAdapter.setOnClick(new RecyclerViewJsonArrayAdapter.OnClick() {
+        imageAdapter.setOnClick(new RecyclerViewAdapter.OnClick() {
             @Override
-            public void click(int position) {
-                preview.setImageURI("file://" + imageArray.getJSONObject(position).getString("path"));
+            public void click(JSONObject jsonObject,int position) {
+                preview.setImageURI("file://" + jsonObject.getString("path"));
             }
         });
     }
