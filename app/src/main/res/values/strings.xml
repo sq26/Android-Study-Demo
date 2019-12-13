@@ -11,6 +11,8 @@
     <string name="media_management">媒体管理</string>
     <string name="download_management">下载管理</string>
     <string name="Database_operation">数据库操作</string>
+    <string name="network">网络</string>
+
     <string name="Get_image">获取图片</string>
     <string name="Get_video">获取视频</string>
 

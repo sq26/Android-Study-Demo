@@ -38,14 +38,12 @@ public class DownloadManagement {
 
     //初始化,创建构造器
     public static Builder initialize(Context context) {
-        Builder builder = new Builder(context);
-        return builder;
+        return new Builder(context);
     }
 
     //初始化,创建构造器
     public static Builder initialize(Context context, String url) {
-        Builder builder = new Builder(context, url);
-        return builder;
+        return new Builder(context, url);
     }
 
     //构造器类
@@ -623,7 +621,7 @@ public class DownloadManagement {
 
     //下载失败的回调接口
     public interface OnFailure {
-        //下载成功的回调方法
+        //下载失败的回调方法
         abstract void failure(int status);
     }
 

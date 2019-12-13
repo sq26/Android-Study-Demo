@@ -44,7 +44,7 @@ public class EncryptionActivity extends AppCompatActivity {
 
     private void initView() {
 
-        key.setText(Base64.encodeToString(Encrypt.getRawKey(), Base64.DEFAULT));
+        key.setText(Base64.encodeToString(Encrypt.getRawKey("123456"), Base64.DEFAULT));
 
         plaintext.setText("987654321");
         plainByte = new String("987654321").getBytes();
@@ -57,7 +57,7 @@ public class EncryptionActivity extends AppCompatActivity {
             case R.id.encryption:
                 Log.d("123", Base64.encodeToString(Base64.decode(key.getText().toString(), Base64.DEFAULT), Base64.DEFAULT));
                 new Encrypt.Builder()
-                        .Algorithm(Encrypt.Algorithm_AES)
+                        .Algorithm(Encrypt.Algorithm_AES_128)
                         .Modes(Encrypt.Modes_CBC)
                         .Paddings(Encrypt.Paddings_PKCS5Padding)
                         .Key(Base64.decode(key.getText().toString(), Base64.DEFAULT))

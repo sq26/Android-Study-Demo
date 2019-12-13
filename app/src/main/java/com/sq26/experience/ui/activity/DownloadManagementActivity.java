@@ -33,6 +33,9 @@ public class DownloadManagementActivity extends AppCompatActivity {
                 //下载文件,检测要下载的url有没有下载过并检测下载过的文件是否还存在,没有下载过或已下载过不存在了再下载
                 DownloadManagement.initialize(this, uriText.getText().toString())
                         .autoOpenFile(true)
+                        .setOnComplete((path) -> {
+
+                        })
                         .start();
                 break;
             case R.id.button2:

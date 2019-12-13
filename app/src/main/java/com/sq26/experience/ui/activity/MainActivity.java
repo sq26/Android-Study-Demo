@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         jsonArray.add(initItem("mediaManagement", getString(R.string.media_management), 1));
         jsonArray.add(initItem("downloadManagement", getString(R.string.download_management), 1));
         jsonArray.add(initItem("databaseManagement", getString(R.string.Database_operation), 1));
+        jsonArray.add(initItem("network", getString(R.string.network), 1));
 
         jsonArray.add(initItem("", getString(R.string.view), 0));
         jsonArray.add(initItem("pullToRefresh", getString(R.string.PullDownToRefresh), 1));
@@ -134,6 +135,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "encryption":
                 startActivity(new Intent(this, EncryptionActivity.class));
+                break;
+            case "network":
+                startActivity(new Intent(this, NetworkActivity.class));
                 break;
 
         }
