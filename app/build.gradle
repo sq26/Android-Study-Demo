@@ -52,6 +52,6 @@ dependencies {
     //Fresco框架
     implementation 'com.facebook.fresco:fresco:2.0.0'
     //okHttp轻量级网络框架
-    implementation 'com.squareup.okhttp3:okhttp:4.2.1'
+    implementation 'com.squareup.okhttp3:okhttp:4.2.2'
 
 }

@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
@@ -13,8 +14,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.sq26.experience.aidl.IDownloadServiceAidlInterface;
+import com.sq26.experience.aidl.IDownloadServiceCallbackInterface;
+import com.sq26.experience.aidl.IDownloadServiceInterface;
+import com.sq26.experience.util.DownloadManagement;
+import com.sq26.experience.util.FileUtil;
 
+import java.io.File;
 import java.util.Map;
 
 public class Download {
@@ -23,7 +28,7 @@ public class Download {
     public static final int STATUS_ERROR = 2; //错误(下载出现错误404或其他)
     public static final int STATUS_DOWNLOADING = 3; //下载中(正在进行下载)
     public static final int STATUS_PAUSE = 4; //暂停(暂时停止下载)
-    public static final int STATUS_START = 5; //开始(刚创建好记录,即将开始下载)
+    public static final int STATUS_START = 5; //准备开始(刚创建好记录,即将开始下载)
 
     //初始化,创建构造器
     public static Builder initialize(Context context, String url) {
@@ -36,6 +41,10 @@ public class Download {
         private Context context;
         //文件下载路径
         private String url;
+        //文件下载位置(默认下载到私有文件夹)
+        private String dirPath = Environment.DIRECTORY_DOWNLOADS;
+        //文件的保存名称(默认取下载链接中的文件名),文件名重复Android会自动在文件名后加字符不用担心
+        private String fileName = null;
         //设置下载完成的回调
         private OnComplete onComplete;
         //设置实时下载进度的回调
@@ -43,10 +52,24 @@ public class Download {
         //设置下载失败的回调
         private OnFailure onFailure;
 
+        private IDownloadServiceInterface iDownloadServiceAidlInterface;
+
         //构建
         Builder(Context context, String url) {
             this.context = context;
             this.url = url;
+        }
+
+        //设置文件的下目录(默认下载到下载文件夹)
+        public Builder setDownloadDirPath(String dirPath) {
+            this.dirPath = dirPath;
+            return this;
+        }
+
+        //设置文件名(要包含后缀)
+        public Builder setDownloadFileName(String fileName) {
+            this.fileName = fileName;
+            return this;
         }
 
         //设置实时下载进度的监听
@@ -73,17 +96,35 @@ public class Download {
             Intent intent = new Intent(context, DownloadService.class);
             //设置下载地址
             intent.putExtra("url", url);
+
+            //判断有没有设置文件名
+            if (fileName == null)
+                //没有就从下载链接中取文件名
+                fileName = FileUtil.getFileName(url);
+            //设置下载地址
+            intent.putExtra("path", new File(dirPath, fileName).getAbsolutePath());
             //启动指定的服务
             context.startService(intent);
+            //创建服务器主动调用客户端的回调
+            IDownloadServiceCallbackInterface.Stub iDownloadServiceCallbackInterface = new IDownloadServiceCallbackInterface.Stub() {
+                //这是做下载状态和下载进度的处理
+                @Override
+                public void onProgress(Map downloadMap) throws RemoteException {
+                    Log.d("downloadMap", (String) downloadMap.get("column_bytes"));
+                }
+            };
+
             //创建服务通道
             ServiceConnection serviceConnection = new ServiceConnection() {
                 @Override
                 public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
                     //获取到服务器接口
-                    IDownloadServiceAidlInterface iDownloadServiceAidlInterface = IDownloadServiceAidlInterface.Stub.asInterface(iBinder);
+                    iDownloadServiceAidlInterface = IDownloadServiceInterface.Stub.asInterface(iBinder);
                     try {
                         Map map = iDownloadServiceAidlInterface.getDownloadInfo(url);
-                        Log.d("map", map.get("bytes") + "");
+                        //注册客户端的下载监听
+                        iDownloadServiceAidlInterface.registerCallback(url, iDownloadServiceCallbackInterface);
+//                        Log.d("map", map.get("bytes") + "");
 
                     } catch (RemoteException e) {
                         e.printStackTrace();
@@ -113,21 +154,28 @@ public class Download {
              *        BIND_ADJUST_WITH_ACTIVITY:如果从一个 Activity 绑定，则这个 Service 进程的优先级和 Activity 是否对用户可见有关。
              */
             context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+
             //利用fragment来监听activity的关闭事件
             FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            Fragment fragment = new Fragment() {
+            DestroyFragment destroyFragment = new DestroyFragment(new DestroyFragment.DestroyCallback() {
                 @Override
-                public void onDestroy() {
-                    super.onDestroy();
+                public void destroy(DestroyFragment destroyFragment1) {
+                    //解绑服务的回调
+                    try {
+                        iDownloadServiceAidlInterface.unregisterCallback(url);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
                     //在关闭时解绑服务
                     context.unbindService(serviceConnection);
                     //移除这个fragment
-                    fragmentTransaction.remove(this);
+                    fragmentTransaction.remove(destroyFragment1);
                 }
-            };
+            });
             //加入fragment
-            fragmentTransaction.add(fragment, "fragment");
+            fragmentTransaction.add(destroyFragment, "fragment");
             return this;
         }
     }

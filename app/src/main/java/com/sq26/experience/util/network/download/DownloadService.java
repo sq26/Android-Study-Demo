@@ -5,11 +5,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.sq26.experience.aidl.IDownloadServiceAidlInterface;
-import com.sq26.experience.aidl.IDownloadServiceImpl;
+import com.sq26.experience.aidl.IDownloadServiceCallbackInterface;
+import com.sq26.experience.aidl.IDownloadServiceInterface;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,20 +27,30 @@ import okhttp3.Response;
 
 public class DownloadService extends Service {
     //跨进程通信接口
-    private IDownloadServiceAidlInterface.Stub iDownloadService = new IDownloadServiceAidlInterface.Stub() {
-
+    private IDownloadServiceInterface.Stub iDownloadService = new IDownloadServiceInterface.Stub() {
+        //获取当前下载的信息
         @Override
         public Map getDownloadInfo(String url) throws RemoteException {
             return null;
         }
 
+        //注册下载进度回调
         @Override
-        public void setDownloadMap(Map downloadMap) throws RemoteException {
+        public void registerCallback(String url, IDownloadServiceCallbackInterface callback) throws RemoteException {
+            downloadCallback.put(url, callback);
+        }
 
+        //解除进度回调
+        @Override
+        public void unregisterCallback(String url) throws RemoteException {
+            downloadCallback.remove(url);
         }
     };
+
+    private Map<String, IDownloadServiceCallbackInterface> downloadCallback = new ConcurrentHashMap<>();
+
     //线程安全的hashMap
-    private Map<String, Object> downloadMap = new ConcurrentHashMap<>();
+    private Map<String, Map> downloadMap = new ConcurrentHashMap<>();
 
     private Context context;
 
@@ -49,11 +60,7 @@ public class DownloadService extends Service {
         android.os.Debug.waitForDebugger();
         super.onCreate();
         context = this;
-        try {
-            iDownloadService.setDownloadMap(downloadMap);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
+
     }
 
     //用startService方法启动服务会进入这个方法
@@ -67,20 +74,14 @@ public class DownloadService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         String url = intent.getStringExtra("url");
+        String path = intent.getStringExtra("path");
         //先插入数据,已存在是不会插入的
-        DownloadHelperUtil.insert(this, url);
-        //再将数据保存在下载集合中(已url做kay,不会重复)
+        DownloadHelperUtil.insert(this, url, path);
+        //再将数据保存在下载集合中(用url做kay,不会重复)
         downloadMap.put(url, DownloadHelperUtil.query(context, url));
         //启动下载
         new StartDownload(url).download();
 
-        try {
-            Map map = new HashMap();
-            map.put("bytes", 100);
-            iDownloadService.setDownloadMap(downloadMap);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
         return iDownloadService;
     }
 
@@ -101,9 +102,9 @@ public class DownloadService extends Service {
         //Range: bytes=0-0,-1 表示第一个和最后一个字节
         //Range: bytes=500-600,601-999 同时指定几个范围
         private String range = "bytes=";
-        private long already = 0;
-        private long next = 1;
-        private Long all = null;
+        private long already = 0;//下载起始位置(下标)
+        private long next = 1;//下载结束位置(下标)
+        private Long all = null;//要下载文件的总大小下载
 
         public StartDownload(String url) {
             this.url = url;
@@ -133,17 +134,29 @@ public class DownloadService extends Service {
                     all = Long.parseLong(contentRange.split("/")[1]);
                     byte[] bytes = response.body().bytes();
 
-                    if (bytes.length == (next - already)) {
+                    if (bytes.length == next - already + 1) {
                         already += bytes.length;
-                        if (next * 2 < all) {
-                            next = next * 2;
-                        } else {
-                            next = all;
+                        next += 1024;
+                        if (next > (all - 1))
+                            next = (all - 1);
+                    }
+
+                    map.put("column_bytes", already + "");
+                    map.put("column_total", all + "");
+                    map.put("status", Download.STATUS_DOWNLOADING);
+
+                    //判断有没有设置进度回调
+                    if (downloadCallback.containsKey(url)) {
+                        //返回当前进度
+                        try {
+                            downloadCallback.get(url).onProgress(downloadMap.get(url));
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
                         }
                     }
 
                     if (all == already) {
-
+                        Log.d("1", "下载完成");
                     } else {
                         download();
                     }

@@ -16,7 +16,7 @@ public class DownloadHelperUtil {
     /**
      * 新增一条下载记录,返回true表示成功
      */
-    public static boolean insert(Context context, String url) {
+    public static boolean insert(Context context, String url, String path) {
         //判断这条url,是否存在,存在就不进行插入动作(预防重复调用,造成重复数据)
         if (query(context, url) != null)
             return false;
@@ -29,8 +29,12 @@ public class DownloadHelperUtil {
         ContentValues contentValues = new ContentValues();
         //插入网络链接
         contentValues.put("url", url);
-        //插入网络链接
+        //插入到目前为止下载的字节数
+        contentValues.put("column_bytes", "0");
+        //插入网络状态(默认状态)
         contentValues.put("status", Download.STATUS_START);
+        //插入保存路径
+        contentValues.put("path", path);
         /**
          * 执行数据插入方法,获取到改变的行数
          * table:数据表的名称

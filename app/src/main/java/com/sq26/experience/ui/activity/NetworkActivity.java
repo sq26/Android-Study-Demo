@@ -14,7 +14,7 @@ public class NetworkActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_network);
 
-        Download.initialize(this,"http://192.168.137.53:8080/tomcat.png").start();
+        Download.initialize(this,"http://192.168.8.210:8080/tomcat.png").start();
 
     }
 }

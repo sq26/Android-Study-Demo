@@ -5,17 +5,21 @@ import android.os.RemoteException;
 
 import java.util.Map;
 
-public class IDownloadServiceImpl extends IDownloadServiceAidlInterface.Stub {
+public class IDownloadServiceImpl extends IDownloadServiceInterface.Stub {
 
-    private Map downloadMap;
 
     @Override
     public Map getDownloadInfo(String url) throws RemoteException {
-        return (Map) downloadMap.get(url);
+        return null;
     }
 
     @Override
-    public void setDownloadMap(Map downloadMap) throws RemoteException {
-        this.downloadMap = downloadMap;
+    public void registerCallback(String url, IDownloadServiceCallbackInterface callback) throws RemoteException {
+
+    }
+
+    @Override
+    public void unregisterCallback(String url) throws RemoteException {
+
     }
 }
