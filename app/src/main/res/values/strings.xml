@@ -40,6 +40,9 @@
     <string name="Ciphertext">密文</string>
     <string name="Key">密钥</string>
 
+    <string name="AIDL_inter_process_communication">AIDL进程间通讯</string>
+
+
     <string name="There_is_no_application_that_can_open_this_file">没有可以打开此文件的应用程序!</string>
     <string name="File_has_been_downloaded">文件已经下载!</string>
     <string name="File_Download_in_progress">文件下载进行中!</string>

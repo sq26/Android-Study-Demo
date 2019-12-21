@@ -138,7 +138,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.activity.NetworkActivity"></activity>
+        <activity android:name=".ui.activity.AIDLActivity"></activity>
+        <activity android:name=".ui.activity.NetworkActivity" />
         <activity android:name=".ui.activity.EncryptionActivity" />
         <activity android:name=".ui.activity.RecyclerViewActivity" />
         <activity android:name=".ui.activity.DownloadManagementActivity" />
@@ -176,7 +177,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <!--
             name :服务所在的位置
             process:指定服务运行的进程
@@ -185,6 +185,10 @@
             android:name=".util.network.download.DownloadService"
             android:process=":sq26" />
 
+<!--        需要声明android:exported="true"，这样别的APP才能访问。-->
+        <service android:name="com.sq26.experience.service.AIDLService"
+            android:exported="true"
+            android:process=":aidl" />
         <!--
         authorities：是该项目的包名+provider
         grantUriPermissions：必须是true，表示授予 URI 临时访问权限
