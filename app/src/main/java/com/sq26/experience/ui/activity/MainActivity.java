@@ -13,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.RecyclerViewAdapter;
 import com.sq26.experience.adapter.ViewHolder;
+import com.sq26.experience.ui.activity.file.FileHomeActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, AuthorizedOperationActivity.class));
                 break;
             case "fileManagement":
-                startActivity(new Intent(this, FileManagementActivity.class));
+                startActivity(new Intent(this, FileHomeActivity.class));
                 break;
             case "mediaManagement":
                 startActivity(new Intent(this, MediaManagementActivity.class));
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(this, NetworkActivity.class));
                 break;
             case "aidl":
-                startActivity(new Intent(this, NetworkActivity.class));
+                startActivity(new Intent(this, AIDLActivity.class));
                 break;
 
         }

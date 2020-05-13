@@ -138,7 +138,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.activity.AIDLActivity"></activity>
+        <activity android:name=".ui.activity.file.FileHomeActivity"></activity>
+        <activity android:name=".ui.activity.AIDLActivity" />
         <activity android:name=".ui.activity.NetworkActivity" />
         <activity android:name=".ui.activity.EncryptionActivity" />
         <activity android:name=".ui.activity.RecyclerViewActivity" />
@@ -161,7 +162,7 @@
         </activity>
         <activity android:name=".ui.util.SelectImageActivity" />
         <activity android:name=".ui.activity.MediaManagementActivity" />
-        <activity android:name=".ui.activity.FileManagementActivity" />
+        <activity android:name=".ui.activity.file.FileOperateActivity" />
         <activity android:name=".ui.activity.AuthorizedOperationActivity" />
         <activity android:name=".ui.activity.StatusBarActivity" />
         <activity android:name=".ui.activity.CameraActivity" />
@@ -183,13 +184,13 @@
         -->
         <service
             android:name=".util.network.download.DownloadService"
-            android:process=":sq26" />
-
-<!--        需要声明android:exported="true"，这样别的APP才能访问。-->
-        <service android:name="com.sq26.experience.service.AIDLService"
+            android:process=":sq26" /> <!-- 需要声明android:exported="true"，这样别的APP才能访问。 -->
+        <service
+            android:name=".service.AIDLService"
             android:exported="true"
             android:process=":aidl" />
         <!--
+        该provider用于本地文件访问
         authorities：是该项目的包名+provider
         grantUriPermissions：必须是true，表示授予 URI 临时访问权限
         exported：必须是false

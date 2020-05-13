@@ -32,4 +32,6 @@
     <external-cache-path
         name="ext_cache"
         path="/" />
+
+<!--    <external-media-path name="ext_media" path="/"/>-->
 </paths>

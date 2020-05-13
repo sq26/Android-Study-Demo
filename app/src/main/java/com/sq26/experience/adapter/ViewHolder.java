@@ -21,6 +21,11 @@ public class ViewHolder extends RecyclerView.ViewHolder {
         TextView textView = view.findViewById(viewId);
         textView.setText(value);
     }
+    //设置text文本颜色
+    public void setTextColor(int viewId, int color) {
+        TextView textView = view.findViewById(viewId);
+        textView.setTextColor(color);
+    }
 
     //设置view背景(资源背景)
     public void setBackgroundResource(int viewId, int resId) {

@@ -9,16 +9,16 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public abstract class RecyclerViewDemoAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
+public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
     private int LAYOUT_ID;
     private List<T> array;
 
-    protected RecyclerViewDemoAdapter(int layoutId, List<T> list) {
+    protected RecyclerViewListAdapter(int layoutId, List<T> list) {
         this.LAYOUT_ID = layoutId;
         this.array = list;
     }
 
-    protected abstract void createViewHolder(ViewHolder viewHolder, T object, int position);
+    protected abstract void createViewHolder(ViewHolder viewHolder, T item, int position);
 
     @NonNull
     @Override

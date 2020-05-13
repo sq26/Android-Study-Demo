@@ -1,6 +1,7 @@
 package com.sq26.experience.util.permissions;
 
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
 
@@ -14,9 +15,8 @@ import java.util.List;
 
 public class JPermissions {
     //初始化,创建构造器
-    public static Builder init(AppCompatActivity c) {
-        Builder builder = new Builder(c);
-        return builder;
+    public static Builder init(Context context) {
+        return new Builder((AppCompatActivity) context);
     }
     //构造器类
     public static class Builder {
