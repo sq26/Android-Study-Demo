@@ -215,9 +215,7 @@ public class Encrypt {
             //根据提供的密钥规范（密钥材料）生成对象SecretKey。
             byte[] keyBytes = keyFactory.generateSecret(keySpec).getEncoded();
             return keyBytes;
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
         }
 //        SecretKey key = new SecretKeySpec(keyBytes, "AES");

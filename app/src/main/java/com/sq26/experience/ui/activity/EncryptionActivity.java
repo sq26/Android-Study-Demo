@@ -57,7 +57,7 @@ public class EncryptionActivity extends AppCompatActivity {
             case R.id.encryption:
                 Log.d("123", Base64.encodeToString(Base64.decode(key.getText().toString(), Base64.DEFAULT), Base64.DEFAULT));
                 new Encrypt.Builder()
-                        .Algorithm(Encrypt.Algorithm_AES_128)
+                        .Algorithm(Encrypt.Algorithm_AES)
                         .Modes(Encrypt.Modes_CBC)
                         .Paddings(Encrypt.Paddings_PKCS5Padding)
                         .Key(Base64.decode(key.getText().toString(), Base64.DEFAULT))
