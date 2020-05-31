@@ -1,5 +1,7 @@
 package com.sq26.experience.ui.activity;
 
+import android.content.Context;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,8 +18,11 @@ import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.ui.dialog.ProgressDialog;
+import com.sq26.experience.util.DensityUtil;
 import com.sq26.experience.util.FileUtil;
+import com.sq26.experience.util.ImageCompressionUtil;
 import com.sq26.experience.util.media.JImage;
+import com.sq26.experience.util.media.SimpleDraweeViewUtils;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,12 +37,14 @@ public class MediaManagementActivity extends AppCompatActivity {
 
     private CommonAdapter imageAdapter;
     private JSONArray imageArray = new JSONArray();
+    private Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_management);
         ButterKnife.bind(this);
+        context = this;
         init();
     }
 
@@ -52,8 +59,8 @@ public class MediaManagementActivity extends AppCompatActivity {
         imageRecyclerView.setAdapter(imageAdapter);
         imageAdapter.setOnClick(new RecyclerViewAdapter.OnClick() {
             @Override
-            public void click(JSONObject jsonObject,int position) {
-                preview.setImageURI("file://" + jsonObject.getString("path"));
+            public void click(JSONObject jsonObject, int position) {
+                SimpleDraweeViewUtils.setDraweeController(jsonObject.getString("path"), preview, DensityUtil.dip2px(context, 150));
             }
         });
     }
@@ -72,7 +79,11 @@ public class MediaManagementActivity extends AppCompatActivity {
                                     Log.d("getImage", p);
                                     item = new JSONObject();
                                     item.put("name", FileUtil.getFileName(p));
-                                    item.put("path", p);
+                                    if (FileUtil.isAbsolutePath(p)) {
+                                        item.put("path", p);
+                                    } else {
+                                        item.put("path", ImageCompressionUtil.startCompression(context, Uri.parse(p)));
+                                    }
                                     imageArray.add(item);
                                 }
                                 imageAdapter.notifyDataSetChanged();

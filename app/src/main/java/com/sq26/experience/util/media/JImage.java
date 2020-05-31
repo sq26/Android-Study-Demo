@@ -158,6 +158,6 @@ public class JImage {
 
     //获取成功的回调
     public interface SuccessCallback {
-        abstract void success(String... path);
+        void success(String... path);
     }
 }

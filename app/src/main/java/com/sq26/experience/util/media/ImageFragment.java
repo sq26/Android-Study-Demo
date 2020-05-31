@@ -109,58 +109,58 @@ public class ImageFragment extends Fragment {
                     String[] paths = Objects.requireNonNull(data).getStringArrayExtra("paths");
                     //判断有没有选择
                     if (paths.length > 0) {
-                        //判断是否要原图
-                        if (data.getBooleanExtra("isOriginal", false)) {
+//                        //判断是否要原图
+//                        if (data.getBooleanExtra("isOriginal", false)) {
                             //要原图直接回调
                             onImageReturnCallback.success(paths);
-                        } else {
-                            //不要原图,进行压缩
-                            //创建一个不可被用户关闭的等待弹出框
-                            ProgressDialog progressDialog = new ProgressDialog(getActivity());
-                            //显示等待弹出框
-                            progressDialog.show();
-                            //创建一个rxjava,进行异步压缩图片
-                            Observable.create(new ObservableOnSubscribe<Integer>() {
-                                @Override
-                                public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                                    //遍历已选择的图片
-                                    for (int i = 0; i < paths.length; i++) {
-                                        //调用图片压缩方法将压缩过的图片的地址进行替换
-                                        paths[i] = ImageCompressionUtil.startCompression(getActivity(), paths[i]);
-                                        //每成功压缩一次,调用一次提示方法
-                                        emitter.onNext(i);
-                                    }
-                                    //压缩遍历完调用完成方法
-                                    emitter.onComplete();
-                                }
-                            }).observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe(new Observer<Integer>() {
-                                        @Override
-                                        public void onSubscribe(Disposable d) {
-                                            //异步开始的方法
-                                        }
-
-                                        @Override
-                                        public void onNext(Integer i) {
-                                            //在这里进行提示刷新,每成功压缩一次,刷新一下提示
-                                            progressDialog.setMessage(Objects.requireNonNull(getContext()).getString(R.string.Compressing_2d, (i + 1), paths.length));
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            //异步线程出错的方法
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
-                                            //完成,关闭等待弹出框
-                                            progressDialog.dismiss();
-                                            //进行图片获取成功的回调
-                                            onImageReturnCallback.success(paths);
-                                        }
-                                    });
-                        }
+//                        } else {
+//                            //不要原图,进行压缩
+//                            //创建一个不可被用户关闭的等待弹出框
+//                            ProgressDialog progressDialog = new ProgressDialog(Objects.requireNonNull(getActivity()));
+//                            //显示等待弹出框
+//                            progressDialog.show();
+//                            //创建一个rxjava,进行异步压缩图片
+//                            Observable.create(new ObservableOnSubscribe<Integer>() {
+//                                @Override
+//                                public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+//                                    //遍历已选择的图片
+//                                    for (int i = 0; i < paths.length; i++) {
+//                                        //调用图片压缩方法将压缩过的图片的地址进行替换
+//                                        paths[i] = ImageCompressionUtil.startCompression(getActivity(), paths[i]);
+//                                        //每成功压缩一次,调用一次提示方法
+//                                        emitter.onNext(i);
+//                                    }
+//                                    //压缩遍历完调用完成方法
+//                                    emitter.onComplete();
+//                                }
+//                            }).observeOn(AndroidSchedulers.mainThread())
+//                                    .subscribeOn(Schedulers.io())
+//                                    .subscribe(new Observer<Integer>() {
+//                                        @Override
+//                                        public void onSubscribe(Disposable d) {
+//                                            //异步开始的方法
+//                                        }
+//
+//                                        @Override
+//                                        public void onNext(Integer i) {
+//                                            //在这里进行提示刷新,每成功压缩一次,刷新一下提示
+//                                            progressDialog.setMessage(Objects.requireNonNull(getContext()).getString(R.string.Compressing_2d, (i + 1), paths.length));
+//                                        }
+//
+//                                        @Override
+//                                        public void onError(Throwable e) {
+//                                            //异步线程出错的方法
+//                                        }
+//
+//                                        @Override
+//                                        public void onComplete() {
+//                                            //完成,关闭等待弹出框
+//                                            progressDialog.dismiss();
+//                                            //进行图片获取成功的回调
+//                                            onImageReturnCallback.success(paths);
+//                                        }
+//                                    });
+//                        }
                     } else
                         //进行图片获取取消的回调
                         onImageReturnCallback.canceled();

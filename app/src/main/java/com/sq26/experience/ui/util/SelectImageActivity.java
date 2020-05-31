@@ -1,6 +1,7 @@
 package com.sq26.experience.ui.util;
 
 import android.app.Dialog;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -32,9 +33,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewAdapter;
@@ -44,6 +42,7 @@ import com.sq26.experience.ui.view.zoomable.ZoomableDraweeView;
 import com.sq26.experience.util.AntiShake;
 import com.sq26.experience.util.DensityUtil;
 import com.sq26.experience.util.FileUtil;
+import com.sq26.experience.util.media.SimpleDraweeViewUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -60,8 +59,6 @@ import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
-
-import static java.lang.Thread.sleep;
 
 public class SelectImageActivity extends AppCompatActivity {
 
@@ -125,15 +122,15 @@ public class SelectImageActivity extends AppCompatActivity {
             @Override
             protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
                 //给图片视图设置图片路径
-                setDraweeController("file://" + jsonObject.getString(MediaStore.Images.Media.DATA), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 180), DensityUtil.dip2px(context, 180));
+                SimpleDraweeViewUtils.setDraweeController(jsonObject.getString("fileUri"), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 180));
                 //判断有没有选中过
-                if (selectedItem.containsKey(jsonObject.getString(MediaStore.Images.Media.DATA))) {
+                if (selectedItem.containsKey(jsonObject.getString("fileUri"))) {
                     //选中过就设置当前选中的编号
-                    viewHolder.setText(R.id.count, selectedItem.getString(jsonObject.getString(MediaStore.Images.Media.DATA)));
+                    viewHolder.setText(R.id.count, selectedItem.getString(jsonObject.getString("fileUri")));
                     //并把背景颜色改为选中色
                     viewHolder.setBackgroundResource(R.id.count, R.drawable.bg_corners_all);
                     //被选中过就保存一下该文件在当前文件夹中的下标,用于保存新文件夹中已选中的文件的下标(虽然在这里调用会重复保存造成些许多余的性能流失,但暂时找不到更高效的保存方法)
-                    selectedItemIndex.put(jsonObject.getString(MediaStore.Images.Media.DATA), position);
+                    selectedItemIndex.put(jsonObject.getString("fileUri"), position);
                 } else {
                     //没有选中就把编号设置为空字符
                     viewHolder.setText(R.id.count, "");
@@ -145,12 +142,12 @@ public class SelectImageActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         //判断有没有选中过
-                        if (selectedItem.containsKey(jsonObject.getString(MediaStore.Images.Media.DATA))) {
+                        if (selectedItem.containsKey(jsonObject.getString("fileUri"))) {
                             //有选中过
                             //移除选中记录
-                            selectedItem.remove(jsonObject.getString(MediaStore.Images.Media.DATA));
+                            selectedItem.remove(jsonObject.getString("fileUri"));
                             //移除下标记录
-                            selectedItemIndex.remove(jsonObject.getString(MediaStore.Images.Media.DATA));
+                            selectedItemIndex.remove(jsonObject.getString("fileUri"));
                             //刷新刚取消选中的视图的下标
                             notifyItemChanged(position);
                             //初始化编号标记
@@ -168,7 +165,7 @@ public class SelectImageActivity extends AppCompatActivity {
                             //判断是否到达已选择图片数量的上限
                             if (maxCount == 0 || selectedItem.size() < maxCount) {
                                 //没有选中过就直接加入记录,并设置编号为总选中数量加1
-                                selectedItem.put(jsonObject.getString(MediaStore.Images.Media.DATA), (selectedItem.size() + 1) + "");
+                                selectedItem.put(jsonObject.getString("fileUri"), (selectedItem.size() + 1) + "");
                                 //刷新指定下标的item视图
                                 notifyItemChanged(position);
                             }
@@ -200,6 +197,7 @@ public class SelectImageActivity extends AppCompatActivity {
                 Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
                 //指定要返回的内容列
                 String[] projection = new String[]{
+                        MediaStore.Images.Media._ID,//文件id
                         MediaStore.Images.Media.DISPLAY_NAME,//文件名
                         MediaStore.Images.Media.DATA,//文件路径
                         MediaStore.Images.Media.HEIGHT,//媒体项目的高度，以像素为单位。
@@ -236,6 +234,10 @@ public class SelectImageActivity extends AppCompatActivity {
                         jsonObject.put("parentFilePath", FileUtil.getFileParentFolderPath(jsonObject.getString(MediaStore.Images.Media.DATA)));
                         //获取父文件夹名称
                         jsonObject.put("parentFileName", FileUtil.getParentFileName(jsonObject.getString(MediaStore.Images.Media.DATA)));
+//                        //获取文件的uri
+//                        jsonObject.put("fileUri", Uri.withAppendedPath(uri, jsonObject.getString(MediaStore.Images.Media._ID)).toString());
+                        //获取文件的uri
+                        jsonObject.put("fileUri", ContentUris.withAppendedId(uri, jsonObject.getLong(MediaStore.Images.Media._ID)).toString());
                         //加入到全图片列表中
                         jsonArray.add(jsonObject);
                         //判断以父文件夹路径作为key的jsonArray是否存在
@@ -256,7 +258,7 @@ public class SelectImageActivity extends AppCompatActivity {
                     //设置标题
                     jsonObject.put("title", "全部图片");
                     //设置预览图(取图片里的第一张)
-                    jsonObject.put("image", jsonArray.getJSONObject(0).getString(MediaStore.Images.Media.DATA));
+                    jsonObject.put("image", jsonArray.getJSONObject(0).getString("fileUri"));
                     //设置图片数量
                     jsonObject.put("count", jsonArray.size());
                     //设置图片内容jsonArray数组
@@ -269,7 +271,7 @@ public class SelectImageActivity extends AppCompatActivity {
                         //设置标题(取列表第一条数据里父文件夹名称)
                         jsonObject.put("title", parentJsonObject.getJSONArray(key).getJSONObject(0).getString("parentFileName"));
                         //设置预览图(取列表第一条数据里的图片路径)
-                        jsonObject.put("image", parentJsonObject.getJSONArray(key).getJSONObject(0).getString(MediaStore.Images.Media.DATA));
+                        jsonObject.put("image", parentJsonObject.getJSONArray(key).getJSONObject(0).getString("fileUri"));
                         //设置图片数量
                         jsonObject.put("count", parentJsonObject.getJSONArray(key).size());
                         //设置图片内容jsonArray数组
@@ -328,7 +330,7 @@ public class SelectImageActivity extends AppCompatActivity {
                 viewHolder.setText(R.id.text, jsonObject.getString("title")
                         + "(" + jsonObject.getString("count") + ")");
                 //设置预览的第一张图片
-                setDraweeController("file://" + jsonObject.getString("image"), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 48), DensityUtil.dip2px(context, 48));
+                SimpleDraweeViewUtils.setDraweeController(jsonObject.getString("image"), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 48));
             }
         };
         //设置适配器
@@ -399,22 +401,6 @@ public class SelectImageActivity extends AppCompatActivity {
         }
     }
 
-    private void setDraweeController(String uri, SimpleDraweeView simpleDraweeView, int width, int height) {
-        //创建一个ImageRequest用于获取图片内容,并设置图片链接
-        ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.parse(uri))
-                //设置图片尺寸
-                .setResizeOptions(new ResizeOptions(width, height))
-                //创建
-                .build();
-        //创建一个DraweeController,对加载显示的图片做更多的控制和定制
-        DraweeController controller = Fresco.newDraweeControllerBuilder()
-                //指定配置,使用旧的配置,不新建
-                .setOldController(simpleDraweeView.getController())
-                .setImageRequest(request)
-                .build();
-        simpleDraweeView.setController(controller);
-    }
-
     //显示全屏dialog
     //isChosen 是否是显示已选择列表,true 就显示已选择列表,否是就显示当前文件夹列表
     private void showFullscreenDialog(boolean isChosen, int index) {
@@ -474,7 +460,7 @@ public class SelectImageActivity extends AppCompatActivity {
             //遍历当前显示文件夹imageArray,
             for (JSONObject jsonObject : imageArray.toArray(new JSONObject[0]))
                 //把当前显示文件夹的所有图片路径加入imageList
-                imageList.add(jsonObject.getString(MediaStore.Images.Media.DATA));
+                imageList.add(jsonObject.getString("fileUri"));
             //设置当前dialog显示的图片是否选中
             select.setChecked(selectedItem.containsKey(imageList.get(index)));
             //设置Toolbar标题
@@ -678,7 +664,7 @@ public class SelectImageActivity extends AppCompatActivity {
             DraweeController draweeController = Fresco.newDraweeControllerBuilder()
                     //指定配置,使用旧的配置,不新建
                     .setOldController(zoomableDraweeView.getController())
-                    .setUri("file://" + imageList.get(position))
+                    .setUri(imageList.get(position))
                     .build();
             //设置配置
             zoomableDraweeView.setController(draweeController);

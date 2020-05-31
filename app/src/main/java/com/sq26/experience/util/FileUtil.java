@@ -118,4 +118,12 @@ public class FileUtil {
             AppUtil.showToast(context, R.string.There_is_no_application_that_can_open_this_file);
         }
     }
+
+    public static boolean isAbsolutePath(String path){
+        if (path.contains("content://")){
+            return false;
+        }else{
+            return true;
+        }
+    }
 }

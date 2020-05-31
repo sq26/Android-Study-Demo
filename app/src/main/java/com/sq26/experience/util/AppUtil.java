@@ -1,6 +1,7 @@
 package com.sq26.experience.util;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -34,10 +35,8 @@ public class AppUtil {
             byte[] bytes = new byte[fileInputStream.available()];
             fileInputStream.read(bytes);
             return new String(bytes);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d("读取私有文件","文件不存在");
         }
         return "";
     }
