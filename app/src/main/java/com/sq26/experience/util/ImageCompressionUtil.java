@@ -90,7 +90,9 @@ public class ImageCompressionUtil {
                     }
                 } else {
                     //判段不需要压缩,就直接将原图片路径返回
+                    //判断是否是Android10或以上系统
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        //可由系统方法简单实现拷贝
                         FileUtils.copy(Objects.requireNonNull(context.getContentResolver().openInputStream(uri)), new FileOutputStream(file));
                     } else {
                         //创建输入流
