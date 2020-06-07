@@ -23,12 +23,30 @@
         app:layout_constraintTop_toBottomOf="@id/name" />
 
     <TextView
-        android:id="@+id/type"
+        android:id="@+id/path"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="类型"
+        android:text="路径"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rom" />
 
+    <TextView
+        android:id="@+id/canRead"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="读"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/path" />
+
+
+    <TextView
+        android:id="@+id/canWrite"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="写"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/canRead" />
 </androidx.constraintlayout.widget.ConstraintLayout>

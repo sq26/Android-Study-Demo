@@ -118,7 +118,7 @@ public class FileUtil {
             AppUtil.showToast(context, R.string.There_is_no_application_that_can_open_this_file);
         }
     }
-
+    //判断一个文件路径是否是绝对路径
     public static boolean isAbsolutePath(String path){
         if (path.contains("content://")){
             return false;
