@@ -12,7 +12,10 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            // 是否进行混淆
+            minifyEnabled true
+            // 混淆文件的位置，其中'proguard-android.txt'为sdk默认的混淆配置，
+            //'proguard-rules.pro' 是该模块下的混淆配置
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -53,6 +56,8 @@ dependencies {
     implementation 'com.facebook.fresco:fresco:2.2.0'
     //okHttp轻量级网络框架
     implementation 'com.squareup.okhttp3:okhttp:4.2.2'
+    //android文件管理类
     implementation 'androidx.documentfile:documentfile:1.0.1'
-
+    //AndroidPdfViewer 查看pdf的控件
+    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
 }

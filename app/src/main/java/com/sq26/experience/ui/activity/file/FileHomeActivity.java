@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.Formatter;
-import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,8 +34,8 @@ import butterknife.ButterKnife;
 
 public class FileHomeActivity extends AppCompatActivity {
     //根目录列表视图
-    @BindView(R.id.add)
-    TextView add;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
     //根目录列表视图
     @BindView(R.id.rootFileRecyclerView)
     RecyclerView rootFileRecyclerView;
@@ -69,6 +71,8 @@ public class FileHomeActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        toolbar.setTitle(getString(R.string.file_management));
+        setSupportActionBar(toolbar);
         //创建分区列表适配器
         rootFileAdapter = new CommonAdapter(R.layout.item_file_hoem_root, rootFileArray) {
             @Override
@@ -101,16 +105,6 @@ public class FileHomeActivity extends AppCompatActivity {
         rootFileRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         //设置设配器
         rootFileRecyclerView.setAdapter(rootFileAdapter);
-
-        add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                //标识同时获取其子目录的读写权限
-                intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
-                startActivityForResult(intent, DOCUMENT_TREE_CODE);
-            }
-        });
     }
 
     private void initDate() {
@@ -181,5 +175,27 @@ public class FileHomeActivity extends AppCompatActivity {
                 initDate();
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_add, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            case R.id.action_add:
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                //标识同时获取其子目录的读写权限
+                intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+                startActivityForResult(intent, DOCUMENT_TREE_CODE);
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

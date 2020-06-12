@@ -32,9 +32,17 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class FileOperateActivity extends AppCompatActivity {
+    //父文件夹列表视图
+    @BindView(R.id.rootRecyclerView)
+    RecyclerView parentRecyclerView;
     //文件列表视图
     @BindView(R.id.recyclerView)
     RecyclerView recyclerView;
+
+    //父文件夹列表适配器
+    private RecyclerViewListAdapter<DocumentFile> parentFileListAdapter;
+    //父文件夹列表
+    private List<DocumentFile> parentFileList = new ArrayList<>();
     //文件列表适配器
     private RecyclerViewListAdapter<DocumentFile> fileListAdapter;
     //文件列表
@@ -68,6 +76,19 @@ public class FileOperateActivity extends AppCompatActivity {
     }
 
     private void initView() {
+        parentFileListAdapter = new RecyclerViewListAdapter<DocumentFile>(R.layout.item_parent_file, parentFileList) {
+            @Override
+            protected void createViewHolder(ViewHolder viewHolder, DocumentFile item, int position) {
+                viewHolder.setText(R.id.text, item.getName());
+                viewHolder.setOnClickListener(R.id.text, view -> {
+                    parentFileList.subList(position + 1, parentFileList.size()).clear();
+                    notifyDataSetChanged();
+                    initData(item.listFiles());
+                });
+            }
+        };
+        parentRecyclerView.setAdapter(parentFileListAdapter);
+
         //文件列表适配器
         fileListAdapter = new RecyclerViewListAdapter<DocumentFile>(R.layout.item_file, fileList) {
             @Override
@@ -87,20 +108,29 @@ public class FileOperateActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View view) {
                         if (item.isFile()) {
-                            new AlertDialog.Builder(FileOperateActivity.this)
-                                    .setMessage("是否删除")
-                                    .setPositiveButton("是", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            Log.d("删除", "有权限");
-                                            item.delete();
-                                            fileList.remove(item);
-                                            fileListAdapter.notifyDataSetChanged();
-                                        }
-                                    }).show();
+                            FileUtil.openFile(context, item.getUri());
                         } else {
+                            parentFileList.add(item);
+                            parentFileListAdapter.notifyDataSetChanged();
                             initData(item.listFiles());
                         }
+                    }
+                });
+                viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        new AlertDialog.Builder(FileOperateActivity.this)
+                                .setMessage("是否删除")
+                                .setPositiveButton("是", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Log.d("删除", "有权限");
+                                        item.delete();
+                                        fileList.remove(item);
+                                        fileListAdapter.notifyDataSetChanged();
+                                    }
+                                }).show();
+                        return true;
                     }
                 });
             }
@@ -119,6 +149,8 @@ public class FileOperateActivity extends AppCompatActivity {
             //不是绝对路径
             documentFile = DocumentFile.fromTreeUri(context, Uri.parse(rootPath));
         }
+        parentFileList.add(documentFile);
+        parentFileListAdapter.notifyDataSetChanged();
         //初始化数据
         initData(documentFile.listFiles());
     }
@@ -134,7 +166,13 @@ public class FileOperateActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (parentFileList.size() > 1) {
+            parentFileList.remove(parentFileList.size() - 1);
+            parentFileListAdapter.notifyDataSetChanged();
+            initData(parentFileList.get(parentFileList.size() - 1).listFiles());
+        } else {
+            super.onBackPressed();
+        }
     }
 
 }

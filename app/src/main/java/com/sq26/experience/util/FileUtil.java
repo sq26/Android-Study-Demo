@@ -94,13 +94,8 @@ public class FileUtil {
         }
     }
 
-    //根据文件路径通过系统应用打开对应的文件
+
     public static void openFile(Context context, String path) {
-        //创建一个Intent并设置activity
-        //ACTION_VIEW:用于显示用户的数据。比较通用，会根据用户的数据类型打开相应的Activity。
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        //给intent添加旗帜,在Activity上下文之外启动Activity需要给Intent设置FLAG_ACTIVITY_NEW_TASK标志，不然会报异常。
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         //根据文件路径path创建文件
         File file = new File(path);
         //定义文件url
@@ -112,8 +107,19 @@ public class FileUtil {
         else
             //小于Android7.0直接把file转换成uri
             uri = Uri.fromFile(file);
+        openFile(context, uri);
+    }
+
+    //根据文件路径通过系统应用打开对应的文件
+    public static void openFile(Context context, Uri uri) {
+        //创建一个Intent并设置activity
+        //ACTION_VIEW:用于显示用户的数据。比较通用，会根据用户的数据类型打开相应的Activity。
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        //给intent添加旗帜,在Activity上下文之外启动Activity需要给Intent设置FLAG_ACTIVITY_NEW_TASK标志，不然会报异常。
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         //设置文件路径和文件的MIME类型。
-        intent.setDataAndType(uri, getMimeType(path));
+        intent.setDataAndType(uri, DocumentFile.fromSingleUri(context, uri).getType());
         //intent添加URI的临时访问权限声明
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         //判断是否有可以打开此类文件的应用程序
