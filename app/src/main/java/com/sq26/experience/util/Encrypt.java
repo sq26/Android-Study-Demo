@@ -50,6 +50,11 @@ public class Encrypt {
     public static final String Modes_CFB = "CFB";
     //输出反馈模式（Output FeedBack (OFB)）
     public static final String Modes_OFB = "OFB";
+    //密码学訊息鑑別碼（MAC）。它可用于验证数据完整性和訊息真伪
+    public static final String Modes_Poly1305 = "Poly1305";
+    //没有模式
+    public static final String Modes_NONE = "NONE";
+
     //无填充
     public static final String Paddings_NoPadding = "NoPadding";
     public static final String Paddings_ISO10126Padding = "ISO10126Padding";
@@ -118,14 +123,42 @@ public class Encrypt {
         public void start() {
             // 它可以用来从字节数组构造密钥而不必经历（基于提供者的）SecretKeyFactory,
             //此类仅对可以表示为字节数组且没有与之关联的密钥参数（例如DES或Triple DES密钥）的原始秘密密钥有用。
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key, algorithm);
+            SecretKeySpec secretKeySpec;
+            if (algorithm.equals(Algorithm_ARC4)) {
+                secretKeySpec = new SecretKeySpec(key, Modes_ECB);
+            } else {
+                secretKeySpec = new SecretKeySpec(key, algorithm);
+            }
 
             Log.d("getEncoded", Base64.encodeToString(secretKeySpec.getEncoded(), Base64.DEFAULT));
             try {
+                String transformation = algorithm;
+                //没有加密模式就不拼模式
+                if (Modes != null)
+                    transformation = transformation + "/" + Modes;
+                //没有填充模式就不拼填充
+                if (Paddings != null)
+                    transformation = transformation + "/" + Paddings;
                 // 获得Cypher实例对象
-                Cipher cipher = Cipher.getInstance(algorithm + "/" + Modes + "/" + Paddings);
-                // 初始化模式为加密模式，并指定密匙
-                cipher.init(opmode, secretKeySpec, new IvParameterSpec(new byte[cipher.getBlockSize()]));
+                Cipher cipher = Cipher.getInstance(transformation);
+                switch (algorithm) {
+                    case Algorithm_ChaCha20:
+                        //加密方式为ChaCha20时无论什么模式都需要设置iv向量,并指定iv向量长度为12
+                        cipher.init(opmode, secretKeySpec, new IvParameterSpec(new byte[12]));
+                        break;
+                    default:
+                        switch (Modes){
+                            case Modes_CBC:
+                                //CBC模式需要设置iv向量
+                                cipher.init(opmode, secretKeySpec, new IvParameterSpec(new byte[cipher.getBlockSize()]));
+                                break;
+                            default:
+                                // 初始化设置加解密模式，并指定密匙
+                                cipher.init(opmode, secretKeySpec);
+                                break;
+                        }
+                        break;
+                }
                 //进行加解密运算
                 byte[] bytes = cipher.doFinal(plaintext);
                 //判断有没有设置完成后的回调
@@ -133,17 +166,7 @@ public class Encrypt {
                     //接口回调返回加解密后的bytes数组
                     onComplete.complete(bytes);
 
-            } catch (NoSuchAlgorithmException e) {
-                e.printStackTrace();
-            } catch (NoSuchPaddingException e) {
-                e.printStackTrace();
-            } catch (InvalidKeyException e) {
-                e.printStackTrace();
-            } catch (BadPaddingException e) {
-                e.printStackTrace();
-            } catch (IllegalBlockSizeException e) {
-                e.printStackTrace();
-            } catch (InvalidAlgorithmParameterException e) {
+            } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException | InvalidAlgorithmParameterException e) {
                 e.printStackTrace();
             }
         }
@@ -178,15 +201,19 @@ public class Encrypt {
         return null;
     }
 
-    //随机生成一个种子(加入密码)
-    public static byte[] getRawKey(String password) {
-        /* 将这些东西存储在磁盘上，以便以后获取密钥: */
-        //迭代次数
-        int iterationCount = 1000;
+
+    /**
+     * 随机生成一个种子
+     *
+     * @param iterationCount 迭代次数  不能是0,建议1000
+     * @param keyLength      密钥的长度   256位用于AES-256、128位用于AES-128等
+     * @param algorithm      密钥的算法      详细信息查看encrypt文件
+     * @param password       密码  不能为空和空字符
+     * @return 返回一个密钥
+     */
+    public static byte[] getRawKey(int iterationCount, int keyLength, String algorithm, String password) {
         //盐的长度
-        int saltLength = 32; // bytes; 应与输出大小相同 (256 / 8 = 32)
-        //密钥的长度
-        int keyLength = 256; // 256位用于AES-256、128位用于AES-128等
+        int saltLength = keyLength / 8; // bytes; 应与输出密钥长度大小相同 (256 / 8 = 32)
 
         /* 首次创建密钥时，请以此作为盐: */
         //加密强度高的随机数生成器
@@ -204,17 +231,14 @@ public class Encrypt {
          * iterationCount:迭代次数
          *  keyLength:要派生的密钥长度
          */
-        KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt,
-                iterationCount, keyLength);
-        //此类表示密钥的工厂
-        SecretKeyFactory keyFactory = null;
+        KeySpec keySpec = new PBEKeySpec(password.toCharArray(), salt, iterationCount, keyLength);
         try {
+            //此类表示密钥的工厂
             //返回一个SecretKeyFactory对象，该对象将转换指定算法的秘密密钥
-            keyFactory = SecretKeyFactory
-                    .getInstance("PBKDF2withHmacSHA1And8BIT");
+            // algorithm加密类型必须和KeySpec的生产工程格式一致,比如PBEKeySpec生产的KeySpec只能指定PBE系列的加密类型
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance(algorithm);
             //根据提供的密钥规范（密钥材料）生成对象SecretKey。
-            byte[] keyBytes = keyFactory.generateSecret(keySpec).getEncoded();
-            return keyBytes;
+            return keyFactory.generateSecret(keySpec).getEncoded();
         } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
             e.printStackTrace();
         }

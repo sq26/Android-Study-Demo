@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/keyLayout"
             android:layout_width="match_parent"
@@ -27,8 +26,10 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/plaintextLayout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@id/startBarrier"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/keyLayout">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -41,9 +42,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/ciphertextLayout"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/plaintextLayout">
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/endBarrier"
+            app:layout_constraintTop_toBottomOf="@id/keyLayout">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ciphertext"
@@ -55,16 +58,18 @@
 
         <TextView
             android:id="@+id/timing"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/ciphertextLayout" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/keyLayout" />
 
         <Button
             android:id="@+id/encryption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/encryption"
-            app:layout_constraintEnd_toStartOf="@id/decrypt"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/timing" />
 
@@ -75,8 +80,22 @@
             android:layout_height="wrap_content"
             android:text="@string/Decrypt"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/encryption"
-            app:layout_constraintTop_toBottomOf="@id/timing" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/encryption" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/startBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="start"
+            app:constraint_referenced_ids="encryption,timing,decrypt,encryptionAlgorithm" />
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/endBarrier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:barrierDirection="end"
+            app:constraint_referenced_ids="encryption,timing,decrypt,encryptionAlgorithm" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

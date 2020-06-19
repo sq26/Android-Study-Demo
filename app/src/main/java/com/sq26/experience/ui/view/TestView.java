@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+import android.graphics.Region;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -89,7 +90,9 @@ public class TestView extends View {
          *  sweepAngle:弧线持续(结束)的角度
          *  forceMoveTo:是否将弧线的起始点作为绘制的起始位置(我个人理解是,是否将弧的起点作为路径的中点或起点)
          */
-        path.arcTo(100, 10, 200, 100, 0, 90, true);
+
+        Region region = new Region(50,50,200,100);
+
         canvas.drawPath(path, paint);
     }
 }

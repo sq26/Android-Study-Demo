@@ -22,11 +22,11 @@ AES_256	            CBC             NoPadding                           26+
                     ----------------------------------------------------------------------------------------
                     GCM	            NoPadding	                        26+
 ------------------------------------------------------------------------------------------------------------
-ARC4	            ECB	            NoPadding	                        10+                    	流密码被认为可以与Ron Rivest开发的RC4密码完全互操作。
+ARC4	            ECB	            NoPadding	                        10+                    	流密码被认为可以与Ron Rivest开发的RC4密码完全互操作。密钥长度可变范围在1-255
                     ----------------------------------------------------------------------------------------
                     NONE	        NoPadding	                        28+
 ------------------------------------------------------------------------------------------------------------
-BLOWFISH	        CBC             ISO10126Padding                     10+
+BLOWFISH	        CBC             ISO10126Padding                     10+                     BLOWFISH的密钥长度为64位
                     CFB             NoPadding
                     CTR             PKCS5Padding
                     CTS
@@ -34,16 +34,16 @@ BLOWFISH	        CBC             ISO10126Padding                     10+
                     OFB
 ------------------------------------------------------------------------------------------------------------
 ChaCha20	        NONE            NoPadding                           28+                    ChaCha with 20 rounds, 96-bit nonce, and 32-bit counter as described in RFC 7539.
-                    Poly1305                                                                  (ChaCha具有20回合，96位随机数和32位计数器，如RFC 7539中所述。)
+                    Poly1305                                                                  (ChaCha具有20回合，96位随机数和32位计数器，如RFC 7539中所述。),密钥长度为256,iv向量长度12位
 ------------------------------------------------------------------------------------------------------------
-DES	                CBC             ISO10126Padding                     1+
+DES	                CBC             ISO10126Padding                     1+                      DES的密钥长度为64位
                     CFB             NoPadding
                     CTR             PKCS5Padding
                     CTS
                     ECB
                     OFB
 ------------------------------------------------------------------------------------------------------------
-DESede	            CBC             ISO10126Padding                     1+                      三重DES加密
+DESede	            CBC             ISO10126Padding                     1+                      三重DES加密,密钥长度为192位
                     CFB             NoPadding
                     CTR             PKCS5Padding
                     CTS
@@ -60,3 +60,52 @@ RSA	                ECB             NoPadding                           1+
                                     OAEPwithSHA-224andMGF1Padding
                                     OAEPwithSHA-384andMGF1Padding
                                     OAEPwithSHA-512andMGF1Padding	    23+
+
+
+Android提供以下SecretKeyFactory算法：
+Algorithm(加密算法)	                                    Supported API Levels(支持的Android版本)
+AES	                                                    23+
+DES	                                                    1+
+DESede	                                                1+
+HmacSHA1	                                            23+
+HmacSHA224	                                            23+
+HmacSHA256	                                            23+
+HmacSHA384	                                            23+
+HmacSHA512	                                            23+
+PBEwithHmacSHA1	                                        1+
+PBEwithHmacSHA1AndAES_128	                            26+
+PBEwithHmacSHA1AndAES_256	                            26+
+PBEwithHmacSHA224AndAES_128	                            26+
+PBEwithHmacSHA224AndAES_256	                            26+
+PBEwithHmacSHA256AndAES_128                         	26+
+PBEwithHmacSHA256AndAES_256	                            26+
+PBEwithHmacSHA384AndAES_128	                            26+
+PBEwithHmacSHA384AndAES_256	                            26+
+PBEwithHmacSHA512AndAES_128	                            26+
+PBEwithHmacSHA512AndAES_256	                            26+
+PBEwithMD5AND128BITAES-CBC-OPENSSL	                    1+
+PBEwithMD5AND192BITAES-CBC-OPENSSL	                    1+
+PBEwithMD5AND256BITAES-CBC-OPENSSL	                    1+
+PBEwithMD5ANDDES	                                    1+
+PBEwithMD5ANDRC2	                                    1+
+PBEwithSHA1ANDDES	                                    1+
+PBEwithSHA1ANDRC2	                                    1+
+PBEwithSHA256AND128BITAES-CBC-BC	                    1+
+PBEwithSHA256AND192BITAES-CBC-BC	                    1+
+PBEwithSHA256AND256BITAES-CBC-BC	                    1+
+PBEwithSHAAND128BITAES-CBC-BC	                        1+
+PBEwithSHAAND128BITRC2-CBC	                            10+
+PBEwithSHAAND128BITRC4	                                10+
+PBEwithSHAAND192BITAES-CBC-BC	                        1+
+PBEwithSHAAND2-KEYTRIPLEDES-CBC                     	1+
+PBEwithSHAAND256BITAES-CBC-BC                       	1+
+PBEwithSHAAND3-KEYTRIPLEDES-CBC                     	1+
+PBEwithSHAAND40BITRC2-CBC                           	1+
+PBEwithSHAAND40BITRC4	                                10+
+PBEwithSHAANDTWOFISH-CBC	                            10+
+PBKDF2withHmacSHA1                                  	10+
+PBKDF2withHmacSHA1And8BIT	                            19+
+PBKDF2withHmacSHA224	                                26+
+PBKDF2withHmacSHA256	                                26+
+PBKDF2withHmacSHA384	                                26+
+PBKDF2withHmacSHA512                                	26+
