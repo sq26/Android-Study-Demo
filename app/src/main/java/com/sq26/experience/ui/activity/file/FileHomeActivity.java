@@ -31,6 +31,7 @@ import java.io.File;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class FileHomeActivity extends AppCompatActivity {
     //根目录列表视图
@@ -76,7 +77,7 @@ public class FileHomeActivity extends AppCompatActivity {
         //创建分区列表适配器
         rootFileAdapter = new CommonAdapter(R.layout.item_file_hoem_root, rootFileArray) {
             @Override
-            protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
+            public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
                 //设置分区名称
                 viewHolder.setText(R.id.name, jsonObject.getString("name"));
                 //设置分区储存容量
@@ -105,6 +106,19 @@ public class FileHomeActivity extends AppCompatActivity {
         rootFileRecyclerView.addItemDecoration(new DividerItemDecoration(context, DividerItemDecoration.VERTICAL));
         //设置设配器
         rootFileRecyclerView.setAdapter(rootFileAdapter);
+    }
+
+    @OnClick({R.id.image, R.id.video, R.id.music})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.image:
+                startActivity(new Intent(this, FileImageActivity.class));
+                break;
+            case R.id.video:
+                break;
+            case R.id.music:
+                break;
+        }
     }
 
     private void initDate() {
@@ -185,7 +199,7 @@ public class FileHomeActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
                 break;
@@ -198,4 +212,5 @@ public class FileHomeActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

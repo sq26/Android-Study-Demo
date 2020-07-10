@@ -138,9 +138,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.activity.file.FileImageActivity"></activity>
         <activity android:name=".ui.util.PdfActivity">
+
             <!-- ignore忽略app链接错误 -->
             <intent-filter tools:ignore="AppLinkUrlError">
+
                 <!-- 设置为,显示数据给用户 -->
                 <action android:name="android.intent.action.VIEW" />
                 <!-- 分类设置匹配所有 -->
@@ -148,25 +151,19 @@
                 <!-- 数据设置为匹配Pdf文档 -->
                 <data android:mimeType="application/pdf" />
             </intent-filter>
-        </activity>
-        <!--        文件管理首页的activity(计划和文件操作页合并)-->
-        <activity android:name=".ui.activity.file.FileHomeActivity" />
-        <!--        跨进程通讯演示操作页-->
-        <activity android:name=".ui.activity.AIDLActivity" />
-        <!--        网络请求演示操作页-->
-        <activity android:name=".ui.activity.NetworkActivity" />
-        <!--        加密解密演示操作页-->
-        <activity android:name=".ui.activity.EncryptionActivity" />
-        <!--        RecyclerView控件演示操作页-->
-        <activity android:name=".ui.activity.RecyclerViewActivity" />
-        <!--        下载管理演示操作页-->
-        <activity android:name=".ui.activity.DownloadManagementActivity" />
-        <!--        上拉刷新下拉加载更多的自定义控件-->
-        <activity android:name=".ui.activity.PullToRefreshActivity" />
-        <!-- 可以打开文本文件的activity -->
+        </activity> <!-- 文件管理首页的activity(计划和文件操作页合并) -->
+        <activity android:name=".ui.activity.file.FileHomeActivity" /> <!-- 跨进程通讯演示操作页 -->
+        <activity android:name=".ui.activity.AIDLActivity" /> <!-- 网络请求演示操作页 -->
+        <activity android:name=".ui.activity.NetworkActivity" /> <!-- 加密解密演示操作页 -->
+        <activity android:name=".ui.activity.EncryptionActivity" /> <!-- RecyclerView控件演示操作页 -->
+        <activity android:name=".ui.activity.RecyclerViewActivity" /> <!-- 下载管理演示操作页 -->
+        <activity android:name=".ui.activity.DownloadManagementActivity" /> <!-- 上拉刷新下拉加载更多的自定义控件 -->
+        <activity android:name=".ui.activity.PullToRefreshActivity" /> <!-- 可以打开文本文件的activity -->
         <activity android:name=".ui.util.TextActivity">
+
             <!-- ignore忽略app链接错误 -->
             <intent-filter tools:ignore="AppLinkUrlError">
+
                 <!-- 设置为,显示数据给用户 -->
                 <action android:name="android.intent.action.VIEW" />
                 <!-- 分类设置匹配所有 -->
@@ -174,28 +171,19 @@
                 <!-- 数据设置为匹配纯文本 -->
                 <data android:mimeType="text/plain" />
             </intent-filter>
-        </activity>
-        <!--        图片选择页-->
-        <activity android:name=".ui.util.SelectImageActivity" />
-        <!--        媒体管理页-->
-        <activity android:name=".ui.activity.MediaManagementActivity" />
-        <!--        文件操作页-->
-        <activity android:name=".ui.activity.file.FileOperateActivity" />
-        <!--        权限申请页-->
-        <activity android:name=".ui.activity.AuthorizedOperationActivity" />
-        <!--        通知栏管理页-->
-        <activity android:name=".ui.activity.StatusBarActivity" />
-        <!--        相机页-->
-        <activity android:name=".ui.activity.CameraActivity" />
-        <!--        测试页-->
-        <activity android:name=".ui.activity.TestActivity" />
-        <!--        二维码识别页-->
-        <activity android:name=".ui.activity.QrCodeDemoActivity" />
-        <!--        RXJava异步操作演示页-->
-        <activity android:name=".ui.activity.RXJavaActivity" />
-        <!--        主页-->
+        </activity> <!-- 图片选择页 -->
+        <activity android:name=".ui.util.SelectImageActivity" /> <!-- 媒体管理页 -->
+        <activity android:name=".ui.activity.MediaManagementActivity" /> <!-- 文件操作页 -->
+        <activity android:name=".ui.activity.file.FileOperateActivity" /> <!-- 权限申请页 -->
+        <activity android:name=".ui.activity.AuthorizedOperationActivity" /> <!-- 通知栏管理页 -->
+        <activity android:name=".ui.activity.StatusBarActivity" /> <!-- 相机页 -->
+        <activity android:name=".ui.activity.CameraActivity" /> <!-- 测试页 -->
+        <activity android:name=".ui.activity.TestActivity" /> <!-- 二维码识别页 -->
+        <activity android:name=".ui.activity.QrCodeDemoActivity" /> <!-- RXJava异步操作演示页 -->
+        <activity android:name=".ui.activity.RXJavaActivity" /> <!-- 主页 -->
         <activity android:name=".ui.activity.MainActivity">
             <intent-filter>
+
                 <!-- 应用程序入口 -->
                 <action android:name="android.intent.action.MAIN" />
                 <!-- 表示activity应该被列入系统的启动器(launcher)(允许用户启动它)。Launcher是安卓系统中的桌面启动器，是桌面UI的统称。 -->
@@ -212,12 +200,12 @@
             android:process=":sq26" />
         <!--
             跨进程通信服务
-            需要声明android:exported="true"，这样别的APP才能访问。 -->
+            需要声明android:exported="true"，这样别的APP才能访问。
+        -->
         <service
             android:name=".service.AIDLService"
             android:exported="true"
-            android:process=":aidl" />
-        <!--        通知栏快捷开关 (未研究完)-->
+            android:process=":aidl" /> <!-- 通知栏快捷开关 (未研究完) -->
         <service
             android:name=".service.QuickSwitchService"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">

@@ -1,5 +1,6 @@
 package com.sq26.experience.ui.activity;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -41,22 +42,26 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
     private Random random = new Random();
 
+    private CommonAdapter commonAdapter;
+    //设置数据集
+    JSONArray jsonArray = new JSONArray();
+
+    private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recycler_view);
         ButterKnife.bind(this);
-
+        context = this;
         initView();
     }
 
     private void initView() {
-
+        //设置标题名
         toolbar.setTitle("RecyclerView");
         setSupportActionBar(toolbar);
-
-        JSONArray jsonArray = new JSONArray();
-
+        //设置数据
         JSONObject jsonObject;
         for (int i = 0; i < 40; i++) {
             jsonObject = new JSONObject();
@@ -66,31 +71,38 @@ public class RecyclerViewActivity extends AppCompatActivity {
         //设置布局管理器
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         //创建适配器
-        CommonAdapter commonAdapter = new CommonAdapter(R.layout.item_recycler_view, jsonArray) {
+        commonAdapter = new CommonAdapter(R.layout.item_recycler_view, jsonArray) {
             @Override
-            protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
-                viewHolder.setText(R.id.text, jsonObject.getString("text"));
-                CardView cardView = viewHolder.getView(R.id.cardView);
-                int r = random.nextInt(256);
-                int g = random.nextInt(256);
-                int b = random.nextInt(256);
-                cardView.setCardBackgroundColor(Color.rgb(r, g, b));
+            public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
+                //等空说明需要刷新全部,不是空就不刷新视图
+                if (payload == null) {
+                    //创建动画
+                    Animation animation = AnimationUtils.loadAnimation(context, R.anim.anim_recycler_item_show);
+                    //给item设置显示动画
+                    viewHolder.itemView.startAnimation(animation);
+                    //
+                    viewHolder.setText(R.id.text, jsonObject.getString("text"));
+                    CardView cardView = viewHolder.getView(R.id.cardView);
+                    int r = random.nextInt(256);
+                    int g = random.nextInt(256);
+                    int b = random.nextInt(256);
+                    cardView.setCardBackgroundColor(Color.rgb(r, g, b));
+                }
+                //无论如何都刷新处理按钮
                 viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Log.d("点击的下标", "" + position);
-                        Log.d("文本是", "" + jsonObject.getString("text"));
+                        Log.d("文本是", "" + jsonArray.getJSONObject(position).getString("text"));
                         new AlertDialog.Builder(RecyclerViewActivity.this)
-                                .setMessage("点击的下标" + position + "\n" + "文本是" + jsonObject.getString("text"))
+                                .setMessage("点击的下标" + position + "\n" + "文本是" + jsonArray.getJSONObject(position).getString("text"))
                                 .show();
                     }
                 });
             }
         };
-        //创建动画
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.anim_recycler_item_show);
         //给适配器item设置显示动画
-        commonAdapter.setItemAnimation(animation);
+//        commonAdapter.setItemAnimation(animation);
         //设置纵向分割线
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         //设置横向分割线
@@ -108,7 +120,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_lookover, menu);
+        getMenuInflater().inflate(R.menu.menu_add_lookover, menu);
         return true;
     }
 
@@ -117,6 +129,13 @@ public class RecyclerViewActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                break;
+            case R.id.action_add:
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put("text", 2);
+                jsonArray.add(2, jsonObject);
+                commonAdapter.notifyItemInserted(2);
+                commonAdapter.notifyItemRangeChanged(2, jsonArray.size() - 2 + 1, true);
                 break;
             case R.id.action_look_over:
                 if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {

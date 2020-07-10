@@ -8,9 +8,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
     private RecyclerViewAdapter recyclerViewAdapter;
+    //默认的内容View的viewType是1
+    private int itemViewType = 1;
 
     public ItemTouchHelperCallback(RecyclerViewAdapter recyclerViewAdapter) {
         this.recyclerViewAdapter = recyclerViewAdapter;
+    }
+    public ItemTouchHelperCallback(RecyclerViewAdapter recyclerViewAdapter,int itemViewType) {
+        this.recyclerViewAdapter = recyclerViewAdapter;
+        this.itemViewType = itemViewType;
     }
 
     /**
@@ -38,8 +44,8 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         } else
             //判断是否线性布局管理器
             if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
-                //判断viewType类型是否等于1(以为默认的内容View的viewType就是1,等1表示他是内容item)
-                if (viewHolder.getItemViewType() == 1) {
+                //判断viewType类型是否等于1(因为默认的内容View的viewType就是1,等1表示他是内容item)
+                if (viewHolder.getItemViewType() == itemViewType) {
                     //可以拖动项目的方向。(上下左右都可以)
                     int dragFlags = 0;
                     //可以滑动项目的方向(0不能滑动)。
@@ -84,7 +90,7 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
         if (viewHolder.getItemViewType() != target.getItemViewType())
             return false;
         //调用recyclerViewAdapter的移动方法
-        recyclerViewAdapter.onItemMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
+        recyclerViewAdapter.onItemViewMove(viewHolder.getAdapterPosition(), target.getAdapterPosition());
         return true;
     }
 
@@ -98,6 +104,6 @@ public class ItemTouchHelperCallback extends ItemTouchHelper.Callback {
      */
     @Override
     public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-
+        recyclerViewAdapter.onClearItemView(viewHolder.getAdapterPosition());
     }
 }

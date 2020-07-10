@@ -38,8 +38,9 @@ public class ProgressDialog {
             View view = View.inflate(context, R.layout.dialog_progress_circle, null);
             //将视图中的文本控件提取封装
             message = view.findViewById(R.id.text);
+            //设置文本
             message.setText(msg);
-            //设置alertDialog不能返回键和点击屏幕关闭
+            //设置alertDialog不能点击返回键和点击屏幕关闭
             alertDialog.setCancelable(false);
             //设置alertDialog的视图
             alertDialog.setView(view);
@@ -47,22 +48,32 @@ public class ProgressDialog {
     }
 
     //显示alertDialog
-    public void show() {
+    public ProgressDialog show() {
         alertDialog.show();
+        return this;
+    }
+
+    //设置alertDialog不能点击返回键和点击屏幕关闭
+    public ProgressDialog setCancelable(boolean flag) {
+        alertDialog.setCancelable(flag);
+        return this;
     }
 
     //动态设置alertDialog中的文本(string)
-    public void setMessage(String msg) {
+    public ProgressDialog setMessage(String msg) {
         message.setText(msg);
+        return this;
     }
 
     //动态设置alertDialog中的文本(res)
-    public void setMessage(int resId) {
+    public ProgressDialog setMessage(int resId) {
         message.setText(resId);
+        return this;
     }
 
     //隐藏并关闭alertDialog
-    public void dismiss() {
+    public ProgressDialog dismiss() {
         alertDialog.dismiss();
+        return this;
     }
 }

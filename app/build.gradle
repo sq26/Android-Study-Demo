@@ -29,6 +29,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.exifinterface:exifinterface:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
@@ -60,4 +61,6 @@ dependencies {
     implementation 'androidx.documentfile:documentfile:1.0.1'
     //AndroidPdfViewer 查看pdf的控件
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+    //Android的原始Socket，HTTP（s）客户端/服务器和WebSocket库
+    implementation 'com.koushikdutta.async:androidasync:2.2.1'
 }

@@ -3,6 +3,7 @@ package com.sq26.experience.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.RecyclerViewAdapter;
+import com.sq26.experience.adapter.RecyclerViewJSONArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.ui.activity.file.FileHomeActivity;
 
@@ -61,9 +63,9 @@ public class MainActivity extends AppCompatActivity {
         jsonArray.add(initItem("RecyclerView", getString(R.string.RecyclerView_use), 1));
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        RecyclerViewAdapter arrayAdapter = new RecyclerViewAdapter(jsonArray) {
+        RecyclerViewJSONArrayAdapter arrayAdapter = new RecyclerViewJSONArrayAdapter(jsonArray) {
             @Override
-            protected int createViewHolder(int viewType) {
+            public int createViewHolder(int viewType) {
                 int LAYOUT_ID = R.layout.item_recyclerview;
                 switch (viewType) {
                     case 0:
@@ -77,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
+            public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
                 switch (jsonObject.getInteger("viewType")) {
                     case 0:
                         viewHolder.setText(R.id.typeName, jsonObject.getString("name"));
@@ -86,18 +88,14 @@ public class MainActivity extends AppCompatActivity {
                         viewHolder.setText(R.id.text, jsonObject.getString("name"));
                         break;
                 }
+                viewHolder.itemView.setOnClickListener(view -> {
+                    Log.d("点击", jsonObject.getString("name"));
+                    menuClick(jsonObject.getString("id"));
+                });
             }
         };
         recyclerView.setAdapter(arrayAdapter);
-        arrayAdapter.setOnClick(new RecyclerViewAdapter.OnClick() {
-            @Override
-            public void click(JSONObject jsonObject, int position) {
-                Log.d("点击", jsonObject.getString("name"));
-                menuClick(jsonObject.getString("id"));
-            }
-        });
 
-//        adapter.notifyDataSetChanged();
     }
 
     private void menuClick(String id) {

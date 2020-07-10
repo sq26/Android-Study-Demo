@@ -38,7 +38,8 @@
     <string name="Decrypt">解密</string>
     <string name="Plaintext">明文</string>
     <string name="Ciphertext">密文</string>
-    <string name="Key">密钥</string>
+    <string name="publicKey">公共密钥</string>
+    <string name="privateKey">私有密钥</string>
 
     <string name="AIDL_inter_process_communication">AIDL进程间通讯</string>
 
@@ -49,4 +50,5 @@
     <string name="File_download_waiting_to_start">文件下载等待启动!</string>
 
     <string name="add">添加</string>
+    <string name="imageBrowse">图片浏览</string>
 </resources>

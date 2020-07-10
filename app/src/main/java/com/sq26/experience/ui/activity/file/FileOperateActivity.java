@@ -78,7 +78,7 @@ public class FileOperateActivity extends AppCompatActivity {
     private void initView() {
         parentFileListAdapter = new RecyclerViewListAdapter<DocumentFile>(R.layout.item_parent_file, parentFileList) {
             @Override
-            protected void createViewHolder(ViewHolder viewHolder, DocumentFile item, int position) {
+            public void bindViewHolder(ViewHolder viewHolder, DocumentFile item, int position) {
                 viewHolder.setText(R.id.text, item.getName());
                 viewHolder.setOnClickListener(R.id.text, view -> {
                     parentFileList.subList(position + 1, parentFileList.size()).clear();
@@ -92,7 +92,7 @@ public class FileOperateActivity extends AppCompatActivity {
         //文件列表适配器
         fileListAdapter = new RecyclerViewListAdapter<DocumentFile>(R.layout.item_file, fileList) {
             @Override
-            protected void createViewHolder(ViewHolder viewHolder, DocumentFile item, int position) {
+            public void bindViewHolder(ViewHolder viewHolder, DocumentFile item, int position) {
                 viewHolder.setText(R.id.name, item.getName());
                 viewHolder.setTextColor(R.id.name, item.canWrite() ? Color.GREEN : Color.RED);
                 viewHolder.setText(R.id.dateTime, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(item.lastModified()));

@@ -46,23 +46,19 @@ public class MediaManagementActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         context = this;
         init();
+        Log.i("12",FileUtil.getFileFormat("123.png"));
     }
 
     private void init() {
         imageAdapter = new CommonAdapter(R.layout.item_recyclerview, imageArray) {
             @Override
-            protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
+            public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
                 viewHolder.setText(R.id.text, jsonObject.getString("name"));
+                viewHolder.itemView.setOnClickListener(view -> SimpleDraweeViewUtils.setDraweeController(jsonObject.getString("path"), preview, DensityUtil.dip2px(context, 150)));
             }
         };
         imageRecyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
         imageRecyclerView.setAdapter(imageAdapter);
-        imageAdapter.setOnClick(new RecyclerViewAdapter.OnClick() {
-            @Override
-            public void click(JSONObject jsonObject, int position) {
-                SimpleDraweeViewUtils.setDraweeController(jsonObject.getString("path"), preview, DensityUtil.dip2px(context, 150));
-            }
-        });
     }
 
     @OnClick({R.id.getImage, R.id.getVideo})
@@ -82,7 +78,9 @@ public class MediaManagementActivity extends AppCompatActivity {
                                     if (FileUtil.isAbsolutePath(p)) {
                                         item.put("path", p);
                                     } else {
-                                        item.put("path", ImageCompressionUtil.startCompression(context, Uri.parse(p)));
+                                        item.put("path", new ImageCompressionUtil(context)
+                                                .uri(Uri.parse(p))
+                                                .startCompressionToString());
                                     }
                                     imageArray.add(item);
                                 }
@@ -92,13 +90,17 @@ public class MediaManagementActivity extends AppCompatActivity {
 
                 break;
             case R.id.getVideo:
-                ProgressDialog progressDialog = new ProgressDialog(this);
-                progressDialog.setMessage("123");
-                progressDialog.show();
+                ProgressDialog progressDialog =
+                        new ProgressDialog(this)
+                                .setMessage("123")
+                                .show();
+                progressDialog.setMessage("321");
+//                progressDialog.setMessage("123");
+//                progressDialog.show();
 
-                ProgressDialog progressDialog2 = new ProgressDialog(this);
-                progressDialog2.setMessage("321");
-                progressDialog2.show();
+//                ProgressDialog progressDialog2 = new ProgressDialog(this);
+//                progressDialog2.setMessage("321");
+//                progressDialog2.show();
                 break;
         }
     }

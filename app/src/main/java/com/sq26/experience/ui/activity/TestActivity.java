@@ -1,5 +1,6 @@
 package com.sq26.experience.ui.activity;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,11 +15,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.koushikdutta.async.http.WebSocket;
+import com.koushikdutta.async.http.server.AsyncHttpServer;
+import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
+import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
+import com.koushikdutta.async.http.server.HttpServerRequestCallback;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.BindView;
@@ -37,11 +45,20 @@ public class TestActivity extends AppCompatActivity {
 
     private void init() {
 
+        AsyncHttpServer asyncHttpServer = new AsyncHttpServer();
 
+//        List<WebSocket> sockets = new ArrayList<>();
+
+        asyncHttpServer.get("/", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                response.send("Hello!!!");
+                startActivity(new Intent(TestActivity.this, MainActivity.class));
+            }
+        });
+        asyncHttpServer.listen(8080);
 
     }
-
-
 
 
     private void SpeedComparison() {

@@ -2,7 +2,7 @@ package com.sq26.experience.adapter;
 
 import com.alibaba.fastjson.JSONArray;
 
-public abstract class CommonAdapter extends RecyclerViewAdapter {
+public abstract class CommonAdapter extends RecyclerViewJSONArrayAdapter {
     private int LAYOUT_ID;
 
     /**
@@ -10,13 +10,13 @@ public abstract class CommonAdapter extends RecyclerViewAdapter {
      *
      * @param jsonArray 数据集合
      */
-    protected CommonAdapter(int layoutId, JSONArray jsonArray) {
+    public CommonAdapter(int layoutId, JSONArray jsonArray) {
         super(jsonArray);
         this.LAYOUT_ID = layoutId;
     }
 
     @Override
-    protected int createViewHolder(int viewType) {
+    public int createViewHolder(int viewType) {
         return LAYOUT_ID;
     }
 }

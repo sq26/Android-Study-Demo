@@ -12,6 +12,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.sq26.experience.R;
 import com.sq26.experience.util.Encrypt;
 
+import java.security.KeyPair;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 
@@ -21,8 +23,11 @@ import butterknife.OnClick;
 
 public class EncryptionActivity extends AppCompatActivity {
     //公用密钥
-    @BindView(R.id.key)
-    TextInputEditText key;
+    @BindView(R.id.publicKey)
+    TextInputEditText publicKey;
+    //私有密钥
+    @BindView(R.id.privateKey)
+    TextInputEditText privateKey;
     //明文
     @BindView(R.id.plaintext)
     TextInputEditText plaintext;
@@ -43,8 +48,14 @@ public class EncryptionActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        //获取密钥
-        key.setText(Base64.encodeToString(Encrypt.getRawKey(1000, 256, "PBKDF2withHmacSHA1And8BIT", "123456"), Base64.DEFAULT));
+        //获取公共密钥
+//        publicKey.setText(Base64.encodeToString(Encrypt.getRawKey(1000, 256, "PBKDF2withHmacSHA1And8BIT", "123456"), Base64.DEFAULT));
+
+        KeyPair keyPair = Encrypt.getRSAKeyPair(1025);
+
+        publicKey.setText(Base64.encodeToString(Encrypt.getRSAPublicKey(keyPair), Base64.DEFAULT));
+        privateKey.setText(Base64.encodeToString(Encrypt.getRSAPrivateKey(keyPair), Base64.DEFAULT));
+
         //明文设置一些字符
         plaintext.setText("987654321");
     }
@@ -56,10 +67,11 @@ public class EncryptionActivity extends AppCompatActivity {
             //加密
             case R.id.encryption:
                 new Encrypt.Builder()
-                        .Algorithm(Encrypt.Algorithm_ChaCha20)
+                        .Algorithm(Encrypt.Algorithm_RSA)
                         .Modes(Encrypt.Modes_NONE)
-                        .Paddings(Encrypt.Paddings_NoPadding)
-                        .Key(Base64.decode(key.getText().toString(), Base64.DEFAULT))
+                        .Paddings(Encrypt.Paddings_PKCS1Padding)
+                        .isPublicKey(false)
+                        .Key(Base64.decode(privateKey.getText().toString(), Base64.DEFAULT))
                         .Plaintext(plaintext.getText().toString().getBytes())
                         .setOpmode(Cipher.ENCRYPT_MODE)
                         .setOnComplete(new Encrypt.OnComplete() {
@@ -74,10 +86,11 @@ public class EncryptionActivity extends AppCompatActivity {
             //解密
             case R.id.decrypt:
                 new Encrypt.Builder()
-                        .Algorithm(Encrypt.Algorithm_ChaCha20)
+                        .Algorithm(Encrypt.Algorithm_RSA)
                         .Modes(Encrypt.Modes_NONE)
-                        .Paddings(Encrypt.Paddings_NoPadding)
-                        .Key(Base64.decode(key.getText().toString(), Base64.DEFAULT))
+                        .Paddings(Encrypt.Paddings_PKCS1Padding)
+                        .isPublicKey(true)
+                        .Key(Base64.decode(publicKey.getText().toString(), Base64.DEFAULT))
                         .Plaintext(Base64.decode(ciphertext.getText().toString().getBytes(), Base64.DEFAULT))
                         .setOpmode(Cipher.DECRYPT_MODE)
                         .setOnComplete(new Encrypt.OnComplete() {

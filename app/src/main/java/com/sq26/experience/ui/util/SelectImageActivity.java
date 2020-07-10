@@ -120,9 +120,12 @@ public class SelectImageActivity extends AppCompatActivity {
         //创建显示图片列表的内容适配器
         imageAdapter = new CommonAdapter(R.layout.item_select_image, imageArray) {
             @Override
-            protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
-                //给图片视图设置图片路径
-                SimpleDraweeViewUtils.setDraweeController(jsonObject.getString("fileUri"), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 180));
+            public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
+                //payload不等空就不刷新图片视图(在选择图片时不会出现闪烁)
+                if (payload == null) {
+                    //给图片视图设置图片路径
+                    SimpleDraweeViewUtils.setDraweeController(jsonObject.getString("fileUri"), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 180));
+                }
                 //判断有没有选中过
                 if (selectedItem.containsKey(jsonObject.getString("fileUri"))) {
                     //选中过就设置当前选中的编号
@@ -149,7 +152,7 @@ public class SelectImageActivity extends AppCompatActivity {
                             //移除下标记录
                             selectedItemIndex.remove(jsonObject.getString("fileUri"));
                             //刷新刚取消选中的视图的下标
-                            notifyItemChanged(position);
+                            notifyItemChanged(position, true);
                             //初始化编号标记
                             int index = 1;
                             //重新遍历,计算新的编号
@@ -157,7 +160,7 @@ public class SelectImageActivity extends AppCompatActivity {
                                 //设置新的编号
                                 selectedItem.put(s, index);
                                 //刷新所有选中的视图(重新计算过编号信息后的),指定下标
-                                notifyItemChanged(selectedItemIndex.getInteger(s));
+                                notifyItemChanged(selectedItemIndex.getInteger(s), true);
                                 //每设置好,编号增加一位
                                 index++;
                             }
@@ -167,7 +170,7 @@ public class SelectImageActivity extends AppCompatActivity {
                                 //没有选中过就直接加入记录,并设置编号为总选中数量加1
                                 selectedItem.put(jsonObject.getString("fileUri"), (selectedItem.size() + 1) + "");
                                 //刷新指定下标的item视图
-                                notifyItemChanged(position);
+                                notifyItemChanged(position, true);
                             }
                         }
                         //刷新预览按钮文本
@@ -325,40 +328,37 @@ public class SelectImageActivity extends AppCompatActivity {
         //创建文件夹列表内容适配器
         CommonAdapter commonAdapter = new CommonAdapter(R.layout.item_select_folder, selectFolderArray) {
             @Override
-            protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
+            public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
                 //设置列表中的标题并加上数量
                 viewHolder.setText(R.id.text, jsonObject.getString("title")
                         + "(" + jsonObject.getString("count") + ")");
                 //设置预览的第一张图片
                 SimpleDraweeViewUtils.setDraweeController(jsonObject.getString("image"), viewHolder.getView(R.id.image), DensityUtil.dip2px(context, 48));
+                //加上点击事件
+                viewHolder.itemView.setOnClickListener(view -> {
+                    //判断当前选择的文件夹的下标是不是当前显示的文件夹的标(简单点说就是重复选择)
+                    if (selectFolderArrayIndex != position) {
+                        //不是重复选择,记录当前悬着的文件夹的下标
+                        selectFolderArrayIndex = position;
+                        //在toolbar设置当前文件夹名称
+                        pathType.setText(getString(R.string.fileNameAndCount, selectFolderArray.getJSONObject(position).getString("title"),
+                                selectFolderArray.getJSONObject(position).getString("count")));
+                        //隐藏selectFolderPopupWindow
+                        selectFolderPopupWindow.dismiss();
+                        //清空当前显示的图片列表
+                        imageArray.clear();
+                        //添加选中的图片列表
+                        imageArray.addAll(selectFolderArray.getJSONObject(position).getJSONArray("array"));
+                        //清空已选中列表
+                        selectedItemIndex.clear();
+                        //刷新图片列表视图
+                        imageAdapter.notifyDataSetChanged();
+                    }
+                });
             }
         };
         //设置适配器
         recyclerView.setAdapter(commonAdapter);
-        //给适配器加上点击事件
-        commonAdapter.setOnClick(new RecyclerViewAdapter.OnClick() {
-            @Override
-            public void click(JSONObject jsonObject, int position) {
-                //判断当前选择的文件夹的下标是不是当前显示的文件夹的标(简单点说就是重复选择)
-                if (selectFolderArrayIndex != position) {
-                    //不是重复选择,记录当前悬着的文件夹的下标
-                    selectFolderArrayIndex = position;
-                    //在toolbar设置当前文件夹名称
-                    pathType.setText(getString(R.string.fileNameAndCount, selectFolderArray.getJSONObject(position).getString("title"),
-                            selectFolderArray.getJSONObject(position).getString("count")));
-                    //隐藏selectFolderPopupWindow
-                    selectFolderPopupWindow.dismiss();
-                    //清空当前显示的图片列表
-                    imageArray.clear();
-                    //添加选中的图片列表
-                    imageArray.addAll(selectFolderArray.getJSONObject(position).getJSONArray("array"));
-                    //清空已选中列表
-                    selectedItemIndex.clear();
-                    //刷新图片列表视图
-                    imageAdapter.notifyDataSetChanged();
-                }
-            }
-        });
         //创建selectFolderPopupWindow
         selectFolderPopupWindow = new PopupWindow(this);
         //给selectFolderPopupWindow设置根布局
@@ -482,7 +482,7 @@ public class SelectImageActivity extends AppCompatActivity {
                         //移除当前文件夹的选中下标记录
                         selectedItemIndex.remove(path);
                         //刷新当前文件夹的被移除选中的记录的item
-                        imageAdapter.notifyItemChanged(viewPager.getCurrentItem());
+                        imageAdapter.notifyItemChanged(viewPager.getCurrentItem(), true);
                     }
                     //初始化编号标记
                     int index = 1;
@@ -559,7 +559,7 @@ public class SelectImageActivity extends AppCompatActivity {
                 //遍历当前文件夹中选中的图片的路径和下标
                 for (String s : selectedItemIndex.keySet())
                     //刷新当前文件夹中记录过的下标
-                    imageAdapter.notifyItemChanged(selectedItemIndex.getInteger(s));
+                    imageAdapter.notifyItemChanged(selectedItemIndex.getInteger(s), true);
             }
         });
         //创建并显示dialog

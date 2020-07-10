@@ -100,7 +100,7 @@ public class AuthorizedOperationActivity extends AppCompatActivity {
         jsonArray.add(jsonObject);
         CommonAdapter commonAdapter = new CommonAdapter(R.layout.item_authorized_operation, jsonArray) {
             @Override
-            protected void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position) {
+            public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
                 viewHolder.setText(R.id.text, jsonObject.getString("name"));
                 CheckBox checkBox = viewHolder.getView(R.id.checkbox);
                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

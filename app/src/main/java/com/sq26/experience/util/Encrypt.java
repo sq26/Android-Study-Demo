@@ -6,10 +6,20 @@ import android.util.Log;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.interfaces.RSAPrivateCrtKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -59,6 +69,8 @@ public class Encrypt {
     public static final String Paddings_NoPadding = "NoPadding";
     public static final String Paddings_ISO10126Padding = "ISO10126Padding";
     public static final String Paddings_PKCS5Padding = "PKCS5Padding";
+    public static final String Paddings_PKCS1Padding = "PKCS1Padding";
+
 
     //构造器类
     public static class Builder {
@@ -70,6 +82,8 @@ public class Encrypt {
         private String Paddings;
         //密钥
         private byte[] key;
+        //是否是公钥
+        private boolean isPublicKey = true;
         //明文
         private byte[] plaintext;
         //模式(加密或解密)
@@ -99,6 +113,12 @@ public class Encrypt {
         //设置密钥
         public Builder Key(byte[] key) {
             this.key = key;
+            return this;
+        }
+
+        //设置是否是公钥
+        public Builder isPublicKey(boolean isPublicKey) {
+            this.isPublicKey = isPublicKey;
             return this;
         }
 
@@ -146,8 +166,28 @@ public class Encrypt {
                         //加密方式为ChaCha20时无论什么模式都需要设置iv向量,并指定iv向量长度为12
                         cipher.init(opmode, secretKeySpec, new IvParameterSpec(new byte[12]));
                         break;
+                    case Algorithm_RSA:
+                        KeyFactory keyFactory = KeyFactory.getInstance(Algorithm_RSA);
+                        if (isPublicKey) {
+                            X509EncodedKeySpec x509EncodedKeySpec = new X509EncodedKeySpec(key);
+                            try {
+                                PublicKey publicKey = keyFactory.generatePublic(x509EncodedKeySpec);
+                                cipher.init(opmode, publicKey);
+                            } catch (InvalidKeySpecException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            PKCS8EncodedKeySpec pkcs8EncodedKeySpec = new PKCS8EncodedKeySpec(key);
+                            try {
+                                PrivateKey privateKey = keyFactory.generatePrivate(pkcs8EncodedKeySpec);
+                                cipher.init(opmode, privateKey);
+                            } catch (InvalidKeySpecException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        break;
                     default:
-                        switch (Modes){
+                        switch (Modes) {
                             case Modes_CBC:
                                 //CBC模式需要设置iv向量
                                 cipher.init(opmode, secretKeySpec, new IvParameterSpec(new byte[cipher.getBlockSize()]));
@@ -246,4 +286,34 @@ public class Encrypt {
         return null;
     }
 
+    /**
+     * 获取生生产RSA密钥的密钥规范（密钥材料）
+     *
+     * @param keysize 密钥长度,长度是512-2048，一般为1024
+     * @return 返回密钥对
+     */
+    public static KeyPair getRSAKeyPair(int keysize) {
+        try {
+            //获取密钥材料
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(Algorithm_RSA);
+            //设置密钥长度
+            keyPairGenerator.initialize(1024);
+            //生成并返回密钥对
+            return keyPairGenerator.genKeyPair();
+
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static byte[] getRSAPublicKey(KeyPair keyPair) {
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
+        return rsaPublicKey.getEncoded();
+    }
+
+    public static byte[] getRSAPrivateKey(KeyPair keyPair) {
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) keyPair.getPrivate();
+        return rsaPrivateKey.getEncoded();
+    }
 }

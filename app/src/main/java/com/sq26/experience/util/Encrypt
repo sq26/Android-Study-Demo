@@ -50,9 +50,9 @@ DESede	            CBC             ISO10126Padding                     1+       
                     ECB
                     OFB
 ------------------------------------------------------------------------------------------------------------
-RSA	                ECB             NoPadding                           1+
-                    NONE            OAEPPadding
-                                    PKCS1Padding
+RSA	                ECB             NoPadding                           1+                      RSA的密钥长度没有上限,最小值512,
+                    NONE            OAEPPadding                                                 推荐1024及以上(1025也可以,没有特殊要求)
+                                    PKCS1Padding                                                ,RSA加密最多只能加密1024字节的数据,数据过多需要分片加密
 	                                ------------------------------------------------------------------------
                                     OAEPwithSHA-1andMGF1Padding
                                     OAEPwithSHA-256andMGF1Padding	    10+

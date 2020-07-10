@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
+public abstract class RecyclerViewListAdapter<T> extends RecyclerViewAdapter {
     private int LAYOUT_ID;
     private List<T> array;
 
@@ -18,7 +18,7 @@ public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<Vi
         this.array = list;
     }
 
-    protected abstract void createViewHolder(ViewHolder viewHolder, T item, int position);
+    protected abstract void bindViewHolder(ViewHolder viewHolder, T item, int position);
 
     @NonNull
     @Override
@@ -30,7 +30,7 @@ public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        createViewHolder(holder, array.get(position), position);
+        bindViewHolder(holder, array.get(position), position);
     }
 
     @Override
@@ -38,4 +38,13 @@ public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<Vi
         return array.size();
     }
 
+    @Override
+    public void onItemViewMove(int fromPosition, int toPosition) {
+
+    }
+
+    @Override
+    public void onClearItemView(int position) {
+
+    }
 }
