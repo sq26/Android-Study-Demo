@@ -2,6 +2,15 @@
     <string name="app_name">experience</string>
     <string name="Java_technology">java技术</string>
     <string name="Use_of_RxJava">RxJava的使用</string>
+    <string name="AndroidJetpackComponents">Android Jetpack组件</string>
+    <string name="LifecycleComponents">Lifecycle组件(生命感知组件)</string>
+    <string name="LiveDataComponents">LiveData组件(安全数据使用组件)</string>
+    <string name="ViewModeComponents">ViewMode组件(数据管理和存储组件)</string>
+    <string name="NavigationComponents">Navigation组件(管理Fragment的切换)</string>
+    <string name="RoomComponents">Room组件(数据库框架)</string>
+    <string name="PagingComponents">Paging组件(RecyclerView分页库)</string>
+    <string name="WorkMangerComponents">WorkManger组件(后台任务库)</string>
+
     <string name="Features">功能</string>
     <string name="QRCode_recognition">QRCode识别</string>
     <string name="camera">相机</string>
@@ -12,6 +21,8 @@
     <string name="download_management">下载管理</string>
     <string name="Database_operation">数据库操作</string>
     <string name="network">网络</string>
+    <string name="WiFi_Direct">WIFI直连</string>
+    <string name="app_management">app管理</string>
 
     <string name="Get_image">获取图片</string>
     <string name="Get_video">获取视频</string>
@@ -43,7 +54,6 @@
 
     <string name="AIDL_inter_process_communication">AIDL进程间通讯</string>
 
-
     <string name="There_is_no_application_that_can_open_this_file">没有可以打开此文件的应用程序!</string>
     <string name="File_has_been_downloaded">文件已经下载!</string>
     <string name="File_Download_in_progress">文件下载进行中!</string>
@@ -51,4 +61,7 @@
 
     <string name="add">添加</string>
     <string name="imageBrowse">图片浏览</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment_2">Hello blank fragment2</string>
 </resources>

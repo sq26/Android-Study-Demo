@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import androidx.core.content.FileProvider;
@@ -13,11 +15,13 @@ import com.sq26.experience.BuildConfig;
 import com.sq26.experience.R;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Objects;
@@ -132,7 +136,7 @@ public class FileUtil {
         }
     }
 
-    //判断一个文件路径是否是绝对路径
+    //判断一个文件路径是否是绝对本地路径
     public static boolean isAbsolutePath(String path) {
         if (path.contains("content://")) {
             return false;
@@ -140,64 +144,23 @@ public class FileUtil {
             return true;
         }
     }
-
+    //获取本地文件链接的类型(file,content,http,https,asset,res)
 
     /**
-     * 将uri文件拷贝到指定位置获取绝对路径
+     * 获取本地文件链接的类型
      *
-     * @param context 上下文
-     * @param uri     相对路径的文件uri
-     * @param file    指定要拷贝到的文件
+     * @param path 文件uri
+     * @return  file        本地文件
+     *          http,https  远程图片
+     *          content     Content provider
+     *          asset       asset目录下的资源
+     *          res         res目录下的资源
      */
-    public static void uriToAbsolutePath(Context context, Uri uri, File file) {
-        try {
-            //创建输入流
-            InputStream in = Objects.requireNonNull(context.getContentResolver().openInputStream(uri));
-            //创建输出流
-            OutputStream out = new FileOutputStream(file);
-            //定义缓冲大小为2M
-            int bytesSize = 1024 * 1024 * 2;
-            byte[] buffer = new byte[bytesSize];
-            //用于保存每次读取后的位子
-            int len;
-            while ((len = in.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
-            }
-            //关闭输入流
-            in.close();
-            //关闭输出流
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static String getFileUriType(String path) {
+        Uri uri = Uri.parse(path);
+        if (TextUtils.isEmpty(uri.getScheme())) {
+            return "file";
         }
-
-    }
-
-    //没指定拷贝位置的方法,需要返回拷贝完的File路径
-    public static String uriToAbsolutePath(Context context, Uri uri) {
-        //将文件拷贝在缓存里
-        File file = new File(context.getExternalCacheDir(), Objects.requireNonNull(Objects.requireNonNull(DocumentFile.fromSingleUri(context, uri)).getName()));
-        uriToAbsolutePath(context, uri, file);
-        return file.getAbsolutePath();
-    }
-
-    //没指定拷贝位置的方法,传string,需要返回拷贝完的File路径
-    public static String uriToAbsolutePath(Context context, String uriString) {
-        return uriToAbsolutePath(context, Uri.parse(uriString));
-    }
-
-    //指定拷贝位置,路径是string的方法
-    public static void uriToAbsolutePath(Context context, Uri uri, String path) {
-        uriToAbsolutePath(context, uri, new File(path));
-    }
-
-    //指定拷贝位置,uri和路径都是string的方法
-    public static void uriToAbsolutePath(Context context, String uriString, String path) {
-        uriToAbsolutePath(context, Uri.parse(uriString), new File(path));
-    }
-
-    //指定拷贝位置,uri是string的方法
-    public static void uriToAbsolutePath(Context context, String uriString, File file) {
-        uriToAbsolutePath(context, Uri.parse(uriString), file);
+        return uri.getScheme();
     }
 }

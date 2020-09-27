@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,7 +16,9 @@ import com.sq26.experience.R;
 import com.sq26.experience.adapter.RecyclerViewAdapter;
 import com.sq26.experience.adapter.RecyclerViewJSONArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
+import com.sq26.experience.entity.JsonArrayViewMode;
 import com.sq26.experience.ui.activity.file.FileHomeActivity;
+import com.sq26.experience.util.FileUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -30,9 +33,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-
-
+//        initView();
         init();
+    }
+
+    private void initView(){
+        JsonArrayViewMode jsonArrayViewMode = new ViewModelProvider(this,new ViewModelProvider.NewInstanceFactory()).get(JsonArrayViewMode.class);
+
     }
 
     private void init() {
@@ -47,6 +54,15 @@ public class MainActivity extends AppCompatActivity {
         jsonArray.add(initItem("aidl", getString(R.string.AIDL_inter_process_communication), 1));
         jsonArray.add(initItem("测试", "用来做一些技术测试", 1));
 
+        jsonArray.add(initItem("", getString(R.string.AndroidJetpackComponents), 0));
+        jsonArray.add(initItem("Lifecycle", getString(R.string.LifecycleComponents), 1));
+        jsonArray.add(initItem("LiveData", getString(R.string.LiveDataComponents), 1));
+        jsonArray.add(initItem("ViewMode", getString(R.string.ViewModeComponents), 1));
+        jsonArray.add(initItem("Navigation", getString(R.string.NavigationComponents), 1));
+        jsonArray.add(initItem("Room", getString(R.string.RoomComponents), 1));
+        jsonArray.add(initItem("Paging", getString(R.string.PagingComponents), 1));
+        jsonArray.add(initItem("WorkManger", getString(R.string.WorkMangerComponents), 1));
+
         jsonArray.add(initItem("", getString(R.string.Features), 0));
         jsonArray.add(initItem("QRCode", getString(R.string.QRCode_recognition), 1));
         jsonArray.add(initItem("camera", getString(R.string.camera), 1));
@@ -57,11 +73,12 @@ public class MainActivity extends AppCompatActivity {
         jsonArray.add(initItem("downloadManagement", getString(R.string.download_management), 1));
         jsonArray.add(initItem("databaseManagement", getString(R.string.Database_operation), 1));
         jsonArray.add(initItem("network", getString(R.string.network), 1));
+        jsonArray.add(initItem("WiFiDirect", getString(R.string.WiFi_Direct), 1));
+        jsonArray.add(initItem("AppManagement", getString(R.string.app_management), 1));
 
         jsonArray.add(initItem("", getString(R.string.view), 0));
         jsonArray.add(initItem("pullToRefresh", getString(R.string.PullDownToRefresh), 1));
         jsonArray.add(initItem("RecyclerView", getString(R.string.RecyclerView_use), 1));
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         RecyclerViewJSONArrayAdapter arrayAdapter = new RecyclerViewJSONArrayAdapter(jsonArray) {
             @Override
@@ -141,6 +158,30 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "aidl":
                 startActivity(new Intent(this, AIDLActivity.class));
+                break;
+            case "Lifecycle":
+                startActivity(new Intent(this, LifecycleActivity.class));
+                break;
+            case "LiveData":
+                startActivity(new Intent(this, LiveDataActivity.class));
+                break;
+            case "ViewMode":
+                startActivity(new Intent(this, ViewModeActivity.class));
+                break;
+            case "Navigation":
+                startActivity(new Intent(this, NavigationActivity.class));
+                break;
+            case "Room":
+                startActivity(new Intent(this, RoomActivity.class));
+                break;
+            case "Paging":
+                startActivity(new Intent(this, PagingActivity.class));
+                break;
+            case "WiFiDirect":
+                startActivity(new Intent(this, WiFiDirectActivity.class));
+                break;
+            case "AppManagement":
+                startActivity(new Intent(this, AppManagementActivity.class));
                 break;
 
         }

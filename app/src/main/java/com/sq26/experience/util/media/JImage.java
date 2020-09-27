@@ -1,5 +1,6 @@
 package com.sq26.experience.util.media;
 
+import android.content.Context;
 import android.content.DialogInterface;
 
 import androidx.appcompat.app.AlertDialog;
@@ -21,20 +22,26 @@ public class JImage {
     public static final int ALBUM = 2;
 
     //初始化,创建构造器
-    public static Builder initialize(AppCompatActivity appCompatActivity) {
-        Builder builder = new Builder(appCompatActivity);
-        return builder;
+    public static Builder initialize(Context context) {
+        return new Builder((AppCompatActivity) context);
     }
 
     //构造器类
     public static class Builder {
+        //上下文
         private AppCompatActivity context;
+        //图片来源
         private Integer sourceType;
+        //获取成功的回调
         private SuccessCallback successCallback;
+        //获取拍照的fragment
         private ImageFragment imageFragment;
         //最大图片数量,默认是0,表示不限制
         private int maxCount = 0;
-
+        //是否压缩拍照的图片
+        private boolean isCompression = false;
+        //压缩后的图片和拍照的图片是否是长期保留(true保存在app内部,默认保存在app缓存中)
+        private boolean isLastingSave = false;
         //构建
         public Builder(AppCompatActivity context) {
             this.context = context;
@@ -46,9 +53,21 @@ public class JImage {
             return this;
         }
 
+        //设置拍照是否压缩(默认不压缩)
+        public Builder isCompression(boolean isCompression) {
+            this.isCompression = isCompression;
+            return this;
+        }
+
         //设置图片来源(从相册还是拍照)
         public Builder setMaxCount(int maxCount) {
             this.maxCount = maxCount;
+            return this;
+        }
+
+        //设置压缩后的图片和拍照的图片是否是长期保留(true保存在app内部,默认保存在app缓存中)
+        public Builder isLastingSave(boolean isLastingSave) {
+            this.isLastingSave = isLastingSave;
             return this;
         }
 
@@ -121,7 +140,7 @@ public class JImage {
 
         private void startFragment() {
             //创建可选择图片的fragment,并初始化回调
-            imageFragment = new ImageFragment(sourceType, maxCount, new ImageFragment.OnImageReturnCallback() {
+            imageFragment = new ImageFragment(sourceType, maxCount, isCompression,isLastingSave, new ImageFragment.OnImageReturnCallback() {
                 @Override
                 public void success(String... paths) {
                     //成功获取到图片后的回调

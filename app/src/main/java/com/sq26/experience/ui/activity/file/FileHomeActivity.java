@@ -28,6 +28,7 @@ import com.sq26.experience.util.permissions.JPermissions;
 import com.sq26.experience.util.permissions.PermissionUtil;
 
 import java.io.File;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -127,9 +128,9 @@ public class FileHomeActivity extends AppCompatActivity {
         File[] files = getExternalFilesDirs(null);
         rootFileArray.clear();
         //遍历分区
-        for (int i = 0; i < files.length; i++) {
+        for (File file : files) {
             //获取根目录file对象,在Android设备装载的储存设备必然会在根目录创建一个名为Android 的文件夹,通过截取Android关键字获取根目录
-            DocumentFile documentFile = DocumentFile.fromFile(files[i]);
+            DocumentFile documentFile = DocumentFile.fromFile(file);
             //新建一个json对象,分区信息
             JSONObject jsonObject = new JSONObject();
             //获取分区名称
@@ -137,7 +138,7 @@ public class FileHomeActivity extends AppCompatActivity {
             //获取已用大小和总大小
             jsonObject.put("rom", Formatter.formatFileSize(context, documentFile.length()));
             //获取绝对路径
-            jsonObject.put("path", files[i].getAbsolutePath());
+            jsonObject.put("path", file.getAbsolutePath());
             //获取是否有读权限
             jsonObject.put("canRead", documentFile.canRead());
             //获取是否有写权限
@@ -160,7 +161,7 @@ public class FileHomeActivity extends AppCompatActivity {
             //新建一个json对象,分区信息
             JSONObject jsonObject = new JSONObject();
             //获取分区名称
-            jsonObject.put("name", documentFile.getName());
+            jsonObject.put("name", Objects.requireNonNull(documentFile).getName());
             //获取已用大小和总大小
             jsonObject.put("rom", Formatter.formatFileSize(context, documentFile.length()));
             //获取绝对路径

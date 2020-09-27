@@ -5,27 +5,22 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 
+import androidx.documentfile.provider.DocumentFile;
 import androidx.exifinterface.media.ExifInterface;
 
 import android.net.Uri;
-import android.os.Build;
 import android.os.Environment;
-import android.os.FileUtils;
-import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Objects;
 
 /**
  * 图片压缩工具
  */
-public class ImageCompressionUtil {
+public class ImageCompression {
     //全局上下文
     private Context context;
     //期望高度(以竖屏为标准)
@@ -47,33 +42,44 @@ public class ImageCompressionUtil {
     //返回得文件
 
     //初始化构造函数
-    public ImageCompressionUtil(Context context) {
+    public ImageCompression(Context context) {
         this.context = context;
     }
 
     //设置高度
-    public ImageCompressionUtil reqHeight(int reqHeight) {
+    public ImageCompression reqHeight(int reqHeight) {
         this.reqHeight = reqHeight;
         return this;
     }
 
     //设置宽度
-    public ImageCompressionUtil reqWidth(int reqWidth) {
+    public ImageCompression reqWidth(int reqWidth) {
         this.reqWidth = reqWidth;
         return this;
     }
 
     //设置uri
-    public ImageCompressionUtil uri(Uri uri) {
+    public ImageCompression uri(Uri uri) {
         this.uri = uri;
         //判断uri是不是绝对路径
-        if (FileUtil.isAbsolutePath(uri.toString())) {
-            this.isAbsolutePath = true;
-            this.path = uri.toString();
-        } else {
-            this.isAbsolutePath = false;
+        switch (FileUtil.getFileUriType(uri.toString())) {
+            //是file类型
+            case "file":
+                //设置为绝对路径
+                this.isAbsolutePath = true;
+                //设置路径
+                this.path = uri.toString();
+                //获取后缀
+                this.fileFormat = FileUtil.getFileFormat(path).toLowerCase();
+                break;
+            //是相对路径
+            case "content":
+                //设置不是绝对路径
+                this.isAbsolutePath = false;
+                //获取文件后缀
+                this.fileFormat = FileUtil.getFileFormat(DocumentFile.fromSingleUri(context, uri).getName()).toLowerCase();
+                break;
         }
-        this.fileFormat = FileUtil.getFileFormat(uri.toString()).toLowerCase();
         switch (fileFormat) {
             case "png":
                 bitmapCompressFormat = Bitmap.CompressFormat.PNG;
@@ -88,23 +94,14 @@ public class ImageCompressionUtil {
         return this;
     }
 
-    //设置path
-    public ImageCompressionUtil path(String path) {
-        this.isAbsolutePath = true;
-        this.path = path;
-        //获取原图后缀
-        this.fileFormat = FileUtil.getFileFormat(path).toLowerCase();
-        switch (fileFormat) {
-            case "png":
-                bitmapCompressFormat = Bitmap.CompressFormat.PNG;
-                break;
-            case "jpg":
-            case "jpeg":
-            default:
-                //没有后缀默认取jpg
-                bitmapCompressFormat = Bitmap.CompressFormat.JPEG;
-                break;
-        }
+    //设置uri
+    public ImageCompression uri(String stringUri) {
+        return uri(Uri.parse(stringUri));
+    }
+
+    //设置是否长期保存
+    public ImageCompression isLastingSave(boolean isLastingSave) {
+        this.isLastingSave = isLastingSave;
         return this;
     }
 
@@ -115,7 +112,16 @@ public class ImageCompressionUtil {
 
     //开始压缩并返回Uri类型路径
     public Uri startCompressionToUri() {
-        return Uri.parse(startCompression());
+        //获取处理完后的链接
+        String uriString = startCompression();
+        //判断是否是绝对路径
+        if (FileUtil.getFileUriType(uriString).equals("file")) {
+            //是,就加上前缀转换成uri
+            return Uri.parse("file://" + uriString);
+        } else {
+            //不是,就直接转成uri
+            return Uri.parse(uriString);
+        }
     }
 
     //压缩方法,传入共享图片的uri,压缩并转换为file路径
@@ -130,8 +136,12 @@ public class ImageCompressionUtil {
         //用于保存新图片的Bitmap
         Bitmap bitmap = null;
         //获取图片角度
-        int angle = readPictureDegree();
-        //判断图片是否需要选择
+        int angle = 0;
+        //png没有ExifInterface属性,没有旋转的概念
+        if (!fileFormat.equals("png")) {
+            angle = readPictureDegree();
+        }
+        //判断图片是否需要旋转
         if (angle != 0) {
             //角度不是0,需要旋转
             //把inJustDecodeBounds设置为true,可以不把图片读到内存中,但依然可以计算出图片的大小
@@ -141,7 +151,7 @@ public class ImageCompressionUtil {
             //判断是否绝对路径
             if (isAbsolutePath) {
                 //通过绝对路径获取originalBitmap
-                originalBitmap = BitmapFactory.decodeFile(uri.toString(), options);
+                originalBitmap = BitmapFactory.decodeFile(path, options);
             } else {
                 try {
                     //通过inputStream获取originalBitmap
@@ -202,32 +212,28 @@ public class ImageCompressionUtil {
             options.inSampleSize = inSampleSize;
             //设置将图片读入内存
             options.inJustDecodeBounds = false;
-            //判断是否是需要旋转的图
+            //判断是否是旋转过的图
             if (bitmap != null) {
-                //不等空说明命是需要旋转的图
+                //不等空说明命是旋转过的图
                 //获取当前的时间戳
                 long timeStamp = System.currentTimeMillis();
-                //以时间戳做文件名,在app的缓存目录创建文件(缓存满后系统会自动清理其他应用的缓存,也可以在每次图片上传完后手动清缓存)
-                File file = new File(context.getExternalCacheDir(), timeStamp + fileFormat);
+                //以时间戳做文件名,在app的缓存目录创建临时文件用于缩放(缓存满后系统会自动清理其他应用的缓存,也可以在每次图片上传完后手动清缓存)
+                File file = new File(context.getExternalCacheDir(), timeStamp + "." + fileFormat);
                 try {
                     //文件基本不可能存在,所以直接创建文件
                     if (file.createNewFile()) {
-                        //创建ByteArrayOutputStream输出流
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        //将Bitmap设置为原图获取的格式,将质量设置到100表示不压缩,输出到ByteArrayOutputStream
-                        bitmap.compress(bitmapCompressFormat, 100, byteArrayOutputStream);
                         //创建新文件的输出流
                         OutputStream outputStream = new FileOutputStream(file);
-                        //把ByteArrayOutputStream输出流拷贝到outputStream输出流(把压缩后的新图片字节流写入到文件)
-                        byteArrayOutputStream.writeTo(outputStream);
+                        //将Bitmap设置为原图获取的格式,将质量设置到100表示不压缩,输出到ByteArrayOutputStream
+                        bitmap.compress(bitmapCompressFormat, 90, outputStream);
                         //关闭outputStream输出流
                         outputStream.close();
-                        //关闭byteArrayOutputStream输出流
-                        byteArrayOutputStream.close();
                         //释放bitmap占用的C内存空间的内存
                         bitmap.recycle();
                         //获取新比例的图片的Bitmap对象
                         bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), options);
+                        //删除临时文件
+                        file.delete();
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -249,26 +255,34 @@ public class ImageCompressionUtil {
             }
             //获取当前的时间戳
             long timeStamp = System.currentTimeMillis();
-            //以时间戳做文件名,通过isLastingSave判断保存在app的缓存里还是app文件目录里(缓存满后系统会自动清理其他应用的缓存,也可以在每次图片上传完后手动清缓存)
+            //文件名称,用之前的名字
+            String fileName;
+            //判断是否是绝对路径
+            if (isAbsolutePath) {
+                //获取文件名
+                fileName = FileUtil.getFileName(path);
+            } else {
+                //获取文件名
+                fileName = DocumentFile.fromSingleUri(context, uri).getName();
+            }
+            //以时间戳做文件名的前缀防止同名文件覆盖,通过isLastingSave判断保存在app的缓存里还是app文件目录里(缓存满后系统会自动清理其他应用的缓存,也可以在每次图片上传完后手动清缓存)
             File file = new File(isLastingSave ? context.getExternalFilesDir(Environment.DIRECTORY_PICTURES) : context.getExternalCacheDir(),
-                    timeStamp + fileFormat);
+                    timeStamp + "");
+            //先创建文件夹
+            file.mkdirs();
+            //再设置文件名
+            file = new File(file, fileName);
             //bitmap 不等空说明图片缩放成功
             if (bitmap != null) {
                 try {
                     //创建文件
                     if (file.createNewFile()) {
-                        //创建ByteArrayOutputStream输出流
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        //将Bitmap设置为jpg格式(需要透明图片就设置成png),将质量设置到60,输出到ByteArrayOutputStream
-                        bitmap.compress(bitmapCompressFormat, 60, byteArrayOutputStream);
                         //创建新文件的输出流
                         OutputStream outputStream = new FileOutputStream(file);
-                        //把ByteArrayOutputStream输出流拷贝到outputStream输出流(把压缩后的新图片字节流写入到文件)
-                        byteArrayOutputStream.writeTo(outputStream);
+                        //将Bitmap设置为jpg格式(需要透明图片就设置成png),将质量设置到60,输出到ByteArrayOutputStream
+                        bitmap.compress(bitmapCompressFormat, 60, outputStream);
                         //关闭outputStream输出流
                         outputStream.close();
-                        //关闭byteArrayOutputStream输出流
-                        byteArrayOutputStream.close();
                         //释放bitmap占用的C内存空间的内存
                         bitmap.recycle();
                     }
@@ -280,9 +294,12 @@ public class ImageCompressionUtil {
             return file.getAbsolutePath();
         } else {
             //判段不需要压缩,就直接将原图片路径返回
+            //判断是否绝对路径
             if (isAbsolutePath) {
+                //是绝对路径,返回path
                 return path;
             } else {
+                //不是,返回相对路径
                 return uri.toString();
             }
         }
@@ -302,7 +319,12 @@ public class ImageCompressionUtil {
             } else {
                 //相对路径,通过转换成绝对路径来获取
                 //使用其他的构造方法对Android版本有要求,这个是折中处理方法
-                exifInterface = new ExifInterface(FileUtil.uriToAbsolutePath(context, path));
+                //先获取零食绝对路径
+                File filePath = new UriToAbsolutePath(context, uri).returnFile();
+                //设置绝对路径
+                exifInterface = new ExifInterface(filePath);
+                //删除临时文件
+                filePath.delete();
             }
             //getAttributeInt:返回指定标签的整数值。
             //TAG_ORIENTATION:按行和列查看的图像方向。
@@ -325,5 +347,4 @@ public class ImageCompressionUtil {
         }
         return degree;
     }
-
 }

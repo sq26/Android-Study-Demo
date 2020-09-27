@@ -38,6 +38,10 @@ public abstract class RecyclerViewListAdapter<T> extends RecyclerViewAdapter {
         return array.size();
     }
 
+    public void setDate(List<T> list){
+        this.array = list;
+    }
+
     @Override
     public void onItemViewMove(int fromPosition, int toPosition) {
 

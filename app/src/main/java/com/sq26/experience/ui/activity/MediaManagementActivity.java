@@ -15,12 +15,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
-import com.sq26.experience.adapter.RecyclerViewAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.ui.dialog.ProgressDialog;
 import com.sq26.experience.util.DensityUtil;
 import com.sq26.experience.util.FileUtil;
-import com.sq26.experience.util.ImageCompressionUtil;
+import com.sq26.experience.util.ImageCompression;
 import com.sq26.experience.util.media.JImage;
 import com.sq26.experience.util.media.SimpleDraweeViewUtils;
 
@@ -46,7 +45,6 @@ public class MediaManagementActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         context = this;
         init();
-        Log.i("12",FileUtil.getFileFormat("123.png"));
     }
 
     private void init() {
@@ -67,25 +65,17 @@ public class MediaManagementActivity extends AppCompatActivity {
             case R.id.getImage:
                 JImage.initialize(this)
                         .setImageSource(JImage.ALL)
-                        .success(new JImage.SuccessCallback() {
-                            @Override
-                            public void success(String... path) {
-                                JSONObject item;
-                                for (String p : path) {
-                                    Log.d("getImage", p);
-                                    item = new JSONObject();
-                                    item.put("name", FileUtil.getFileName(p));
-                                    if (FileUtil.isAbsolutePath(p)) {
-                                        item.put("path", p);
-                                    } else {
-                                        item.put("path", new ImageCompressionUtil(context)
-                                                .uri(Uri.parse(p))
-                                                .startCompressionToString());
-                                    }
-                                    imageArray.add(item);
-                                }
-                                imageAdapter.notifyDataSetChanged();
+                        .isCompression(true)
+                        .success(path -> {
+                            JSONObject item;
+                            for (String p : path) {
+                                Log.d("getImage", p);
+                                item = new JSONObject();
+                                item.put("name", FileUtil.getFileName(p));
+                                item.put("path", p);
+                                imageArray.add(item);
                             }
+                            imageAdapter.notifyDataSetChanged();
                         }).start();
 
                 break;

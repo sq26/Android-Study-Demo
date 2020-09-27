@@ -11,7 +11,7 @@ import com.facebook.drawee.view.SimpleDraweeView;
 public class ViewHolder extends RecyclerView.ViewHolder {
     private View view;
 
-    ViewHolder(@NonNull View itemView) {
+    public ViewHolder(@NonNull View itemView) {
         super(itemView);
         this.view = itemView;
     }
