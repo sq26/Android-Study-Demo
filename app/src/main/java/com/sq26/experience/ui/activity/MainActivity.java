@@ -3,22 +3,18 @@ package com.sq26.experience.ui.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.sq26.experience.R;
-import com.sq26.experience.adapter.RecyclerViewAdapter;
 import com.sq26.experience.adapter.RecyclerViewJSONArrayAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.entity.JsonArrayViewMode;
 import com.sq26.experience.ui.activity.file.FileHomeActivity;
-import com.sq26.experience.util.FileUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -53,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         jsonArray.add(initItem("encryption", getString(R.string.Symmetric_and_asymmetric_encryption), 1));
         jsonArray.add(initItem("aidl", getString(R.string.AIDL_inter_process_communication), 1));
         jsonArray.add(initItem("测试", "用来做一些技术测试", 1));
+        jsonArray.add(initItem("kotlin学习", "用来做kotlin语言学习", 1));
 
         jsonArray.add(initItem("", getString(R.string.AndroidJetpackComponents), 0));
         jsonArray.add(initItem("Lifecycle", getString(R.string.LifecycleComponents), 1));
@@ -183,7 +180,9 @@ public class MainActivity extends AppCompatActivity {
             case "AppManagement":
                 startActivity(new Intent(this, AppManagementActivity.class));
                 break;
-
+            case "kotlin学习":
+                startActivity(new Intent(this, KotlinActivity.class));
+                break;
         }
     }
 
