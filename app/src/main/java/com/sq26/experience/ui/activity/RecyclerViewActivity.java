@@ -71,7 +71,7 @@ public class RecyclerViewActivity extends AppCompatActivity {
         //设置布局管理器
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         //创建适配器
-        commonAdapter = new CommonAdapter(R.layout.item_recycler_view, jsonArray) {
+        commonAdapter = new CommonAdapter(R.layout.item_recyclerview_item, jsonArray) {
             @Override
             public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
                 //等空说明需要刷新全部,不是空就不刷新视图

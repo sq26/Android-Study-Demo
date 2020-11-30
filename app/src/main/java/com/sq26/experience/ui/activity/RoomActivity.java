@@ -5,9 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -15,16 +12,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.paging.DataSource;
-import androidx.paging.PagedList;
-import androidx.paging.Pager;
-import androidx.paging.PagingConfig;
-import androidx.paging.PagingData;
-import androidx.paging.PagingDataAdapter;
-import androidx.paging.PagingSource;
-import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.ColumnInfo;
 import androidx.room.Dao;
@@ -40,9 +28,6 @@ import androidx.room.RoomDatabase;
 import com.sq26.experience.R;
 import com.sq26.experience.adapter.RecyclerViewListAdapter;
 import com.sq26.experience.adapter.ViewHolder;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -214,8 +199,6 @@ public class RoomActivity extends AppCompatActivity {
         WordRepository(Application application) {
             WordRoomDatabase db = WordRoomDatabase.getDatabase(application);
             mWordDao = db.wordDao();
-
-            PagingConfig pagingConfig = new PagingConfig(20, 3, true, 60, 100);
 
             mAllWords = mWordDao.getAlphabetizedWords();
         }

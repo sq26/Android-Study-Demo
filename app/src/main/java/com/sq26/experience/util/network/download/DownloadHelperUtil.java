@@ -32,7 +32,7 @@ public class DownloadHelperUtil {
         //插入到目前为止下载的字节数
         contentValues.put("column_bytes", "0");
         //插入网络状态(默认状态)
-        contentValues.put("status", Download.STATUS_START);
+        contentValues.put("status", 1);
         //插入保存路径
         contentValues.put("path", path);
         /**

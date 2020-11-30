@@ -18,9 +18,9 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.0.1'
         //kotlin支持
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.20'
         //kotlin扩展插件Anko库的支持
-        classpath 'org.jetbrains.kotlin:kotlin-android-extensions:1.4.10'
+//        classpath 'org.jetbrains.kotlin:kotlin-android-extensions:1.4.10'
         //Butter Knife需要的支持
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.3'
 

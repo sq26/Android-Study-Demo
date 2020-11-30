@@ -6,4 +6,27 @@
     android:layout_height="match_parent"
     tools:context=".ui.activity.NetworkActivity">
 
+    <Button
+        android:id="@+id/download"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="下载"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/viewDownload"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查看download表"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/download" />
+
+    <Button
+        android:id="@+id/viewDownloadSlice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查看downloadSlice表"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/viewDownload" />
 </androidx.constraintlayout.widget.ConstraintLayout>
