@@ -1,11 +1,10 @@
 package com.sq26.experience.entity
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.alibaba.fastjson.JSONArray
-import com.orhanobut.logger.Logger
+import com.sq26.experience.util.Log
 
 //视图本身是运行在主线程的
 class JsonArrayViewMode : ViewModel() {
@@ -29,7 +28,7 @@ class JsonArrayViewMode : ViewModel() {
         Thread {
             for (i in 0..99) {
                 jsonArray[0] = "" + i
-                Logger.i(i.toString())
+                Log.i(i.toString())
                 if (jsonArrayMutableLiveData!!.hasObservers())
                     jsonArrayMutableLiveData!!.postValue(jsonArray)
                 else

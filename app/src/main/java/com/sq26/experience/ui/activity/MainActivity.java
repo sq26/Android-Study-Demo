@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
         init();
     }
 
-    private void initView(){
-        JsonArrayViewMode jsonArrayViewMode = new ViewModelProvider(this,new ViewModelProvider.NewInstanceFactory()).get(JsonArrayViewMode.class);
+    private void initView() {
+        JsonArrayViewMode jsonArrayViewMode = new ViewModelProvider(this, new ViewModelProvider.NewInstanceFactory()).get(JsonArrayViewMode.class);
 
     }
 
@@ -59,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         jsonArray.add(initItem("Room", getString(R.string.RoomComponents), 1));
         jsonArray.add(initItem("Paging", getString(R.string.PagingComponents), 1));
         jsonArray.add(initItem("WorkManger", getString(R.string.WorkMangerComponents), 1));
+        jsonArray.add(initItem("DataBinding", getString(R.string.Data_BindingComponents), 1));
 
         jsonArray.add(initItem("", getString(R.string.Features), 0));
         jsonArray.add(initItem("QRCode", getString(R.string.QRCode_recognition), 1));
@@ -182,6 +183,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case "kotlin学习":
                 startActivity(new Intent(this, KotlinActivity.class));
+                break;
+            case "DataBinding":
+                startActivity(new Intent(this, DataBindingActivity.class));
                 break;
         }
     }

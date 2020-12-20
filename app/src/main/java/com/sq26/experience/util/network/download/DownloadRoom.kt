@@ -13,8 +13,8 @@ data class DownloadEntity(
         //此注解用于指向数据库对应字段名
 //        @ColumnInfo(name = "url")
         var url: String = "",
-        //保存的目录
-        var dirPath: String = "",
+        //文件的url路径
+        var fileUri: String = "",
         //保存的文件名
         var fileName: String = "",
         //下载状态，
@@ -46,8 +46,8 @@ interface DownloadDao {
     fun getDownloadForStatus(status: Int): Int
 
     //查询对应文件名称,路径,连接的数据
-    @Query("select * from download where fileName == :fileName and dirPath == :dirPath")
-    fun getDownloadForUrlAndFileNameAndDirPath(fileName: String, dirPath: String): DownloadEntity
+    @Query("select * from download where fileName == :fileName and fileUri == :fileUri")
+    fun getDownloadForUrlAndFileNameAndDirPath(fileName: String, fileUri: String): DownloadEntity
 
     //新增一条
     @Insert
@@ -99,7 +99,7 @@ interface DownloadSliceDao {
     @Query("select count(1) from download_slice where status == :status")
     fun getListSizeForStatus(status: Int): Int
 
-    //查询所有对应状态的数据数量
+    //查询所有对应状态的切片数量
     @Query("select count(1) from download_slice where downloadId == :downloadId and status == :status")
     fun getListSizeForDownloadIdAndStatus(downloadId: Int, status: Int): Int
 

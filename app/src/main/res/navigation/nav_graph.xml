@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation_navigation"
+    android:label="navigation"
+    app:startDestination="@id/blankFragment">
+    <!--startDestination:设置起始目的地-->
+    <fragment
+        android:id="@+id/blankFragment"
+        android:name="com.sq26.experience.ui.fragment.BlankFragment"
+        android:label="fragment_blank"
+        tools:layout="@layout/fragment_blank">
+        <!--在导航图中，操作由 <action> 元素表示。
+        操作至少应包含自己的 ID 和用户应转到的目的地的 ID。
+        Type 字段包含“Action”。
+        ID 字段包含该操作的 ID。
+        Destination 字段包含目的地 Fragment 或 Activity 的 ID。
+        -->
+        <action
+            android:id="@+id/action_blankFragment_to_blank2Fragment"
+            app:destination="@id/blank2Fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/blank2Fragment"
+        android:name="com.sq26.experience.ui.fragment.Blank2Fragment"
+        android:label="fragment_blank2"
+        tools:layout="@layout/fragment_blank2">
+        <argument
+            android:name="index"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <!--        popUpTo:指在blankFragment的上面打开目标blankFragment,
+        并清除blankFragment之上的所有fragment,
+                    popUpToInclusive:true表示连同popUpTo指定的blankFragment一起清除
+                    false:false表示不清除
+                    像目的地是blankFragment同时要在blankFragment之上打开新页面时,就会产生两个blankFragment
+                    需要设置popUpToInclusive:true把指定的blankFragment也一起清除代替旧的blankFragment的位置
+                            -->
+        <action
+            android:id="@+id/action_blank2Fragment_to_blankFragment"
+            app:destination="@id/blankFragment"
+            app:popUpTo="@+id/blankFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <!--    外层是全局跳转动作-->
+    <action
+        android:id="@+id/action_global_blankFragment"
+        app:destination="@id/blankFragment"
+        app:popUpTo="@+id/blankFragment"
+        app:popUpToInclusive="true" />
+    <action
+        android:id="@+id/action_global_blank2Fragment"
+        app:destination="@id/blank2Fragment" />
+</navigation>
