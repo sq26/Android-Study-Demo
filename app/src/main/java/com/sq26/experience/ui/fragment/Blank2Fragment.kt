@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.sq26.experience.R
 import com.sq26.experience.databinding.FragmentBlank2Binding
 import com.sq26.experience.util.Log
 
@@ -52,6 +53,10 @@ class Blank2Fragment : Fragment() {
         binding.bottom.setOnClickListener {
             val action = Blank2FragmentDirections.actionBlank2FragmentToBlankFragment()
             findNavController().navigate(action)
+        }
+        binding.bottom2.setOnClickListener {
+//            findNavController()
+            findNavController().navigateUp()
         }
     }
 }

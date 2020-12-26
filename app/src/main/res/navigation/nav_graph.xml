@@ -4,8 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/navigation_navigation"
     android:label="navigation"
-    app:startDestination="@id/blankFragment">
+    app:startDestination="@id/startFragment">
     <!--startDestination:设置起始目的地-->
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="com.sq26.experience.ui.fragment.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start" >
+        <action
+            android:id="@+id/action_startFragment_to_homeFragment"
+            app:destination="@id/homeFragment"
+            />
+    </fragment>
+
     <fragment
         android:id="@+id/blankFragment"
         android:name="com.sq26.experience.ui.fragment.BlankFragment"
@@ -19,30 +30,21 @@
         -->
         <action
             android:id="@+id/action_blankFragment_to_blank2Fragment"
-            app:destination="@id/blank2Fragment" />
-    </fragment>
-
-    <fragment
-        android:id="@+id/blank2Fragment"
-        android:name="com.sq26.experience.ui.fragment.Blank2Fragment"
-        android:label="fragment_blank2"
-        tools:layout="@layout/fragment_blank2">
-        <argument
-            android:name="index"
-            android:defaultValue="0"
-            app:argType="integer" />
-        <!--        popUpTo:指在blankFragment的上面打开目标blankFragment,
-        并清除blankFragment之上的所有fragment,
-                    popUpToInclusive:true表示连同popUpTo指定的blankFragment一起清除
-                    false:false表示不清除
-                    像目的地是blankFragment同时要在blankFragment之上打开新页面时,就会产生两个blankFragment
-                    需要设置popUpToInclusive:true把指定的blankFragment也一起清除代替旧的blankFragment的位置
-                            -->
+            app:destination="@id/navigation">
+            <!-- 跳转嵌套导航图,如果嵌套导航图的根视图需要参数,需要在跳转动作中添加argument才能正常传递参数
+            argument要与嵌套导航图的根视图需要参数的名称和类型完全相同  -->
+            <!-- 修改原本blank2Fragment要传的参数的默认值-->
+            <argument
+                android:name="index"
+                android:defaultValue="5"
+                app:argType="integer" />
+        </action>
         <action
-            android:id="@+id/action_blank2Fragment_to_blankFragment"
-            app:destination="@id/blankFragment"
-            app:popUpTo="@+id/blankFragment"
-            app:popUpToInclusive="true" />
+            android:id="@+id/action_blankFragment_to_loginActivity"
+            app:destination="@id/loginActivity" />
+        <action
+            android:id="@+id/action_blankFragment_to_include_nav_graph"
+            app:destination="@id/include_nav_graph" />
     </fragment>
 
     <!--    外层是全局跳转动作-->
@@ -53,5 +55,56 @@
         app:popUpToInclusive="true" />
     <action
         android:id="@+id/action_global_blank2Fragment"
-        app:destination="@id/blank2Fragment" />
+        app:destination="@id/navigation">
+        <argument
+            android:name="index"
+            android:defaultValue="6"
+            app:argType="integer" />
+    </action>
+    <!--    目的地是activity会打开新页面-->
+    <activity
+        android:id="@+id/loginActivity"
+        android:name="com.sq26.experience.ui.activity.LoginActivity"
+        android:label="activity_login"
+        tools:layout="@layout/activity_login">
+        <argument
+            android:name="text"
+            android:defaultValue=""
+            app:argType="string" />
+    </activity>
+    <!--    通过include引入嵌套导航图-->
+    <include app:graph="@navigation/nav_include_graph" />
+    <!--    也可以直接创建嵌套导航图-->
+    <navigation
+        android:id="@+id/navigation"
+        app:startDestination="@id/blank2Fragment">
+        <fragment
+            android:id="@+id/blank2Fragment"
+            android:name="com.sq26.experience.ui.fragment.Blank2Fragment"
+            android:label="fragment_blank2"
+            tools:layout="@layout/fragment_blank2">
+            <argument
+                android:name="index"
+                android:defaultValue="0"
+                app:argType="integer" />
+            <!--        popUpTo:指在blankFragment的上面打开目标blankFragment,
+            并清除blankFragment之上的所有fragment,
+                        popUpToInclusive:true表示连同popUpTo指定的blankFragment一起清除
+                        false:false表示不清除
+                        像目的地是blankFragment同时要在blankFragment之上打开新页面时,就会产生两个blankFragment
+                        需要设置popUpToInclusive:true把指定的blankFragment也一起清除代替旧的blankFragment的位置
+                                -->
+            <action
+                android:id="@+id/action_blank2Fragment_to_blankFragment"
+                app:destination="@id/blankFragment"
+                app:popUpTo="@+id/blankFragment"
+                app:popUpToInclusive="true" />
+        </fragment>
+    </navigation>
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.sq26.experience.ui.fragment.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" />
+
 </navigation>

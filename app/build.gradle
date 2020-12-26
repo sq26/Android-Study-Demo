@@ -4,6 +4,8 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 //kotlin注解处理插件，kapt是kotlin的注解处理器，kapt 也能够处理 Java 文件，所以需要替换 annotationProcessor 关键字
 apply plugin: 'kotlin-kapt'
+//应用Hilt插件 ,Hilt是 Android 的依赖项注入库，可减少在项目中执行手动依赖项注入的样板代码。
+apply plugin: 'dagger.hilt.android.plugin'
 //导航的插件,safeargs用于在fragment之间跳转传输少量数据,适用于 Java 模块或 Java 和 Kotlin 混合模块的 Java 语言代码
 apply plugin: "androidx.navigation.safeargs"
 android {
@@ -109,13 +111,27 @@ dependencies {
     // paging 组件(数据分页)
     implementation "androidx.paging:paging-runtime-ktx:2.1.2"
     //navigation组件(fragment管理)
+    implementation "androidx.navigation:navigation-runtime-ktx:2.3.2"
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
     implementation "androidx.navigation:navigation-ui-ktx:2.3.2"
     implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.2"
     implementation "androidx.navigation:navigation-compose:1.0.0-alpha04"
     //activity的kotlin强化库
     implementation "androidx.activity:activity-ktx:1.1.0"
+    //Fragment KTX 提供了一系列扩展程序以简化 Fragment API。
+    implementation "androidx.fragment:fragment-ktx:1.2.5"
     //Android 上的 Kotlin 协程
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1"
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
+    //Android ktx,KTX 扩展程序可以为 Jetpack、Android 平台及其他 API 提供简洁的惯用 Kotlin 代码。
+    implementation "androidx.core:core-ktx:1.3.2"
+    //Collection 扩展程序包含在 Android 的节省内存的集合库中使用的实用函数，包括 ArrayMap、LongParseArray、LruCache 等等。
+    implementation "androidx.collection:collection-ktx:1.1.0"
+    //ViewModel KTX 库提供了一个 viewModelScope() 函数，可让您更轻松地从 ViewModel 启动协程。
+    // CoroutineScope 绑定至 Dispatchers.Main，并且会在清除 ViewModel 后自动取消。
+    // 您可以使用 viewModelScope()，而无需为每个 ViewModel 创建一个新范围。
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    //dagger hilt 解耦各个模块之间的强关联性
+    implementation "com.google.dagger:hilt-android:2.28.3-alpha"
+    kapt "com.google.dagger:hilt-android-compiler:2.28.3-alpha"
 }

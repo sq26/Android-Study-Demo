@@ -4,17 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
-import androidx.navigation.Navigation
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
-import com.sq26.experience.R
-import com.sq26.experience.databinding.FragmentBlank2Binding
 import com.sq26.experience.databinding.FragmentBlankBinding
+import com.sq26.experience.ui.activity.NavigationViewModel
+import com.sq26.experience.util.Log
 
 /**
  * A simple [Fragment] subclass.
@@ -81,12 +76,27 @@ class BlankFragment : Fragment() {
         _binding = null
     }
 
+    //获取宿主activity的viewModel
+    private val viewModel: NavigationViewModel by activityViewModels()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.text.text = "1"
+        //打印viewModel中的数据
+        Log.i("liveData:${viewModel.text}")
         binding.bottom.setOnClickListener {
             val action = BlankFragmentDirections.actionBlankFragmentToBlank2Fragment()
-                .setIndex(22)
+//                .setIndex(22)
+            //ktx语法糖,可以获取绑定的导航控制器
+            findNavController().navigate(action)
+        }
+        binding.bottom2.setOnClickListener {
+            val action = BlankFragmentDirections.actionBlankFragmentToLoginActivity()
+                .setText("123")
+
+            findNavController().navigate(action)
+        }
+        binding.bottom3.setOnClickListener {
+            val action = BlankFragmentDirections.actionBlankFragmentToIncludeNavGraph()
             findNavController().navigate(action)
         }
     }

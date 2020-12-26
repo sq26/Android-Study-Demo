@@ -1,27 +1,19 @@
 package com.sq26.experience.ui.activity
 
 import android.os.Bundle
-import android.view.View
-import android.widget.Button
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.NavGraph
-import androidx.navigation.Navigation
+import androidx.lifecycle.*
 import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
 import com.sq26.experience.NavigationNavigationDirections
-import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityNavigationBinding
-import com.sq26.experience.ui.fragment.Blank2FragmentDirections
-import com.sq26.experience.ui.fragment.BlankFragmentDirections
+import com.sq26.experience.util.Log
 
 //Navigation的基本使用
+//目前发现Navigation只能往前跳转,和在fragment中向上返回,其他操作需要配合finish()
 class NavigationActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivityNavigationBinding
+    private val viewModel: NavigationViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityNavigationBinding.inflate(layoutInflater)
@@ -32,7 +24,7 @@ class NavigationActivity : AppCompatActivity() {
 //        navController = binding.navHostFragment.findNavController()
         binding.toolbar.title = "导航"
         setSupportActionBar(binding.toolbar)
-
+        Log.i("liveData1:${viewModel.text}")
         //声明NavController,整个 Navigation 架构中 最重要的核心类，我们所有的导航行为都由 NavController 处理
         //宿主activity提前申明获取navController的方法
 //        val navHostFragment =
@@ -41,33 +33,22 @@ class NavigationActivity : AppCompatActivity() {
 
         binding.button1.setOnClickListener {
             //binding.navHostFragment.findNavController()在视图没有显示之前调用会报下标越界错误
+            //修改viewModel的text为111,在跳转后的fragmen中获取
+            viewModel.text = "111"
             //全局跳转到BlankFragment
             val action = NavigationNavigationDirections.actionGlobalBlankFragment()
+
             binding.navHostFragment.findNavController().navigate(action)
         }
         binding.button2.setOnClickListener {
-            //全局跳转到BlankFragment
+            //全局跳转到Blank2Fragment
             val action = NavigationNavigationDirections.actionGlobalBlank2Fragment()
-                .setIndex(2)
+                .setIndex(22)
             binding.navHostFragment.findNavController().navigate(action)
         }
     }
-
-//    @OnClick(R.id.button1, R.id.button2)
-//    fun onViewClicked(view: View) {
-//        when (view.id) {
-//            R.id.button1 ->
-//
-//
-//                //跳转到blankFragment
-//                navController.navigate(R.id.blankFragment)
-//            R.id.button2 ->                 //跳转到blank2Fragment
-//                navController.navigate(R.id.blank2Fragment)
-//        }
-//    }
-
-//    override fun onSupportNavigateUp(): Boolean {
-//        //接管activity的返回
-//        return navController.navigateUp()
-//    }
+}
+//创建ViewModel
+class NavigationViewModel() : ViewModel() {
+    var text = "000"
 }
