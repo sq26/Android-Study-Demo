@@ -23,7 +23,6 @@ import com.sq26.experience.util.Log
 import com.sq26.experience.viewmodel.HomeViewModel
 import com.sq26.experience.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Singleton
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {

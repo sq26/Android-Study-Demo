@@ -28,12 +28,12 @@ buildscript {
 allprojects {
     //项目需要的依赖
     repositories {
+        google()
+        jcenter()
         //阿里仓库代理
         maven { url 'https://maven.aliyun.com/repository/public' }
         maven { url 'https://maven.aliyun.com/repository/google' }
         maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
-        google()
-        jcenter()
     }
 }
 

@@ -7,14 +7,19 @@ import kotlinx.coroutines.flow.Flow
 data class HomeMenu(
     @PrimaryKey
     val id: String,
-    val name: String
+    val name: String,
+    //HomeMenuType的id
+    val type: Int
 )
 
 @Dao
 interface HomeMenuDao {
-    @Insert()
+    @Update()
     fun insertAll(list: List<HomeMenu>)
 
     @Query("select * from HomeMenu")
     fun getHomeMenuList(): Flow<List<HomeMenu>>
+
+    @Delete
+    fun deleteAll()
 }

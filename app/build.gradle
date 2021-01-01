@@ -132,9 +132,12 @@ dependencies {
     // CoroutineScope 绑定至 Dispatchers.Main，并且会在清除 ViewModel 后自动取消。
     // 您可以使用 viewModelScope()，而无需为每个 ViewModel 创建一个新范围。
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
-    //dagger hilt 解耦各个模块之间的强关联性
+    //使用 Hilt 实现依赖项注入
     implementation "com.google.dagger:hilt-android:2.28.3-alpha"
     kapt "com.google.dagger:hilt-android-compiler:2.28.3-alpha"
-    //hilt,Viewmodel生命周期支持
+    //使用 Hilt 注入 ViewModel 对象
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02"
+    kapt "androidx.hilt:hilt-compiler:1.0.0-alpha02"
+    //使用 Hilt 注入 WorkManager
+    implementation 'androidx.hilt:hilt-work:1.0.0-alpha01'
 }

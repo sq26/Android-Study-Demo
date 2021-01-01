@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 
 class MainViewModel : ViewModel() {
-    val isInit = liveData<Boolean> {
+    val isInit = liveData {
        emit(false)
     }
 }

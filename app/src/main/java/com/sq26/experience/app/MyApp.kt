@@ -22,5 +22,6 @@ class MyApp : Application() {
         Log.isEnable = true
         Log.TAG = "APP"
 
+        Log.i("onCreate")
     }
 }
