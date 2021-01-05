@@ -61,10 +61,11 @@ abstract class AppDatabase : RoomDatabase() {
                 homeMenuTypeList.add(HomeMenuType(2, "控件功能"))
                 appDatabase.homeMenuTypeDao().insertAll(homeMenuTypeList)
 
+                appDatabase.homeMenuDao().deleteAll()
                 val homeMenuList = mutableListOf<HomeMenu>()
                 homeMenuList.add(HomeMenu("encryption", "对称和非对称加密", 0))
                 homeMenuList.add(HomeMenu("aidl", "AIDL进程间通讯", 0))
-                appDatabase.homeMenuDao().deleteAll()
+                homeMenuList.add(HomeMenu("Navigation", "导航框架", 1))
                 appDatabase.homeMenuDao().insertAll(homeMenuList)
             }
         }

@@ -27,6 +27,7 @@ class HomeViewModel @ViewModelInject internal constructor(
 }
 
 //Singleton注解会将HomeRepository的生命周期绑定到application,也就是回和应用程序一起创建和销毁,是一种更加方便地单例模式,所有依赖HomeRepository的类获取到的都是同一实例
+//Inject注解会使用设置在DatabaseModule中的HomeMenuDao的获取方法
 @Singleton
 class HomeRepository @Inject constructor(
     private val homeMenuDao: HomeMenuDao

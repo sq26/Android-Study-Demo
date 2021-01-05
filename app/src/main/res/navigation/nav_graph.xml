@@ -21,6 +21,12 @@
         <action
             android:id="@+id/action_homeFragment_to_startFragment"
             app:destination="@id/startFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_encryptionActivity"
+            app:destination="@id/encryptionActivity" />
+        <action
+            android:id="@+id/action_homeFragment_to_navigationActivity"
+            app:destination="@id/navigationActivity" />
     </fragment>
 
     <fragment
@@ -107,5 +113,15 @@
                 app:popUpToInclusive="true" />
         </fragment>
     </navigation>
+    <activity
+        android:id="@+id/encryptionActivity"
+        android:name="com.sq26.experience.ui.activity.EncryptionActivity"
+        android:label="activity_encryption"
+        tools:layout="@layout/activity_encryption" />
+    <activity
+        android:id="@+id/navigationActivity"
+        android:name="com.sq26.experience.ui.activity.NavigationActivity"
+        android:label="activity_navigation"
+        tools:layout="@layout/activity_navigation" />
 
 </navigation>

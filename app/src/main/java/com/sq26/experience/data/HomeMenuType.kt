@@ -11,7 +11,7 @@ data class HomeMenuType(
 
 @Dao
 interface HomeMenuTypeDao {
-    @Insert
+    @Update
     fun insertAll(list: List<HomeMenuType>)
 
     @Query("select * from HomeMenuType")

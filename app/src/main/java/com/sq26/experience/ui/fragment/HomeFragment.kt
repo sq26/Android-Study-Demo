@@ -11,11 +11,13 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sq26.experience.R
+import com.sq26.experience.adapter.HomeMenuAdapter
 import com.sq26.experience.data.HomeMenu
 import com.sq26.experience.databinding.FragmentHomeBinding
 import com.sq26.experience.databinding.ItemRecyclerviewBinding
@@ -81,48 +83,4 @@ class HomeFragment : Fragment() {
     }
 }
 
-class HomeMenuAdapter : ListAdapter<HomeMenu, HomeMenuAdapter.ViewHolder>(HomeMenuDiffCallback()) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            ItemRecyclerviewBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent,
-                false
-            )
-        )
-
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(getItem(position))
-    }
-
-    class ViewHolder(private val binding: ItemRecyclerviewBinding) :
-        RecyclerView.ViewHolder(binding.root) {
-        init {
-            binding.setClickListener {
-                binding.homeMenu?.let {
-                    Log.i("$it")
-                }
-            }
-        }
-
-        fun bind(item: HomeMenu) {
-            binding.apply {
-                homeMenu = item
-                executePendingBindings()
-            }
-        }
-    }
-}
-
-private class HomeMenuDiffCallback : DiffUtil.ItemCallback<HomeMenu>() {
-    override fun areItemsTheSame(oldItem: HomeMenu, newItem: HomeMenu): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: HomeMenu, newItem: HomeMenu): Boolean {
-        return oldItem == newItem
-    }
-}
 

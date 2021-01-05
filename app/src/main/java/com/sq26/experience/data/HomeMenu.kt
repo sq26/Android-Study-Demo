@@ -14,12 +14,13 @@ data class HomeMenu(
 
 @Dao
 interface HomeMenuDao {
-    @Update()
+    //插入一组HomeMenu
+    @Insert()
     fun insertAll(list: List<HomeMenu>)
-
+    //获取HomeMenu表所有数据并监听HomeMenu表
     @Query("select * from HomeMenu")
     fun getHomeMenuList(): Flow<List<HomeMenu>>
-
-    @Delete
+    //清空HomeMenu表
+    @Query("delete from HomeMenu")
     fun deleteAll()
 }
