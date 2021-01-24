@@ -1,152 +1,151 @@
-package com.sq26.experience.ui.activity;
+package com.sq26.experience.ui.activity
 
-import android.content.Context;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.graphics.Color
+import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
+import android.view.animation.AnimationUtils
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
+import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.*
+import butterknife.BindView
+import butterknife.ButterKnife
+import com.alibaba.fastjson.JSONArray
+import com.alibaba.fastjson.JSONObject
+import com.sq26.experience.R
+import com.sq26.experience.adapter.CommonAdapter
+import com.sq26.experience.adapter.ItemTouchHelperCallback
+import com.sq26.experience.adapter.RecyclerView1Adapter
+import com.sq26.experience.adapter.ViewHolder
+import com.sq26.experience.databinding.ActivityRecyclerViewBinding
+import com.sq26.experience.viewmodel.RecyclerViewViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+@AndroidEntryPoint
+class RecyclerViewActivity : AppCompatActivity() {
+    //    private val random = Random()
+    private lateinit var binding: ActivityRecyclerViewBinding
+    private val viewModel: RecyclerViewViewModel by viewModels()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = DataBindingUtil.setContentView<ActivityRecyclerViewBinding>(
+            this,
+            R.layout.activity_recycler_view
+        ).apply {
+            //设置标题名
+            toolbar.title = "RecyclerView"
+            setSupportActionBar(toolbar)
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.sq26.experience.R;
-import com.sq26.experience.adapter.CommonAdapter;
-import com.sq26.experience.adapter.ItemTouchHelperCallback;
-import com.sq26.experience.adapter.ViewHolder;
+            //设置布局管理器
+            recyclerView.layoutManager = LinearLayoutManager(this@RecyclerViewActivity)
+            val adapter = RecyclerView1Adapter()
+            recyclerView.adapter = adapter
 
-import java.util.Random;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-
-public class RecyclerViewActivity extends AppCompatActivity {
-
-    @BindView(R.id.recyclerView)
-    RecyclerView recyclerView;
-    @BindView(R.id.toolbar)
-    Toolbar toolbar;
-
-    private Random random = new Random();
-
-    private CommonAdapter commonAdapter;
-    //设置数据集
-    JSONArray jsonArray = new JSONArray();
-
-    private Context context;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recycler_view);
-        ButterKnife.bind(this);
-        context = this;
-        initView();
-    }
-
-    private void initView() {
-        //设置标题名
-        toolbar.setTitle("RecyclerView");
-        setSupportActionBar(toolbar);
-        //设置数据
-        JSONObject jsonObject;
-        for (int i = 0; i < 40; i++) {
-            jsonObject = new JSONObject();
-            jsonObject.put("text", i);
-            jsonArray.add(jsonObject);
-        }
-        //设置布局管理器
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        //创建适配器
-        commonAdapter = new CommonAdapter(R.layout.item_recyclerview_item, jsonArray) {
-            @Override
-            public void bindViewHolder(ViewHolder viewHolder, JSONObject jsonObject, int position, Object payload) {
-                //等空说明需要刷新全部,不是空就不刷新视图
-                if (payload == null) {
-                    //创建动画
-                    Animation animation = AnimationUtils.loadAnimation(context, R.anim.anim_recycler_item_show);
-                    //给item设置显示动画
-                    viewHolder.itemView.startAnimation(animation);
-                    //
-                    viewHolder.setText(R.id.text, jsonObject.getString("text"));
-                    CardView cardView = viewHolder.getView(R.id.cardView);
-                    int r = random.nextInt(256);
-                    int g = random.nextInt(256);
-                    int b = random.nextInt(256);
-                    cardView.setCardBackgroundColor(Color.rgb(r, g, b));
-                }
-                //无论如何都刷新处理按钮
-                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Log.d("点击的下标", "" + position);
-                        Log.d("文本是", "" + jsonArray.getJSONObject(position).getString("text"));
-                        new AlertDialog.Builder(RecyclerViewActivity.this)
-                                .setMessage("点击的下标" + position + "\n" + "文本是" + jsonArray.getJSONObject(position).getString("text"))
-                                .show();
-                    }
-                });
+            viewModel.getQueryAll().observe(this@RecyclerViewActivity) {
+                adapter.submitList(it)
             }
-        };
-        //给适配器item设置显示动画
-//        commonAdapter.setItemAnimation(animation);
-        //设置纵向分割线
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        //设置横向分割线
-        recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.HORIZONTAL));
-        //设置适配器
-        recyclerView.setAdapter(commonAdapter);
-        //创建item触摸气泡回调
-        ItemTouchHelper.Callback callback = new ItemTouchHelperCallback(commonAdapter);
-        //创建iten触摸气泡
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(callback);
-        //设置recyclerView
-        itemTouchHelper.attachToRecyclerView(recyclerView);
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_add_lookover, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
-            case R.id.action_add:
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("text", 2);
-                jsonArray.add(2, jsonObject);
-                commonAdapter.notifyItemInserted(2);
-                commonAdapter.notifyItemRangeChanged(2, jsonArray.size() - 2 + 1, true);
-                break;
-            case R.id.action_look_over:
-                if (recyclerView.getLayoutManager() instanceof GridLayoutManager) {
-                    item.setIcon(getResources().getDrawable(R.drawable.ic_view_list_white_24dp));
-                    recyclerView.setLayoutManager(new LinearLayoutManager(this));
-                } else {
-                    item.setIcon(getResources().getDrawable(R.drawable.ic_view_module_white_24dp));
-                    recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-                }
-                break;
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+//    private fun initView() {
+//        //设置布局管理器
+//        //创建适配器
+//        commonAdapter = object : CommonAdapter(R.layout.item_recyclerview_item, jsonArray) {
+//            override fun bindViewHolder(
+//                viewHolder: ViewHolder,
+//                jsonObject: JSONObject,
+//                position: Int,
+//                payload: Any
+//            ) {
+//                //等空说明需要刷新全部,不是空就不刷新视图
+//                if (payload == null) {
+//                    //创建动画
+//                    val animation =
+//                        AnimationUtils.loadAnimation(context, R.anim.anim_recycler_item_show)
+//                    //给item设置显示动画
+//                    viewHolder.itemView.startAnimation(animation)
+//                    //
+//                    viewHolder.setText(R.id.text, jsonObject.getString("text"))
+//                    val cardView = viewHolder.getView<CardView>(R.id.cardView)
+//                    val r = random.nextInt(256)
+//                    val g = random.nextInt(256)
+//                    val b = random.nextInt(256)
+//                    cardView.setCardBackgroundColor(Color.rgb(r, g, b))
+//                }
+//                //无论如何都刷新处理按钮
+//                viewHolder.itemView.setOnClickListener {
+//                    Log.d("点击的下标", "" + position)
+//                    Log.d("文本是", "" + jsonArray.getJSONObject(position).getString("text"))
+//                    AlertDialog.Builder(this@RecyclerViewActivity)
+//                        .setMessage(
+//                            """
+//    点击的下标$position
+//    文本是${jsonArray.getJSONObject(position).getString("text")}
+//    """.trimIndent()
+//                        )
+//                        .show()
+//                }
+//            }
+//        }
+//        //给适配器item设置显示动画
+////        commonAdapter.setItemAnimation(animation);
+//        //设置纵向分割线
+//        recyclerView!!.addItemDecoration(
+//            DividerItemDecoration(
+//                this,
+//                DividerItemDecoration.VERTICAL
+//            )
+//        )
+//        //设置横向分割线
+//        recyclerView!!.addItemDecoration(
+//            DividerItemDecoration(
+//                this,
+//                DividerItemDecoration.HORIZONTAL
+//            )
+//        )
+//        //设置适配器
+//        recyclerView!!.adapter = commonAdapter
+//        //创建item触摸气泡回调
+//        val callback: ItemTouchHelper.Callback = ItemTouchHelperCallback(commonAdapter)
+//        //创建iten触摸气泡
+//        val itemTouchHelper = ItemTouchHelper(callback)
+//        //设置recyclerView
+//        itemTouchHelper.attachToRecyclerView(recyclerView)
+//    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_add_lookover, menu)
+        return true
+    }
+
+    @SuppressLint("UseCompatLoadingForDrawables")
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> onBackPressed()
+            R.id.action_add -> {
+                viewModel.insert()
+//                val jsonObject = JSONObject()
+//                jsonObject["text"] = 2
+//                jsonArray.add(2, jsonObject)
+//                commonAdapter!!.notifyItemInserted(2)
+//                commonAdapter!!.notifyItemRangeChanged(2, jsonArray.size - 2 + 1, true)
+            }
+            R.id.action_look_over -> if (binding.recyclerView.layoutManager is GridLayoutManager) {
+                item.icon = getDrawable(R.drawable.ic_view_list_white_24dp)
+                binding.recyclerView.layoutManager = LinearLayoutManager(this)
+            } else {
+                item.icon = getDrawable(R.drawable.ic_view_module_white_24dp)
+                binding.recyclerView.layoutManager = GridLayoutManager(this, 3)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

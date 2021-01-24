@@ -6,22 +6,72 @@
     <data>
 
         <variable
+            name="onClick"
+            type="android.view.View.OnClickListener" />
+
+        <variable
             name="viewmodel"
             type="com.sq26.experience.ui.activity.DataBindingViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         tools:context=".ui.activity.DataBindingActivity">
-
+        <!--Long.toString:把long转成string类型-->
         <TextView
-            android:id="@+id/time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->viewmodel.onRefresh()}"
             android:text="@{Long.toString(viewmodel.currentTime)}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{Long.toString(viewmodel.currentTime2)}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewmodel.updateCurrentTime()}"
+            android:text="更新currentTime1" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{onClick}"
+            android:text="dataBinding中绑定点击事件" />
+        <!--()->:通过一个简易的lambda表达式用点击事件回调调用viewmodel.onClick方法    -->
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewmodel.onClick()}"
+            android:text="viewModel中绑定点击事件" />
+
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="@={viewmodel.checked}" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewmodel.onTest()}"
+            android:text="测试" />
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@={viewmodel.editText}" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewmodel.editText}" />
+
+    </LinearLayout>
 </layout>

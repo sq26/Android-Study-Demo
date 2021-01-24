@@ -8,8 +8,11 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.alibaba.fastjson.JSONObject;
@@ -19,14 +22,6 @@ import com.sq26.experience.util.permissions.JPermissions;
 import com.sq26.experience.util.permissions.PermissionUtil;
 
 import java.util.Map;
-
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 import static java.lang.Thread.sleep;
 
@@ -369,10 +364,11 @@ public class DownloadManagement {
             DownloadManager.Query query = new DownloadManager.Query();
             //设置要查询的下载id
             query.setFilterById(downloadId);
+
             //开始实时查询下载状态
-            Observable.create(new ObservableOnSubscribe<ProgressEntity>() {
+            new Thread(new Runnable() {
                 @Override
-                public void subscribe(ObservableEmitter<ProgressEntity> emitter) throws Exception {
+                public void run() {
                     //判断循环是否继续
                     boolean isContinue = true;
                     //开始循环,间隔300毫秒一次
@@ -398,7 +394,13 @@ public class DownloadManagement {
                             ProgressEntity progressEntity = new ProgressEntity();
                             progressEntity.setCurrent(COLUMN_BYTES_DOWNLOADED_SO_FAR);
                             progressEntity.setTotal(COLUMN_TOTAL_SIZE_BYTES);
-                            emitter.onNext(progressEntity);
+
+                            new Handler(Looper.getMainLooper()).post(() -> {
+                                //判读有没有设置实时下载监听
+                                if (onProgress != null)
+                                    //回调实时下载监听
+                                    onProgress.progress(progressEntity.getCurrent(), progressEntity.getTotal());
+                            });
                             //判断下载状态是否是已完成状态
                             if (COLUMN_STATUS == DownloadManager.STATUS_SUCCESSFUL) {
                                 //已完成就终止循环
@@ -412,71 +414,52 @@ public class DownloadManagement {
                         //关闭游标
                         cursor.close();
                         //暂停线程300毫秒
-                        sleep(300);
+                        try {
+                            sleep(300);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                    //调用下载完成的回调
-                    emitter.onComplete();
-                }
-            }).observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
-                    .subscribe(new Observer<ProgressEntity>() {
-                        @Override
-                        public void onSubscribe(Disposable d) {
 
-                        }
-
-                        @Override
-                        public void onNext(ProgressEntity progressEntity) {
-                            //判读有没有设置实时下载监听
-                            if (onProgress != null)
-                                //回调实时下载监听
-                                onProgress.progress(progressEntity.getCurrent(), progressEntity.getTotal());
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            //执行查询并获取游标
-                            Cursor cursor = downloadManager.query(query);
-                            //判断数据数量是否大于0
-                            if (cursor.getCount() > 0) {
-                                //大于零说明有数据
-                                //把游标移动到第一条数据(这绝对只有一条数据,下载id是不可能重复的)
-                                cursor.moveToPosition(0);
-                                //下载的当前状态，为STATUS_ *常量之一。
-                                //STATUS_FAILED下载失败（并不会重试）
-                                //STATUS_PAUSED下载正在等待重试或恢复。
-                                //STATUS_PENDING下载等待启动。
-                                //STATUS_RUNNING正在运行下载。
-                                //STATUS_SUCCESSFUL下载成功完成。
-                                int COLUMN_STATUS = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-                                //判断是否下载完成
-                                if (COLUMN_STATUS == DownloadManager.STATUS_SUCCESSFUL) {
-                                    //获取文件的本地保存路径(文件路径有前缀,暴力替换感觉不行,暂时没有更好的方法)
-                                    String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "");
-                                    //更新下载记录
-                                    DownloadManagementHelperUtil.update(context, url, downloadId, path);
-                                    //判读有没有注册下载完成监听
-                                    if (onComplete != null)
-                                        //回调下载完成监听
-                                        onComplete.complete(path);
-                                    //判断是否打开文件
-                                    if (isOpenFile) {
-                                        //打开文件
-                                        FileUtil.openFile(context, path);
-                                    }
-                                } else {
-                                    //设置下载失败的回调
-                                    if (onFailure != null)
-                                        onFailure.failure(COLUMN_STATUS);
+                    new Handler(Looper.getMainLooper()).post(() -> {
+                        //执行查询并获取游标
+                        Cursor cursor = downloadManager.query(query);
+                        //判断数据数量是否大于0
+                        if (cursor.getCount() > 0) {
+                            //大于零说明有数据
+                            //把游标移动到第一条数据(这绝对只有一条数据,下载id是不可能重复的)
+                            cursor.moveToPosition(0);
+                            //下载的当前状态，为STATUS_ *常量之一。
+                            //STATUS_FAILED下载失败（并不会重试）
+                            //STATUS_PAUSED下载正在等待重试或恢复。
+                            //STATUS_PENDING下载等待启动。
+                            //STATUS_RUNNING正在运行下载。
+                            //STATUS_SUCCESSFUL下载成功完成。
+                            int COLUMN_STATUS = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                            //判断是否下载完成
+                            if (COLUMN_STATUS == DownloadManager.STATUS_SUCCESSFUL) {
+                                //获取文件的本地保存路径(文件路径有前缀,暴力替换感觉不行,暂时没有更好的方法)
+                                String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "");
+                                //更新下载记录
+                                DownloadManagementHelperUtil.update(context, url, downloadId, path);
+                                //判读有没有注册下载完成监听
+                                if (onComplete != null)
+                                    //回调下载完成监听
+                                    onComplete.complete(path);
+                                //判断是否打开文件
+                                if (isOpenFile) {
+                                    //打开文件
+                                    FileUtil.openFile(context, path);
                                 }
+                            } else {
+                                //设置下载失败的回调
+                                if (onFailure != null)
+                                    onFailure.failure(COLUMN_STATUS);
                             }
                         }
                     });
+                }
+            }).start();
         }
 
         private void openCompleteReceiver() {

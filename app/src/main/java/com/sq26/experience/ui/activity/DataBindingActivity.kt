@@ -1,113 +1,108 @@
 package com.sq26.experience.ui.activity
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.databinding.Bindable
 import androidx.databinding.DataBindingUtil
+import androidx.databinding.Observable
+import androidx.databinding.PropertyChangeRegistry
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
+import com.sq26.experience.BR
 import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityDataBindingBinding
 import com.sq26.experience.util.Log
+import com.sq26.experience.util.kotlin.toast
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.qualifiers.ActivityContext
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.withContext
 import java.util.*
 
+@AndroidEntryPoint
 class DataBindingActivity : AppCompatActivity() {
-    private val viewmodel: DataBindingViewModel by viewModels { DataBindingVMFactory }
+    private val viewModel: DataBindingViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil.setContentView<ActivityDataBindingBinding>(
+        //创建数据绑定
+        DataBindingUtil.setContentView<ActivityDataBindingBinding>(
             this,
             R.layout.activity_data_binding
-        )
-        //绑定生命周期
-        binding.lifecycleOwner =this
-        //绑定视图模板
-        binding.viewmodel = viewmodel
+        ).apply {
+            //绑定生命周期(不知道什么原理,绑定生命周期写在apply方法中才生效,才可以自动刷新)
+            lifecycleOwner = this@DataBindingActivity
+            //绑定视图模板
+            viewmodel = viewModel
 
+            setOnClick {
+                toast("DataBinding绑定点击事件")
+            }
+        }
     }
 }
 
-object DataBindingVMFactory : ViewModelProvider.Factory {
-    private val dataSource = DefaultDataSource(Dispatchers.IO)
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        @Suppress("UNCHECKED_CAST")
-        return DataBindingViewModel(dataSource) as T
+class DataBindingViewModel @ViewModelInject constructor(
+    @ActivityContext private val context: Context
+) : ViewModel(), Observable {
+    private val callbacks = PropertyChangeRegistry()
+    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
+        callbacks.add(callback)
+    }
+    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
+        callbacks.remove(callback)
+    }
+    //Bindable注解给currentTime打上标识,可用于之后的手动数据更新
+    @Bindable
+    var currentTime = System.currentTimeMillis()
+
+    @Bindable
+    var currentTime2 = System.currentTimeMillis()
+
+    //更新currentTime
+    fun updateCurrentTime() {
+        //给currentTime和currentTime2都设置最新的时间戳
+        currentTime = System.currentTimeMillis()
+        currentTime2 = System.currentTimeMillis()
+        //只刷新currentTime,这样就可以只用刷新currentTime的数据而不刷新currentTime2
+        callbacks.notifyChange(this, BR.currentTime)
     }
 
-}
-
-class DefaultDataSource(private val ioDispatcher: CoroutineDispatcher) {
-
-    fun getCurrentTime(): LiveData<Long> = liveData {
-        while (true) {
-            emit(System.currentTimeMillis())
-            delay(1000)
-        }
+    fun onClick() {
+        AlertDialog.Builder(context)
+            .setMessage("viewModel绑定点击事件")
+            .show()
+//        Toast.makeText(context, "viewModel绑定点击事件", Toast.LENGTH_SHORT).show()
     }
 
-    // 每2秒公开一次不断变化的天气状况的LiveData。
-    private val weatherConditions = listOf("Sunny", "Cloudy", "Rainy", "Stormy", "Snowy")
-    fun fetchWeather(): LiveData<String> = liveData {
-        var counter = 0
-        while (true) {
-            counter++
-            delay(2000)
+    var checked = false
 
-            emit(weatherConditions[counter % weatherConditions.size])
-        }
+    fun onTest() {
+        Log.i(checked.toString(), "checked")
+        editText.postValue("123")
     }
 
-    // Cache of a data point that is exposed to VM
-    private val _cachedData = MutableLiveData("This is old data")
-    val cachedData: LiveData<String> = _cachedData
+    var editText = MutableLiveData<String>()
 
-    //在需要刷新缓存时调用。 必须从协程调用。
-    suspend fun fetchNewData() {
-        // 主线程
-        withContext(Dispatchers.Main) {
-            _cachedData.value = "Fetching new data..."
-            _cachedData.value = simulateNetworkDataFetch()
-        }
-    }
-
-    // 在后台获取新数据。 必须从协程调用，以便正确确定范围。
-    private var counter = 0
-
-    // 使用ioDispatcher是因为该函数模拟了长时间且昂贵的操作。
-    private suspend fun simulateNetworkDataFetch(): String = withContext(ioDispatcher) {
-        delay(3000)
-        counter++
-        "New data from request #$counter"
-    }
-}
-
-class DataBindingViewModel(private val dataSource: DefaultDataSource) : ViewModel() {
-
-    companion object {
-        // 实际应用会在结果类型上使用包装器来处理此问题。
-        const val LOADING_STRING = "Loading..."
-    }
-
-    // 函数返回的LiveData，该函数返回使用liveData构建器生成的LiveData
-    val currentTime = dataSource.getCurrentTime()
-
-    fun onRefresh(){
-        Log.i("点了一下")
-    }
 
     // 协程内部的转换
-    val currentTimeTransformed = currentTime.switchMap {
-        // timeStampToTime是一个暂停函数，因此我们需要从协程调用它。
-        liveData { emit(timeStampToTime(it)) }
-    }
+//    val currentTimeTransformed = currentTime.switchMap {
+//        // timeStampToTime是一个暂停函数，因此我们需要从协程调用它。
+//        liveData { emit(timeStampToTime(it)) }
+//    }
 
     // 在后台线程中模拟长时间运行的计算
-    private suspend fun timeStampToTime(timestamp: Long): String {
-        delay(500)  // 模拟长时间运行
-        val date = Date(timestamp)
-        return date.toString()
-    }
+//    private suspend fun timeStampToTime(timestamp: Long): String {
+//        delay(500)  // 模拟长时间运行
+//        val date = Date(timestamp)
+//        return date.toString()
+//    }
+
 }

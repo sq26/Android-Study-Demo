@@ -95,6 +95,8 @@ public class FileHomeActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         //新建打开界面意图
                         Intent intent = new Intent(context, FileOperateActivity.class);
+                        //在新的窗口打开
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
                         //设置根目录路径
                         intent.putExtra("rootPath", jsonObject.getString("path"));
                         //打开文件操作界面

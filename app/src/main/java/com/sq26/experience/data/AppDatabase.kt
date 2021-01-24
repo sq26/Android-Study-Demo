@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.sq26.experience.R
 import kotlin.concurrent.thread
 
 /**app的全局数据库
@@ -13,10 +13,10 @@ import kotlin.concurrent.thread
  * version:数据库的版本
  * exportSchema:是否将数据库导出到文件夹中
  */
-@Database(entities = [HomeMenu::class, HomeMenuType::class], version = 1, exportSchema = false)
+@Database(entities = [HomeMenu::class, RecyclerViewItem::class], version = 1, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun homeMenuDao(): HomeMenuDao
-    abstract fun homeMenuTypeDao(): HomeMenuTypeDao
+    abstract fun recyclerViewDao(): RecyclerViewDao
 
     companion object {
         //Volatile注解,申明线程安全(每次读取刷新cpu缓存)
@@ -44,6 +44,7 @@ abstract class AppDatabase : RoomDatabase() {
                             initHomeMenu(getInstance(context))
                         }
                     })
+//                    .addMigrations(MIGRATION_1_2())
                     //构建
                     .build()
                     //also内联扩展函数,传入调用对象本身,返回调用对象本身,内部的lambda表达式处理对象的初始属性设置和赋值等操作
@@ -53,20 +54,45 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        private fun MIGRATION_1_2(): Migration {
+            //从1升级到2只增加了一个表,所以并不需要写sql语句
+            return object : Migration(1, 2) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    //在这里添加版本变化后所需要执行的sql语句
+//                    database.execSQL("")
+                }
+            }
+        }
+
         fun initHomeMenu(appDatabase: AppDatabase) {
             thread {
-                val homeMenuTypeList = mutableListOf<HomeMenuType>()
-                homeMenuTypeList.add(HomeMenuType(0, "技术功能"))
-                homeMenuTypeList.add(HomeMenuType(1, "android功能"))
-                homeMenuTypeList.add(HomeMenuType(2, "控件功能"))
-                appDatabase.homeMenuTypeDao().insertAll(homeMenuTypeList)
-
-                appDatabase.homeMenuDao().deleteAll()
                 val homeMenuList = mutableListOf<HomeMenu>()
-                homeMenuList.add(HomeMenu("encryption", "对称和非对称加密", 0))
-                homeMenuList.add(HomeMenu("aidl", "AIDL进程间通讯", 0))
-                homeMenuList.add(HomeMenu("Navigation", "导航框架", 1))
-                appDatabase.homeMenuDao().insertAll(homeMenuList)
+                homeMenuList.add(HomeMenu("0", "技术功能", 0))
+                homeMenuList.add(HomeMenu("encryption", "对称和非对称加密", 1, "0"))
+                homeMenuList.add(HomeMenu("aidl", "AIDL进程间通讯", 1, "0"))
+                homeMenuList.add(HomeMenu("javaTest", "java测试", 1, "0"))
+                homeMenuList.add(HomeMenu("kotlin", "kotlin语言学习", 1, "0"))
+                homeMenuList.add(HomeMenu("1", "框架功能", 0))
+                homeMenuList.add(HomeMenu("Navigation", "Navigation导航框架", 1, "1"))
+                homeMenuList.add(HomeMenu("Paging", "Paging框架(RecyclerView分页库)", 1, "1"))
+                homeMenuList.add(HomeMenu("WorkManger", "WorkManger框架(后台任务库)", 1, "1"))
+                homeMenuList.add(HomeMenu("DataBinding", "Data Binding框架(数据绑定)", 1, "1"))
+                homeMenuList.add(HomeMenu("2", "android功能", 0))
+                homeMenuList.add(HomeMenu("ScanCode", "扫码", 1, "2"))
+                homeMenuList.add(HomeMenu("camera", "相机", 1, "2"))
+                homeMenuList.add(HomeMenu("statusBar", "侵入式体验(通知栏和导航栏控制)", 1, "2"))
+                homeMenuList.add(HomeMenu("authorizedOperation", "授权操作", 1, "2"))
+                homeMenuList.add(HomeMenu("fileManagement", "文件管理", 1, "2"))
+                homeMenuList.add(HomeMenu("downloadManagement", "下载管理", 1, "2"))
+                homeMenuList.add(HomeMenu("databaseManagement", "数据库操作", 1, "2"))
+                homeMenuList.add(HomeMenu("network", "网络", 1, "2"))
+                homeMenuList.add(HomeMenu("WiFiDirect", "WIFI直连", 1, "2"))
+                homeMenuList.add(HomeMenu("AppManagement", "app管理", 1, "2"))
+                homeMenuList.add(HomeMenu("3", "视图", 0))
+                homeMenuList.add(HomeMenu("pullToRefresh", "下拉刷新,上拉加载更多", 1, "3"))
+                homeMenuList.add(HomeMenu("RecyclerView", "RecyclerView的使用", 1, "3"))
+
+                appDatabase.homeMenuDao().updateAll(homeMenuList)
             }
         }
     }

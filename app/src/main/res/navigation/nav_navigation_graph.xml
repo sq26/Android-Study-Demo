@@ -3,21 +3,106 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_navigation_graph"
-    app:startDestination="@id/blankFragment2">
-
+    app:startDestination="@id/blankFragment">
+    <!--startDestination:设置起始目的地-->
     <fragment
-        android:id="@+id/blankFragment2"
+        android:id="@+id/blankFragment"
         android:name="com.sq26.experience.ui.fragment.BlankFragment"
-        android:label="fragment_blank"
-        tools:layout="@layout/fragment_blank" />
+        android:label="导航演示的默认碎片页"
+        tools:layout="@layout/fragment_blank">
+        <!--在导航图中，操作由 <action> 元素表示。
+        操作至少应包含自己的 ID 和用户应转到的目的地的 ID。
+        Type 字段包含“Action”。
+        ID 字段包含该操作的 ID。
+        Destination 字段包含目的地 Fragment 或 Activity 的 ID。
+        enterAnim:进入fragment时的动画
+        exitAnim:退出动画,目前不知道什么场景触发
+        popEnterAnim:弹出进入动画,目前不知道什么场景触发
+        popExitAnim:弹出退出动画,按返回键退出时触发
+        -->
+        <action
+            android:id="@+id/action_blankFragment_to_blank3Fragment"
+            app:destination="@id/blank3Fragment"
+            app:enterAnim="@anim/fragment_enter"
+            app:exitAnim="@anim/fragment_fade_exit"
+            app:popEnterAnim="@anim/nav_default_enter_anim"
+            app:popExitAnim="@anim/nav_default_exit_anim" />
+        <action
+            android:id="@+id/action_blankFragment_to_navigationDemoActivity"
+            app:destination="@id/navigationDemoActivity" />
+        <argument
+            android:name="index"
+            android:defaultValue="1"
+            app:argType="integer" />
+    </fragment>
     <fragment
-        android:id="@+id/blank2Fragment2"
+        android:id="@+id/blank2Fragment"
         android:name="com.sq26.experience.ui.fragment.Blank2Fragment"
-        android:label="fragment_blank2"
-        tools:layout="@layout/fragment_blank2" />
+        android:label="导航演示碎片页2"
+        tools:layout="@layout/fragment_blank2">
+        <!-- argument
+               设置此页面需要的参数
+        name是参数名
+        argType是参数类型
+        defaultValue是默认值,可以没有
+        -->
+        <argument
+            android:name="index"
+            android:defaultValue="0"
+            app:argType="integer" />
+        <!--     popUpTo:指在目标地址blankFragment的上面打开blankFragment页面
+                         并清除目标地址blankFragment之上的所有fragment
+        popUpToInclusive:true表示连同目标地址blankFragment一起清除
+                         false表示不清除,默认false,像这种目标地址和popUpTo弹出地址一样时
+                         就会存在两个blankFragment,设置成true就可以清除目标地址blankFragment -->
+        <action
+            android:id="@+id/action_blank2Fragment_to_blankFragment"
+            app:destination="@id/blankFragment"
+            app:popUpTo="@id/blankFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
-        android:id="@+id/blank3Fragment2"
+        android:id="@+id/blank3Fragment"
         android:name="com.sq26.experience.ui.fragment.Blank3Fragment"
-        android:label="fragment_blank3"
-        tools:layout="@layout/fragment_blank3" />
+        android:label="导航演示碎片页3"
+        tools:layout="@layout/fragment_blank3">
+        <argument
+            android:name="index"
+            android:defaultValue="3"
+            app:argType="integer" />
+        <action
+            android:id="@+id/action_blank3Fragment_to_blank2Fragment"
+            app:destination="@id/blank2Fragment" />
+    </fragment>
+
+    <!--   activity只能从fragment中跳转不能设置全局跳转 -->
+    <activity
+        android:id="@+id/navigationDemoActivity"
+        android:name="com.sq26.experience.ui.activity.NavigationDemoActivity"
+        android:label="导航演示页">
+        <argument
+            android:name="index"
+            android:defaultValue="0"
+            app:argType="integer" />
+    </activity>
+    <!--    全局跳转到fragment2-->
+    <action
+        android:id="@+id/action_global_blank2Fragment"
+        app:destination="@id/blank2Fragment">
+        <!-- 修改原本blank2Fragment要传的参数的默认值,类型可以不填-->
+        <argument
+            android:name="index"
+            android:defaultValue="2" />
+    </action>
+    <fragment
+        android:id="@+id/blank4Fragment"
+        android:name="com.sq26.experience.ui.fragment.Blank4Fragment"
+        android:label="fragment_blank4"
+        tools:layout="@layout/fragment_blank4">
+
+        <deepLink
+            android:id="@+id/deepLink"
+            app:uri="sq26://blank.fragment4/" />
+    </fragment>
+
 </navigation>

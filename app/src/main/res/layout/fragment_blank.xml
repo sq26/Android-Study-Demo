@@ -1,43 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.fragment.BlankFragment">
+<layout>
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@id/text"
+    <data>
+
+        <variable
+            name="bottom1OnClick"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="bottom2OnClick"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="bottom3OnClick"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="bottom4OnClick"
+            type="android.view.View.OnClickListener" />
+
+        <variable
+            name="blankViewModel"
+            type="com.sq26.experience.ui.fragment.BlankViewModel" />
+
+        <variable
+            name="graphViewModel"
+            type="com.sq26.experience.ui.activity.GraphViewModel" />
+    </data>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <Button
-        android:id="@+id/bottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/text" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{blankViewModel.text}" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{blankViewModel.text2}"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{graphViewModel.text}"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{bottom1OnClick}"
+            android:text="局部跳转到fragment3并传递参数" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{bottom2OnClick}"
+            android:text="局部跳转到activity并传递参数" />
 
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{bottom3OnClick}"
+            android:text="返回" />
 
-    <Button
-        android:id="@+id/bottom2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="activity"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bottom" />
-
-
-    <Button
-        android:id="@+id/bottom3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="blankFragment3"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bottom2" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{bottom4OnClick}"
+            android:text="隐式深层链接跳转fragment4不加flag"/>
+    </LinearLayout>
+</layout>

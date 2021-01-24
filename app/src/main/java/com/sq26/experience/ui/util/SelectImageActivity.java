@@ -52,13 +52,6 @@ import java.util.Objects;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class SelectImageActivity extends AppCompatActivity {
 
@@ -192,132 +185,107 @@ public class SelectImageActivity extends AppCompatActivity {
     }
 
     private void init() {
-        //使用rxJava在子线程中获取数据
-        Observable.create(new ObservableOnSubscribe<Integer>() {
-            @Override
-            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
-                //指定的是images,并且指明是外部内容
-                Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-                //指定要返回的内容列
-                String[] projection = new String[]{
-                        MediaStore.Images.Media._ID,//文件id
-                        MediaStore.Images.Media.DISPLAY_NAME,//文件名
-                        MediaStore.Images.Media.DATA,//文件路径
-                        MediaStore.Images.Media.HEIGHT,//媒体项目的高度，以像素为单位。
-                        MediaStore.Images.Media.SIZE,//媒体项目的大小。
-                        MediaStore.Images.Media.TITLE,//媒体项目的标题。
-                        MediaStore.Images.Media.WIDTH,//媒体项目的宽度，以像素为单位。
-                        MediaStore.Images.Media.DATE_MODIFIED//媒体项目上次修改的时间。
-                };
 
-                /*
-                 * url:指明要查询的内容类型
-                 * projection:要返回的内容列
-                 *selection:设置条件，相当于SQL语句中的where。null表示不进行筛选。
-                 * selectionArgs:这个参数是要配合第三个参数使用的，如果你在第三个参数里面有？，那么你在selectionArgs写的数据就会替换掉？
-                 * sortOrder:按照什么进行排序，相当于SQL语句中的Order by。如果想要结果按照ID的降序排列,DESC是从大到小排序,ASC是从小到大排序
-                 */
-                Cursor cursor = getContentResolver().query(uri, projection, null, null,
-                        MediaStore.Images.Media.DATE_MODIFIED + " DESC");
-                if (cursor != null) {
-                    //用于关联文件夹和文件,将文件分类在文件夹中
-                    JSONObject parentJsonObject = new JSONObject();
-                    //使用jsonArray保存所有查询出的图片
-                    JSONArray jsonArray = new JSONArray();
-                    //使用jsonObject保存每个图片的信息
-                    JSONObject jsonObject;
-                    //开始遍历查询出的内容
-                    while (cursor.moveToNext()) {
-                        jsonObject = new JSONObject();
-                        for (int i = 0; i < projection.length; i++) {
-                            //字段名做key,值做value
-                            jsonObject.put(projection[i], cursor.getString(i));
-                        }
-                        //获取父文件夹路径
-                        jsonObject.put("parentFilePath", FileUtil.getFileParentFolderPath(jsonObject.getString(MediaStore.Images.Media.DATA)));
-                        //获取父文件夹名称
-                        jsonObject.put("parentFileName", FileUtil.getParentFileName(jsonObject.getString(MediaStore.Images.Media.DATA)));
+        new Thread(() -> {
+            //指定的是images,并且指明是外部内容
+            Uri uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            //指定要返回的内容列
+            String[] projection = new String[]{
+                    MediaStore.Images.Media._ID,//文件id
+                    MediaStore.Images.Media.DISPLAY_NAME,//文件名
+                    MediaStore.Images.Media.DATA,//文件路径
+                    MediaStore.Images.Media.HEIGHT,//媒体项目的高度，以像素为单位。
+                    MediaStore.Images.Media.SIZE,//媒体项目的大小。
+                    MediaStore.Images.Media.TITLE,//媒体项目的标题。
+                    MediaStore.Images.Media.WIDTH,//媒体项目的宽度，以像素为单位。
+                    MediaStore.Images.Media.DATE_MODIFIED//媒体项目上次修改的时间。
+            };
+
+            /*
+             * url:指明要查询的内容类型
+             * projection:要返回的内容列
+             *selection:设置条件，相当于SQL语句中的where。null表示不进行筛选。
+             * selectionArgs:这个参数是要配合第三个参数使用的，如果你在第三个参数里面有？，那么你在selectionArgs写的数据就会替换掉？
+             * sortOrder:按照什么进行排序，相当于SQL语句中的Order by。如果想要结果按照ID的降序排列,DESC是从大到小排序,ASC是从小到大排序
+             */
+            Cursor cursor = getContentResolver().query(uri, projection, null, null,
+                    MediaStore.Images.Media.DATE_MODIFIED + " DESC");
+            if (cursor != null) {
+                //用于关联文件夹和文件,将文件分类在文件夹中
+                JSONObject parentJsonObject = new JSONObject();
+                //使用jsonArray保存所有查询出的图片
+                JSONArray jsonArray = new JSONArray();
+                //使用jsonObject保存每个图片的信息
+                JSONObject jsonObject;
+                //开始遍历查询出的内容
+                while (cursor.moveToNext()) {
+                    jsonObject = new JSONObject();
+                    for (int i = 0; i < projection.length; i++) {
+                        //字段名做key,值做value
+                        jsonObject.put(projection[i], cursor.getString(i));
+                    }
+                    //获取父文件夹路径
+                    jsonObject.put("parentFilePath", FileUtil.getFileParentFolderPath(jsonObject.getString(MediaStore.Images.Media.DATA)));
+                    //获取父文件夹名称
+                    jsonObject.put("parentFileName", FileUtil.getParentFileName(jsonObject.getString(MediaStore.Images.Media.DATA)));
 //                        //获取文件的uri
 //                        jsonObject.put("fileUri", Uri.withAppendedPath(uri, jsonObject.getString(MediaStore.Images.Media._ID)).toString());
-                        //获取文件的uri
-                        jsonObject.put("fileUri", ContentUris.withAppendedId(uri, jsonObject.getLong(MediaStore.Images.Media._ID)).toString());
-                        //加入到全图片列表中
-                        jsonArray.add(jsonObject);
-                        //判断以父文件夹路径作为key的jsonArray是否存在
-                        if (parentJsonObject.containsKey(jsonObject.getString("parentFilePath"))) {
-                            //存在就把jsonObject加入对应的value中
-                            parentJsonObject.getJSONArray(jsonObject.getString("parentFilePath")).add(jsonObject);
-                        } else {
-                            //不存在就以父文件夹路径作为key创建jsonArray,并加入第一条数据
-                            JSONArray newJsonArray = new JSONArray();
-                            newJsonArray.add(jsonObject);
-                            parentJsonObject.put(jsonObject.getString("parentFilePath"), newJsonArray);
-                        }
+                    //获取文件的uri
+                    jsonObject.put("fileUri", ContentUris.withAppendedId(uri, jsonObject.getLong(MediaStore.Images.Media._ID)).toString());
+                    //加入到全图片列表中
+                    jsonArray.add(jsonObject);
+                    //判断以父文件夹路径作为key的jsonArray是否存在
+                    if (parentJsonObject.containsKey(jsonObject.getString("parentFilePath"))) {
+                        //存在就把jsonObject加入对应的value中
+                        parentJsonObject.getJSONArray(jsonObject.getString("parentFilePath")).add(jsonObject);
+                    } else {
+                        //不存在就以父文件夹路径作为key创建jsonArray,并加入第一条数据
+                        JSONArray newJsonArray = new JSONArray();
+                        newJsonArray.add(jsonObject);
+                        parentJsonObject.put(jsonObject.getString("parentFilePath"), newJsonArray);
                     }
-                    //关闭链接
-                    cursor.close();
-                    //创建一个新的JSONObject
+                }
+                //关闭链接
+                cursor.close();
+                //创建一个新的JSONObject
+                jsonObject = new JSONObject();
+                //设置标题
+                jsonObject.put("title", "全部图片");
+                //设置预览图(取图片里的第一张)
+                jsonObject.put("image", jsonArray.getJSONObject(0).getString("fileUri"));
+                //设置图片数量
+                jsonObject.put("count", jsonArray.size());
+                //设置图片内容jsonArray数组
+                jsonObject.put("array", jsonArray);
+                //加入到全局文件夹jsonArray
+                selectFolderArray.add(jsonObject);
+                //遍历保存的父文件夹
+                for (String key : parentJsonObject.keySet()) {
                     jsonObject = new JSONObject();
-                    //设置标题
-                    jsonObject.put("title", "全部图片");
-                    //设置预览图(取图片里的第一张)
-                    jsonObject.put("image", jsonArray.getJSONObject(0).getString("fileUri"));
+                    //设置标题(取列表第一条数据里父文件夹名称)
+                    jsonObject.put("title", parentJsonObject.getJSONArray(key).getJSONObject(0).getString("parentFileName"));
+                    //设置预览图(取列表第一条数据里的图片路径)
+                    jsonObject.put("image", parentJsonObject.getJSONArray(key).getJSONObject(0).getString("fileUri"));
                     //设置图片数量
-                    jsonObject.put("count", jsonArray.size());
+                    jsonObject.put("count", parentJsonObject.getJSONArray(key).size());
                     //设置图片内容jsonArray数组
-                    jsonObject.put("array", jsonArray);
+                    jsonObject.put("array", parentJsonObject.getJSONArray(key));
                     //加入到全局文件夹jsonArray
                     selectFolderArray.add(jsonObject);
-                    //遍历保存的父文件夹
-                    for (String key : parentJsonObject.keySet()) {
-                        jsonObject = new JSONObject();
-                        //设置标题(取列表第一条数据里父文件夹名称)
-                        jsonObject.put("title", parentJsonObject.getJSONArray(key).getJSONObject(0).getString("parentFileName"));
-                        //设置预览图(取列表第一条数据里的图片路径)
-                        jsonObject.put("image", parentJsonObject.getJSONArray(key).getJSONObject(0).getString("fileUri"));
-                        //设置图片数量
-                        jsonObject.put("count", parentJsonObject.getJSONArray(key).size());
-                        //设置图片内容jsonArray数组
-                        jsonObject.put("array", parentJsonObject.getJSONArray(key));
-                        //加入到全局文件夹jsonArray
-                        selectFolderArray.add(jsonObject);
-                    }
-                    //将全部图片列表加入到当前显示图片视图列表中
-                    imageArray.addAll(jsonArray);
-
-
-                    Log.d("jsonArray", jsonArray.toJSONString());
-                } else {
-                    Log.d("图片", "没有图片");
                 }
+                //将全部图片列表加入到当前显示图片视图列表中
+                imageArray.addAll(jsonArray);
 
 
-                emitter.onComplete();
+                Log.d("jsonArray", jsonArray.toJSONString());
+            } else {
+                Log.d("图片", "没有图片");
             }
-        }).observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Observer<Integer>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onNext(Integer s) {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        //刷新图片视图列表
-                        imageAdapter.notifyDataSetChanged();
-
-                    }
-                });
+            runOnUiThread(() -> {
+                //刷新图片视图列表
+                imageAdapter.notifyDataSetChanged();
+            });
+        }).start();
     }
 
     private void initSelectFolderPopupWindow() {

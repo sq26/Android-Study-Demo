@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
@@ -29,30 +30,34 @@
                 android:layout_height="wrap_content"
                 android:theme="@style/ToolBarTheme"
                 app:layout_constraintTop_toTopOf="parent"
-                app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+                app:navigationIcon="@drawable/ic_baseline_menu_24"
                 app:title="@{viewModel.title}" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/menuRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                tools:listitem="@layout/item_recyclerview"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/toolbar" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@android:color/white"
             android:orientation="vertical">
 
-            <TextView
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/menuTypeRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="@{viewModel.left}" />
-        </LinearLayout>
+                tools:listitem="@layout/item_recyclerview"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.drawerlayout.widget.DrawerLayout>
 

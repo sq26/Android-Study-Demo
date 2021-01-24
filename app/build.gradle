@@ -6,8 +6,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 //应用Hilt插件 ,Hilt是 Android 的依赖项注入库，可减少在项目中执行手动依赖项注入的样板代码。
 apply plugin: 'dagger.hilt.android.plugin'
-//导航的插件,safeargs用于在fragment之间跳转传输少量数据,适用于 Java 模块或 Java 和 Kotlin 混合模块的 Java 语言代码
-apply plugin: "androidx.navigation.safeargs"
+//导航的插件,safeargs用于在fragment之间跳转传输少量数据,去掉后面的.kotlin就是适用于 Java 模块或 Java 和 Kotlin 混合模块的 Java 语言代码
+apply plugin: "androidx.navigation.safeargs.kotlin"
 
 android {
     compileSdkVersion 30
@@ -78,8 +78,8 @@ dependencies {
     //fastJson json解析库
     implementation 'com.alibaba:fastjson:1.2.74'
     //RxJava链式异步处理库
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.11'
+//    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+//    implementation 'io.reactivex.rxjava2:rxjava:2.2.11'
     //zxing框架核心
     implementation 'com.google.zxing:core:3.4.1'
     //Fresco框架
@@ -140,5 +140,7 @@ dependencies {
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02"
     kapt "androidx.hilt:hilt-compiler:1.0.0-alpha02"
     //使用 Hilt 注入 WorkManager
-    implementation 'androidx.hilt:hilt-work:1.0.0-alpha01'
+    implementation 'androidx.hilt:hilt-work:1.0.0-alpha02'
+    //添加 WorkManager 的依赖项Kotlin + coroutines
+    implementation "androidx.work:work-runtime-ktx:2.4.0"
 }

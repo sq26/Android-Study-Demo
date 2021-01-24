@@ -15,10 +15,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/bottom"
+        android:id="@+id/bottom1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="局部跳转到fragment1并清空fragment1之上的所有页面"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/text" />
 
@@ -26,7 +26,7 @@
         android:id="@+id/bottom2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="返回"
+        android:text="返回到fragment1,并设置返回参数"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bottom" />
+        app:layout_constraintTop_toBottomOf="@id/bottom1" />
 </androidx.constraintlayout.widget.ConstraintLayout>

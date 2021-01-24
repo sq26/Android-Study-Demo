@@ -2,6 +2,7 @@ package com.sq26.experience.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.compose.ui.viewinterop.viewModel
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -10,10 +11,14 @@ import com.sq26.experience.data.HomeMenu
 import com.sq26.experience.databinding.ItemRecyclerviewBinding
 import com.sq26.experience.ui.fragment.HomeFragmentDirections
 import com.sq26.experience.util.Log
+import com.sq26.experience.viewmodel.HomeViewModel
+import javax.inject.Inject
 
-
-class HomeMenuAdapter : ListAdapter<HomeMenu, HomeMenuAdapter.ViewHolder>(HomeMenuDiffCallback()) {
+//获取数据模型
+class HomeMenuAdapter(private val homeViewModel: HomeViewModel) :
+    ListAdapter<HomeMenu, HomeMenuAdapter.ViewHolder>(HomeMenuDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        //数据绑定
         return ViewHolder(
             ItemRecyclerviewBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -25,10 +30,11 @@ class HomeMenuAdapter : ListAdapter<HomeMenu, HomeMenuAdapter.ViewHolder>(HomeMe
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        //绑定数据
         holder.bind(getItem(position))
     }
 
-    class ViewHolder(private val binding: ItemRecyclerviewBinding) :
+    inner class ViewHolder(private val binding: ItemRecyclerviewBinding) :
         RecyclerView.ViewHolder(binding.root) {
         init {
             //设置数据的itemView的点击事件
@@ -37,17 +43,55 @@ class HomeMenuAdapter : ListAdapter<HomeMenu, HomeMenuAdapter.ViewHolder>(HomeMe
                 binding.homeMenu?.apply {
                     //设置点击事件
                     Log.i("$this")
-                    //设置要跳转的页面
-                    val directions = when(id){
-                        "encryption"->
-                            HomeFragmentDirections.actionHomeFragmentToEncryptionActivity()
-                        "Navigation"->
-                            HomeFragmentDirections.actionHomeFragmentToNavigationActivity()
-                        else ->
-                            HomeFragmentDirections.actionHomeFragmentToStartFragment()
+                    if (type == 0) {
+                        //刷新菜单
+                        homeViewModel.refreshHomeMenuList(id)
+                    } else {
+                        //设置要跳转的页面
+                        val directions = when (id) {
+                            "encryption" ->
+                                HomeFragmentDirections.actionHomeFragmentToEncryptionActivity()
+                            "aidl" ->
+                                HomeFragmentDirections.actionHomeFragmentToAIDLActivity()
+                            "javaTest" ->
+                                HomeFragmentDirections.actionHomeFragmentToTestActivity()
+                            "kotlin" ->
+                                HomeFragmentDirections.actionHomeFragmentToKotlinActivity()
+                            "Navigation" ->
+                                HomeFragmentDirections.actionHomeFragmentToNavigationActivity()
+                            "Paging" ->
+                                HomeFragmentDirections.actionHomeFragmentToPagingActivity()
+                            "DataBinding" ->
+                                HomeFragmentDirections.actionHomeFragmentToDataBindingActivity()
+                            "ScanCode" ->
+                                HomeFragmentDirections.actionHomeFragmentToQrCodeDemoActivity()
+                            "camera" ->
+                                HomeFragmentDirections.actionHomeFragmentToCameraActivity()
+                            "statusBar" ->
+                                HomeFragmentDirections.actionHomeFragmentToStatusBarActivity()
+                            "authorizedOperation" ->
+                                HomeFragmentDirections.actionHomeFragmentToAuthorizedOperationActivity()
+                            "fileManagement" ->
+                                HomeFragmentDirections.actionHomeFragmentToFileHomeActivity()
+                            "downloadManagement" ->
+                                HomeFragmentDirections.actionHomeFragmentToDownloadManagementActivity()
+                            "network" ->
+                                HomeFragmentDirections.actionHomeFragmentToNetworkActivity()
+                            "WiFiDirect" ->
+                                HomeFragmentDirections.actionHomeFragmentToWiFiDirectActivity()
+                            "AppManagement" ->
+                                HomeFragmentDirections.actionHomeFragmentToAppManagementActivity()
+                            "pullToRefresh" ->
+                                HomeFragmentDirections.actionHomeFragmentToPullToRefreshActivity()
+                            "RecyclerView" ->
+                                HomeFragmentDirections.actionHomeFragmentToRecyclerViewActivity()
+                            "WorkManger" ->
+                                HomeFragmentDirections.actionHomeFragmentToWorkManagerActivity()
+                            else ->
+                                HomeFragmentDirections.actionHomeFragmentToStartFragment()
+                        }
+                        it.findNavController().navigate(directions)
                     }
-
-                    it.findNavController().navigate(directions)
                 }
             }
         }
@@ -61,14 +105,14 @@ class HomeMenuAdapter : ListAdapter<HomeMenu, HomeMenuAdapter.ViewHolder>(HomeMe
             }
         }
     }
-}
 
-private class HomeMenuDiffCallback : DiffUtil.ItemCallback<HomeMenu>() {
-    override fun areItemsTheSame(oldItem: HomeMenu, newItem: HomeMenu): Boolean {
-        return oldItem.id == newItem.id
-    }
+    class HomeMenuDiffCallback : DiffUtil.ItemCallback<HomeMenu>() {
+        override fun areItemsTheSame(oldItem: HomeMenu, newItem: HomeMenu): Boolean {
+            return oldItem.id == newItem.id
+        }
 
-    override fun areContentsTheSame(oldItem: HomeMenu, newItem: HomeMenu): Boolean {
-        return oldItem == newItem
+        override fun areContentsTheSame(oldItem: HomeMenu, newItem: HomeMenu): Boolean {
+            return oldItem == newItem
+        }
     }
 }

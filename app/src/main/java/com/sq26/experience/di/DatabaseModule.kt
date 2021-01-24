@@ -3,6 +3,7 @@ package com.sq26.experience.di
 import android.content.Context
 import com.sq26.experience.data.AppDatabase
 import com.sq26.experience.data.HomeMenuDao
+import com.sq26.experience.data.RecyclerViewDao
 import com.sq26.experience.util.Log
 import dagger.Module
 import dagger.Provides
@@ -31,5 +32,10 @@ class DatabaseModule {
     @Provides
     fun provideHomeMenuDao(appDatabase: AppDatabase): HomeMenuDao {
         return appDatabase.homeMenuDao()
+    }
+
+    @Provides
+    fun provideRecyclerViewDao(appDatabase: AppDatabase): RecyclerViewDao {
+        return appDatabase.recyclerViewDao()
     }
 }

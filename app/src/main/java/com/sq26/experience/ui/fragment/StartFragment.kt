@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.observe
 import androidx.navigation.fragment.findNavController
 import com.sq26.experience.databinding.FragmentStartBinding
 import com.sq26.experience.viewmodel.MainViewModel

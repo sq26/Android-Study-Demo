@@ -1,12 +1,7 @@
 <resources>
     <string name="app_name">experience</string>
-    <string name="Use_of_RxJava">RxJava的使用</string>
     <string name="AndroidJetpackComponents">Android Jetpack组件</string>
-    <string name="LifecycleComponents">Lifecycle组件(生命感知组件)</string>
-    <string name="LiveDataComponents">LiveData组件(安全数据使用组件)</string>
-    <string name="ViewModeComponents">ViewMode组件(数据管理和存储组件)</string>
     <string name="NavigationComponents">Navigation组件(管理Fragment的切换)</string>
-    <string name="RoomComponents">Room组件(数据库框架)</string>
     <string name="PagingComponents">Paging组件(RecyclerView分页库)</string>
     <string name="WorkMangerComponents">WorkManger组件(后台任务库)</string>
     <string name="Data_BindingComponents">Data Binding组件(数据绑定)</string>

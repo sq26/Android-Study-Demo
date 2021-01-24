@@ -1,23 +1,40 @@
 package com.sq26.experience.viewmodel
 
+import android.content.Context
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.liveData
+import androidx.lifecycle.*
 import com.sq26.experience.data.HomeMenu
 import com.sq26.experience.data.HomeMenuDao
+import dagger.hilt.android.qualifiers.ActivityContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
 class HomeViewModel @ViewModelInject internal constructor(
-    homeRepository: HomeRepository
+    private val homeRepository: HomeRepository,
+    @ActivityContext private val context: Context
 ) : ViewModel() {
     val content = "主页"
-    val left = "左边栏"
     val title = "首页"
 
-    val homeMenuList: LiveData<List<HomeMenu>> = homeRepository.getHomeMenuList().asLiveData()
+    val homeMenuList = MutableLiveData<List<HomeMenu>>()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            homeMenuList.postValue(homeRepository.getHomeMenuList("0"))
+        }
+    }
+
+    fun refreshHomeMenuList(typeId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            homeMenuList.postValue(homeRepository.getHomeMenuList(typeId))
+        }
+    }
+
+
+    val homeMenuTypeList: LiveData<List<HomeMenu>> =
+        homeRepository.getHomeMenuTypeList().asLiveData()
 //        liveData {
 //        emit(homeRepository.getHomeMenuList())
 
@@ -32,5 +49,8 @@ class HomeViewModel @ViewModelInject internal constructor(
 class HomeRepository @Inject constructor(
     private val homeMenuDao: HomeMenuDao
 ) {
-    fun getHomeMenuList() = homeMenuDao.getHomeMenuList()
+
+    fun getHomeMenuList(typeId: String) = homeMenuDao.getHomeMenuList(typeId)
+
+    fun getHomeMenuTypeList() = homeMenuDao.getHomeMenuTypeList()
 }

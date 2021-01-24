@@ -30,21 +30,8 @@ import com.sq26.experience.util.FileType;
 import com.sq26.experience.util.ImageCompression;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Objects;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
-
-import static java.lang.Thread.sleep;
 
 public class ImageFragment extends Fragment {
     //记录图片数据的来源
@@ -84,8 +71,8 @@ public class ImageFragment extends Fragment {
             long timeStamp = System.currentTimeMillis();
             //创建拍照保存的图片文件,用时间戳做文件名,这里不加后缀(因为无法设置相机的拍摄格式)
             File cameraSaveFile = new File(isLastingSave ?
-                    Objects.requireNonNull(getActivity()).getExternalFilesDir(Environment.DIRECTORY_PICTURES) :
-                    Objects.requireNonNull(getActivity()).getExternalCacheDir(), timeStamp + "");
+                    getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES) :
+                    getActivity().getExternalCacheDir(), timeStamp + "");
             //获取文件的临时路径
             cameraTemporarySavePath = cameraSaveFile.getAbsolutePath();
             //创建intent,跳转相机
@@ -97,7 +84,7 @@ public class ImageFragment extends Fragment {
                 //加入临时访问声明
                 intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 //将图片路劲转成Uri
-                uri = FileProvider.getUriForFile(Objects.requireNonNull(getActivity()), BuildConfig.APPLICATION_ID + ".FileProvider", cameraSaveFile);
+                uri = FileProvider.getUriForFile(getActivity(), BuildConfig.APPLICATION_ID + ".FileProvider", cameraSaveFile);
             } else {
                 //将图片路劲转成Uri
                 uri = Uri.fromFile(cameraSaveFile);
@@ -135,7 +122,7 @@ public class ImageFragment extends Fragment {
                     if (isCompression) {
                         //进行压缩
                         //创建一个不可被用户关闭的等待弹出框,并显示
-                        ProgressDialog progressDialog = new ProgressDialog(Objects.requireNonNull(getActivity())).show();
+                        ProgressDialog progressDialog = new ProgressDialog(getActivity()).show();
                         //创建MutableLiveData做异步处理
                         MutableLiveData<String> mutableLiveData = new MutableLiveData<>();
                         //设置观察者,监听数据变化
@@ -179,11 +166,11 @@ public class ImageFragment extends Fragment {
                         } else {
                             //不要原图,进行压缩
                             //创建一个不可被用户关闭的等待弹出框,并显示
-                            ProgressDialog progressDialog = new ProgressDialog(Objects.requireNonNull(getActivity())).show();
-                            //创建一个rxjava,进行异步压缩图片
-                            Observable.create(new ObservableOnSubscribe<Integer>() {
+                            ProgressDialog progressDialog = new ProgressDialog(getActivity()).show();
+
+                            new Thread(new Runnable() {
                                 @Override
-                                public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                                public void run() {
                                     //遍历已选择的图片
                                     for (int i = 0; i < paths.length; i++) {
                                         //调用图片压缩方法将压缩过的图片的地址进行替换
@@ -195,38 +182,26 @@ public class ImageFragment extends Fragment {
                                                 //执行压缩,并返回file路径
                                                 .startCompressionToString();
                                         //每成功压缩一次,调用一次提示方法
-                                        emitter.onNext(i);
+                                        int finalI = i;
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                //在这里进行提示刷新,每成功压缩一次,刷新一下提示
+                                                progressDialog.setMessage(getContext().getString(R.string.Compressing_2d, (finalI + 1), paths.length));
+                                            }
+                                        });
                                     }
-                                    //压缩遍历完调用完成方法
-                                    emitter.onComplete();
-                                }
-                            }).observeOn(AndroidSchedulers.mainThread())
-                                    .subscribeOn(Schedulers.io())
-                                    .subscribe(new Observer<Integer>() {
+                                    getActivity().runOnUiThread(new Runnable() {
                                         @Override
-                                        public void onSubscribe(Disposable d) {
-                                            //异步开始的方法
-                                        }
-
-                                        @Override
-                                        public void onNext(Integer i) {
-                                            //在这里进行提示刷新,每成功压缩一次,刷新一下提示
-                                            progressDialog.setMessage(Objects.requireNonNull(getContext()).getString(R.string.Compressing_2d, (i + 1), paths.length));
-                                        }
-
-                                        @Override
-                                        public void onError(Throwable e) {
-                                            //异步线程出错的方法
-                                        }
-
-                                        @Override
-                                        public void onComplete() {
+                                        public void run() {
                                             //完成,关闭等待弹出框
                                             progressDialog.dismiss();
                                             //进行图片获取成功的回调
                                             onImageReturnCallback.success(paths);
                                         }
                                     });
+                                }
+                            }).start();
                         }
                     } else
                         //进行图片获取取消的回调

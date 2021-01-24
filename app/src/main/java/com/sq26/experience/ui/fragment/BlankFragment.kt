@@ -1,13 +1,24 @@
 package com.sq26.experience.ui.fragment
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
+import androidx.navigation.navGraphViewModels
+import com.sq26.experience.R
 import com.sq26.experience.databinding.FragmentBlankBinding
+import com.sq26.experience.ui.activity.GraphViewModel
 import com.sq26.experience.ui.activity.NavigationViewModel
 import com.sq26.experience.util.Log
 
@@ -16,93 +27,90 @@ import com.sq26.experience.util.Log
  * Use the [BlankFragment.newInstance] factory method to
  * 创建此片段的一个实例。
  */
-class BlankFragment : Fragment() {
-    //公用属性
-    private var mParam1: String? = null
-    private var mParam2: String? = null
+abstract class BlankFragment : Fragment() {
+    private val viewModel: BlankViewModel by viewModels()
 
-    companion object {
-        // 片段初始化参数，例如ARG_ITEM_NUMBER
-        private const val ARG_PARAM1 = "param1"
-        private const val ARG_PARAM2 = "param2"
+    //获取宿主activity的viewModel
+    private val navigationViewModel: NavigationViewModel by activityViewModels()
 
-        /**
-         * 使用此工厂方法创建一个新的实例
-         * 该片段使用提供的参数。
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return 片段BlankFragment的新实例。
-         */
-        // TODO: Rename and change types and number of parameters
-        fun newInstance(param1: String?, param2: String?): BlankFragment =
-        //通过setArguments的方式保存的参数不会应为屏幕旋转或是其他重新创建的情况而丢失
-            //apply用于对象的初始化时对其属性赋值,返回值是调用者自身
-            BlankFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+    //获取范围限定于导航图的 ViewModel
+    private val mGraphViewModel: GraphViewModel by navGraphViewModels(R.id.nav_navigation_graph)
 
-    }
+    //获取传入的参数
+    private val args: BlankFragmentArgs by navArgs()
 
+    //onCreate只会创建一次
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //恢复参数
-        //使用let方法做非空判断,arguments不等空就执行函数体中的代码
-        //it表示不为空的arguments
-        arguments?.let {
-            mParam1 = it.getString(ARG_PARAM1)
-            mParam2 = it.getString(ARG_PARAM2)
+        Log.i("BlankFragment创建")
+        //获取当前堆栈的保存状态
+        val currentBackStackEntry = findNavController().currentBackStackEntry!!
+        val savedStateHandle = currentBackStackEntry.savedStateHandle
+        savedStateHandle.getLiveData<String>("text").observe(currentBackStackEntry) {
+            viewModel.text2 = it
+        }
+        //添加返回监听,默认是启用状态
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            Toast.makeText(activity, "再点一次退出", Toast.LENGTH_SHORT).show()
+            //设置不起用下次点击返回才会返回上级界面
+            isEnabled = false
         }
     }
 
-    private var _binding: FragmentBlankBinding? = null
-
-    // 此属性仅在onCreateView和onDestroyView之间有效
-    private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Log.i("BlankFragment创建视图")
         // 创建此片段的布局
-        _binding = FragmentBlankBinding.inflate(inflater, container, false)
-        return _binding!!.root
+        val binding = DataBindingUtil.inflate<FragmentBlankBinding>(
+            inflater,
+            R.layout.fragment_blank,
+            container,
+            false
+        ).apply {
+            blankViewModel = viewModel
+            graphViewModel = mGraphViewModel
+            //设置dataBinding生命周期
+            lifecycleOwner = viewLifecycleOwner
+            bottom1OnClick = View.OnClickListener {
+                val directions =
+                    BlankFragmentDirections.actionBlankFragmentToBlank3Fragment(13)
+                findNavController().navigate(directions)
+            }
+            bottom2OnClick = View.OnClickListener {
+                val directions =
+                    BlankFragmentDirections.actionBlankFragmentToNavigationDemoActivity(10)
+                findNavController().navigate(directions)
+            }
+            //简写点击事件
+            setBottom3OnClick {
+                //向上返回,已经到顶就不会返回了,会返回成功或失败
+//                findNavController().navigateUp()
+                //向上返回,这个可以指定要返回的页面
+                mGraphViewModel.text.postValue("11")
+//                findNavController().popBackStack()
+            }
+            setBottom4OnClick {
+                //创建隐式深层连接
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("sq26://blank.fragment4/"))
+                intent.putExtra("index", 14)
+                //不加此flag可以正常返回
+//                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            }
+            viewModel.text = args.index.toString()
+        }
+        return binding.root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    //获取宿主activity的viewModel
-    private val viewModel: NavigationViewModel by activityViewModels()
+    //onViewCreated被遮挡后显示会再次调用
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.text.text = "1"
-        //打印viewModel中的数据
-        Log.i("liveData:${viewModel.text}")
-        binding.bottom.setOnClickListener {
-            val action = BlankFragmentDirections.actionBlankFragmentToBlank2Fragment()
-//                .setIndex(22)
-            //ktx语法糖,可以获取绑定的导航控制器
-            findNavController().navigate(action)
-        }
-        binding.bottom2.setOnClickListener {
-            val action = BlankFragmentDirections.actionBlankFragmentToLoginActivity()
-                .setText("123")
-
-            findNavController().navigate(action)
-        }
-        binding.bottom3.setOnClickListener {
-            val action = BlankFragmentDirections.actionBlankFragmentToIncludeNavGraph()
-            findNavController().navigate(action)
-        }
     }
 
-    private fun start() {
-        //指定跳转行为,进行跳转
-//        navController.navigate(R.id.action_blankFragment_to_blank2Fragment);
-    }
+}
+
+class BlankViewModel : ViewModel() {
+    var text = ""
+    var text2 = ""
 }

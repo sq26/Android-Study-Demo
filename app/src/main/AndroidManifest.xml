@@ -139,17 +139,18 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".ui.activity.LoginActivity"></activity>
+        <activity android:name=".ui.activity.NavigationDemoActivity" />
         <activity android:name=".ui.activity.DataBindingActivity" />
         <activity android:name=".ui.activity.KotlinActivity" />
         <activity android:name=".ui.activity.AppManagementActivity" />
         <activity android:name=".ui.activity.WiFiDirectActivity" />
         <activity android:name=".ui.activity.PagingActivity" />
-        <activity android:name=".ui.activity.RoomActivity" />
-        <activity android:name=".ui.activity.NavigationActivity" />
-        <activity android:name=".ui.activity.ViewModeActivity" />
-        <activity android:name=".ui.activity.LiveDataActivity" />
-        <activity android:name=".ui.activity.LifecycleActivity" />
+        <activity android:name="com.sq26.experience.ui.activity.WorkManagerActivity" />
+        <activity android:name=".ui.activity.NavigationActivity">
+            <!--使用隐式深层链接必须将导航图添加到指向现有导航图的 Activity-->
+            <!--构建项目时，Navigation 组件会将 <nav-graph> 元素替换为生成的 <intent-filter> 元素，以匹配导航图中的所有深层链接。-->
+            <nav-graph android:value="@navigation/nav_navigation_graph" />
+        </activity>
         <activity android:name=".ui.activity.file.FileImageActivity" />
         <activity android:name=".ui.util.PdfActivity">
 
@@ -164,15 +165,21 @@
                 <data android:mimeType="application/pdf" />
             </intent-filter>
         </activity> <!-- 文件管理首页的activity(计划和文件操作页合并) -->
-        <activity android:name=".ui.activity.file.FileHomeActivity" /> <!-- 跨进程通讯演示操作页 -->
-        <activity android:name=".ui.activity.AIDLActivity" /> <!-- 网络请求演示操作页 -->
-        <activity android:name=".ui.activity.NetworkActivity" /> <!-- 加密解密演示操作页 -->
-        <activity android:name=".ui.activity.EncryptionActivity" /> <!-- RecyclerView控件演示操作页 -->
-        <activity android:name=".ui.activity.RecyclerViewActivity" /> <!-- 下载管理演示操作页 -->
-        <activity android:name=".ui.activity.DownloadManagementActivity" /> <!-- 上拉刷新下拉加载更多的自定义控件 -->
-        <activity android:name=".ui.activity.PullToRefreshActivity" /> <!-- 可以打开文本文件的activity -->
+        <activity android:name=".ui.activity.file.FileHomeActivity" />
+        <!-- 跨进程通讯演示操作页 -->
+        <activity android:name=".ui.activity.AIDLActivity" />
+        <!-- 网络请求演示操作页 -->
+        <activity android:name=".ui.activity.NetworkActivity" />
+        <!-- 加密解密演示操作页 -->
+        <activity android:name=".ui.activity.EncryptionActivity" />
+        <!-- RecyclerView控件演示操作页 -->
+        <activity android:name=".ui.activity.RecyclerViewActivity" />
+        <!-- 下载管理演示操作页 -->
+        <activity android:name=".ui.activity.DownloadManagementActivity" />
+        <!-- 上拉刷新下拉加载更多的自定义控件 -->
+        <activity android:name=".ui.activity.PullToRefreshActivity" />
+        <!-- 可以打开文本文件的activity -->
         <activity android:name=".ui.util.TextActivity">
-
             <!-- ignore忽略app链接错误 -->
             <intent-filter tools:ignore="AppLinkUrlError">
 
@@ -183,16 +190,24 @@
                 <!-- 数据设置为匹配纯文本 -->
                 <data android:mimeType="text/plain" />
             </intent-filter>
-        </activity> <!-- 图片选择页 -->
-        <activity android:name=".ui.util.SelectImageActivity" /> <!-- 媒体管理页 -->
-        <activity android:name=".ui.activity.MediaManagementActivity" /> <!-- 文件操作页 -->
-        <activity android:name=".ui.activity.file.FileOperateActivity" /> <!-- 权限申请页 -->
-        <activity android:name=".ui.activity.AuthorizedOperationActivity" /> <!-- 通知栏管理页 -->
-        <activity android:name=".ui.activity.StatusBarActivity" /> <!-- 相机页 -->
-        <activity android:name=".ui.activity.CameraActivity" /> <!-- 测试页 -->
-        <activity android:name=".ui.activity.TestActivity" /> <!-- 二维码识别页 -->
-        <activity android:name=".ui.activity.QrCodeDemoActivity" /> <!-- RXJava异步操作演示页 -->
-        <activity android:name=".ui.activity.RXJavaActivity" /> <!-- 主页 -->
+        </activity>
+        <!-- 图片选择页 -->
+        <activity android:name=".ui.util.SelectImageActivity" />
+        <!-- 媒体管理页 -->
+        <activity android:name=".ui.activity.MediaManagementActivity" />
+        <!-- 文件操作页 -->
+        <activity android:name=".ui.activity.file.FileOperateActivity" />
+        <!-- 权限申请页 -->
+        <activity android:name=".ui.activity.AuthorizedOperationActivity" />
+        <!-- 通知栏管理页 -->
+        <activity android:name=".ui.activity.StatusBarActivity" />
+        <!-- 相机页 -->
+        <activity android:name=".ui.activity.CameraActivity" />
+        <!-- 测试页 -->
+        <activity android:name=".ui.activity.TestActivity" />
+        <!-- 二维码识别页 -->
+        <activity android:name=".ui.activity.QrCodeDemoActivity" />
+        <!-- RXJava异步操作演示页 -->
         <activity android:name=".ui.activity.MainActivity">
             <intent-filter>
 
@@ -203,21 +218,22 @@
             </intent-filter>
         </activity>
         <!--
-            下载服务
-            name :服务所在的位置
-            process:指定服务运行的进程
-        -->
+                下载服务
+                name :服务所在的位置
+                process:指定服务运行的进程
+            -->
         <service
             android:name=".util.network.download.DownloadService"
             android:process=":sq26" />
         <!--
-            跨进程通信服务
-            需要声明android:exported="true"，这样别的APP才能访问。
-        -->
+                跨进程通信服务
+                需要声明android:exported="true"，这样别的APP才能访问。
+            -->
         <service
             android:name=".service.AIDLService"
             android:exported="true"
-            android:process=":aidl" /> <!-- 通知栏快捷开关 (未研究完) -->
+            android:process=":aidl" />
+        <!-- 通知栏快捷开关 (未研究完) -->
         <service
             android:name=".service.QuickSwitchService"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
@@ -226,12 +242,12 @@
             </intent-filter>
         </service>
         <!--
-            该provider用于本地文件访问
-            authorities：是该项目的包名+provider
-            grantUriPermissions：必须是true，表示授予 URI 临时访问权限
-            exported：必须是false
-            resource：中的@xml/file_paths是我们接下来要在资源文件目录下添加的文件
-        -->
+                该provider用于本地文件访问
+                authorities：是该项目的包名+provider
+                grantUriPermissions：必须是true，表示授予 URI 临时访问权限
+                exported：必须是false
+                resource：中的@xml/file_paths是我们接下来要在资源文件目录下添加的文件
+            -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.FileProvider"
@@ -242,5 +258,4 @@
                 android:resource="@xml/file_paths" />
         </provider>
     </application>
-
 </manifest>
