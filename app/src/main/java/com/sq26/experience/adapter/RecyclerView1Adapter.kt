@@ -2,10 +2,11 @@ package com.sq26.experience.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
+import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.sq26.experience.R
 import com.sq26.experience.data.RecyclerViewItem
 import com.sq26.experience.databinding.ItemRecyclerviewItemBinding
 import com.sq26.experience.util.Log
@@ -26,6 +27,9 @@ class RecyclerView1Adapter :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val animation =
+            AnimationUtils.loadAnimation(holder.itemView.context, R.anim.anim_recycler_item_show)
+        holder.itemView.startAnimation(animation)
         holder.bind(getItem(position))
     }
 
@@ -36,10 +40,13 @@ class RecyclerView1Adapter :
             itemRecyclerviewItemBinding.root.setOnClickListener {
                 itemRecyclerviewItemBinding.item?.apply {
                     Log.i(this.id.toString(), "Recyclerview")
+                    Log.i(adapterPosition.toString(), "RecyclerviewPosition")
                 }
 
             }
         }
+
+        fun getItem() = itemRecyclerviewItemBinding.item
 
         fun bind(recyclerViewItem: RecyclerViewItem) {
             itemRecyclerviewItemBinding.apply {

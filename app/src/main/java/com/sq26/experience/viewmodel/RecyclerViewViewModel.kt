@@ -18,9 +18,16 @@ class RecyclerViewViewModel @ViewModelInject constructor(
     @ActivityContext private val context: Context
 ) : ViewModel() {
     fun insert() {
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             recyclerViewRepository.insert(RecyclerViewItem())
         }
+    }
+
+    fun delete(item: RecyclerViewItem?) {
+        if (item != null)
+            viewModelScope.launch(Dispatchers.IO) {
+                recyclerViewRepository.delete(item)
+            }
     }
 
     fun getQueryAll() = recyclerViewRepository.queryAll().asLiveData()
@@ -28,9 +35,9 @@ class RecyclerViewViewModel @ViewModelInject constructor(
 
 @Singleton
 class RecyclerViewRepository @Inject constructor(private val recyclerViewDao: RecyclerViewDao) {
-    fun insert(recyclerViewItem: RecyclerViewItem) {
-        recyclerViewDao.insert(recyclerViewItem)
-    }
+    fun insert(recyclerViewItem: RecyclerViewItem) = recyclerViewDao.insert(recyclerViewItem)
+
+    fun delete(recyclerViewItem: RecyclerViewItem) = recyclerViewDao.delete(recyclerViewItem)
 
     fun queryAll() = recyclerViewDao.queryAll()
 }

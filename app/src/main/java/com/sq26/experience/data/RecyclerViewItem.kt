@@ -26,6 +26,9 @@ interface RecyclerViewDao {
     @Insert
     fun insert(recyclerViewItem: RecyclerViewItem)
 
+    @Delete
+    fun delete(recyclerViewItem: RecyclerViewItem)
+
     @Insert
     fun insertAll(recyclerViewList: List<RecyclerViewItem>)
 
