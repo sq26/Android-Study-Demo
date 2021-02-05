@@ -14,7 +14,7 @@ import com.sq26.experience.databinding.FragmentBlank3Binding
 import com.sq26.experience.ui.activity.GraphViewModel
 
 abstract class Blank3Fragment : Fragment() {
-    private lateinit var binding: FragmentBlank3Binding
+    lateinit var binding: FragmentBlank3Binding
     //获取范围限定于导航图的 ViewModel
     private val mGraphViewModel: GraphViewModel by navGraphViewModels(R.id.nav_navigation_graph)
     override fun onCreateView(

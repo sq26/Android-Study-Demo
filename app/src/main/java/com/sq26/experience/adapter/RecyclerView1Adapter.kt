@@ -40,7 +40,6 @@ class RecyclerView1Adapter :
             itemRecyclerviewItemBinding.root.setOnClickListener {
                 itemRecyclerviewItemBinding.item?.apply {
                     Log.i(this.id.toString(), "Recyclerview")
-                    Log.i(adapterPosition.toString(), "RecyclerviewPosition")
                 }
 
             }

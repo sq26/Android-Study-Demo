@@ -1,12 +1,12 @@
-package com.sq26.experience.util.network.download
+package com.sq26.experience.app
 
-import android.annotation.SuppressLint
-import okhttp3.OkHttpClient
+import okhttp3.*
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
+import java.util.concurrent.TimeUnit
 import javax.net.ssl.*
 
-class OkHttpClientBuilder {
+class OkHttpUtil(private val url: String) {
     companion object {
         @Volatile
         private var instance: OkHttpClient? = null
@@ -27,6 +27,14 @@ class OkHttpClientBuilder {
                 val sslContext = SSLContext.getInstance("TLS")
                 sslContext.init(null, trustAllCerts, SecureRandom())
                 instance = OkHttpClient.Builder()
+                    //连接超时时间20秒
+                    .connectTimeout(20, TimeUnit.SECONDS)
+                    //写入超时时间
+                    .writeTimeout(20, TimeUnit.SECONDS)
+                    //通讯超时时间20秒
+                    .callTimeout(20, TimeUnit.SECONDS)
+                    //读取超时30秒
+                    .readTimeout(20, TimeUnit.SECONDS)
                     //忽略host验证
                     .hostnameVerifier(object : HostnameVerifier {
                         override fun verify(p0: String?, p1: SSLSession?): Boolean {

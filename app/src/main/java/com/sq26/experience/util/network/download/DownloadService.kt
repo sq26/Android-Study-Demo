@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Environment
 import android.os.IBinder
 import androidx.documentfile.provider.DocumentFile
+import com.sq26.experience.app.OkHttpUtil
 import com.sq26.experience.util.Log
 import okhttp3.*
 import java.io.File
@@ -81,7 +82,7 @@ class DownloadService : Service() {
     //比较并切片数据,用于测试连接是否可用,以及获取文件大小,比较数据将数据切片标记
     fun compareAndSlice(downloadEntity: DownloadEntity) {
         //创建http客户端
-        val okHttpClient = OkHttpClientBuilder.getInstance()
+        val okHttpClient = OkHttpUtil.getInstance()
         //创建一个请求
         //使用head请求,只获取请求头
         val request = Request.Builder()
@@ -205,7 +206,7 @@ class DownloadService : Service() {
             )
             .build()
         //获取通信
-        val call = OkHttpClientBuilder.getInstance()
+        val call = OkHttpUtil.getInstance()
             .newBuilder()
             //连接超时时间20秒
             .connectTimeout(20, TimeUnit.SECONDS)

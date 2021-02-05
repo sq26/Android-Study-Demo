@@ -1,32 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.activity.NetworkActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <Button
-        android:id="@+id/download"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="下载"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
+        <variable
+            name="viewModel"
+            type="com.sq26.experience.ui.activity.NetworkViewModel" />
+    </data>
 
-    <Button
-        android:id="@+id/viewDownload"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="查看download表"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/download" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.activity.NetworkActivity">
 
-    <Button
-        android:id="@+id/viewDownloadSlice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="查看downloadSlice表"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/viewDownload" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <Button
+            android:id="@+id/download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载" />
+
+        <Button
+            android:id="@+id/viewDownload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="查看download表" />
+
+        <Button
+            android:id="@+id/viewDownloadSlice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="查看downloadSlice表" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="get"
+            android:onClick="@{()->viewModel.get()}"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="post"
+            android:onClick="@{()->viewModel.post()}"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.content}"/>
+    </LinearLayout>
+
+
+</layout>

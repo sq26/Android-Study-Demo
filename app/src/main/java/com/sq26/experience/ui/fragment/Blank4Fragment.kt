@@ -12,7 +12,7 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.fragment.app.Fragment
 import com.sq26.experience.R
 
-abstract class Blank4Fragment : Fragment() {
+class Blank4Fragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -22,6 +22,7 @@ abstract class Blank4Fragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        view.findViewById<TextView>(R.id.text).text = activity?.intent?.getIntExtra("index",4).toString()
+        view.findViewById<TextView>(R.id.text).text =
+            activity?.intent?.getIntExtra("index", 4).toString()
     }
 }

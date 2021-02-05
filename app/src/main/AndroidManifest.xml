@@ -206,11 +206,10 @@
         <!-- 测试页 -->
         <activity android:name=".ui.activity.TestActivity" />
         <!-- 二维码识别页 -->
-        <activity android:name=".ui.activity.QrCodeDemoActivity" />
-        <!-- RXJava异步操作演示页 -->
+        <activity android:name=".ui.activity.ScanCodeActivity" />
+        <!--        主页-->
         <activity android:name=".ui.activity.MainActivity">
             <intent-filter>
-
                 <!-- 应用程序入口 -->
                 <action android:name="android.intent.action.MAIN" />
                 <!-- 表示activity应该被列入系统的启动器(launcher)(允许用户启动它)。Launcher是安卓系统中的桌面启动器，是桌面UI的统称。 -->

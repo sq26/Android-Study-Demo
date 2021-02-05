@@ -18,8 +18,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.alibaba.fastjson.JSONObject;
 import com.sq26.experience.R;
 import com.sq26.experience.entity.ProgressEntity;
-import com.sq26.experience.util.permissions.JPermissions;
-import com.sq26.experience.util.permissions.PermissionUtil;
 
 import java.util.Map;
 
@@ -282,23 +280,23 @@ public class DownloadManagement {
                 download();
             } else {
                 //授权申请
-                JPermissions.init((AppCompatActivity) context)
-                        //申请存储权限
-                        .permissions(PermissionUtil.Group.STORAGE)
-                        //成功的回调
-                        .success(new JPermissions.SuccessCallback() {
-                            @Override
-                            public void success() {
-                                //启动下载
-                                download();
-                            }
-                        })//失败的回调
-                        .failure(new JPermissions.FailureCallback() {
-                            @Override
-                            public void failure(String[] successArray, String[] failureArray, String[] noPromptArray) {
-                                //失败后弹出提示(暂时没想好怎么提示)
-                            }
-                        }).start();//开始
+//                JPermissions.init((AppCompatActivity) context)
+//                        //申请存储权限
+//                        .permissions(PermissionUtil.Group.STORAGE)
+//                        //成功的回调
+//                        .success(new JPermissions.SuccessCallback() {
+//                            @Override
+//                            public void success() {
+//                                //启动下载
+//                                download();
+//                            }
+//                        })//失败的回调
+//                        .failure(new JPermissions.FailureCallback() {
+//                            @Override
+//                            public void failure(String[] successArray, String[] failureArray, String[] noPromptArray) {
+//                                //失败后弹出提示(暂时没想好怎么提示)
+//                            }
+//                        }).start();//开始
             }
         }
 

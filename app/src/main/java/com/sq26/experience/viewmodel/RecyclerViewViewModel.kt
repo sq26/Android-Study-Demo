@@ -7,6 +7,7 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.sq26.experience.data.RecyclerViewDao
 import com.sq26.experience.data.RecyclerViewItem
+import com.sq26.experience.util.Log
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -17,9 +18,17 @@ class RecyclerViewViewModel @ViewModelInject constructor(
     private val recyclerViewRepository: RecyclerViewRepository,
     @ActivityContext private val context: Context
 ) : ViewModel() {
+
     fun insert() {
         viewModelScope.launch(Dispatchers.IO) {
-            recyclerViewRepository.insert(RecyclerViewItem())
+            //排序字段取最大值加一
+            recyclerViewRepository.insert(RecyclerViewItem(sort = recyclerViewRepository.getMaxSort() + 1))
+        }
+    }
+
+    fun updateAll(list: List<RecyclerViewItem>){
+        viewModelScope.launch(Dispatchers.IO) {
+            recyclerViewRepository.updateAll(list)
         }
     }
 
@@ -40,4 +49,8 @@ class RecyclerViewRepository @Inject constructor(private val recyclerViewDao: Re
     fun delete(recyclerViewItem: RecyclerViewItem) = recyclerViewDao.delete(recyclerViewItem)
 
     fun queryAll() = recyclerViewDao.queryAll()
+
+    fun getMaxSort() = recyclerViewDao.getMaxSort()
+
+    fun updateAll(list: List<RecyclerViewItem>) = recyclerViewDao.updateAll(list)
 }

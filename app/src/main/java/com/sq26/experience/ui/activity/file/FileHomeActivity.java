@@ -24,8 +24,6 @@ import com.sq26.experience.R;
 import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 import com.sq26.experience.util.AppUtil;
-import com.sq26.experience.util.permissions.JPermissions;
-import com.sq26.experience.util.permissions.PermissionUtil;
 
 import java.io.File;
 import java.util.Objects;
@@ -61,15 +59,15 @@ public class FileHomeActivity extends AppCompatActivity {
         //初始化界面
         initView();
         //申请储存权限
-        JPermissions.init(this)
-                .permissions(PermissionUtil.Group.STORAGE)
-                .success(new JPermissions.SuccessCallback() {
-                    @Override
-                    public void success() {
-                        //初始化数据
-                        initDate();
-                    }
-                }).start();
+//        JPermissions.init(this)
+//                .permissions(PermissionUtil.Group.STORAGE)
+//                .success(new JPermissions.SuccessCallback() {
+//                    @Override
+//                    public void success() {
+//                        //初始化数据
+//                        initDate();
+//                    }
+//                }).start();
     }
 
     private void initView() {

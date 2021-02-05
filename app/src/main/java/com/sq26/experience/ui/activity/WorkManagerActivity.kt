@@ -64,6 +64,8 @@ class WorkManagerActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     *
     fun other() {
         //创建约束 Constraints 实例
         val constraints = Constraints.Builder()
@@ -132,6 +134,7 @@ class WorkManagerActivity : AppCompatActivity() {
 
 
     }
+     */
 }
 
 //定义工作

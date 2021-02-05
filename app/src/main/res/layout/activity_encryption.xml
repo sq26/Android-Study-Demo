@@ -1,115 +1,156 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.activity.EncryptionActivity">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.sq26.experience.ui.activity.EncryptionViewModel" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        tools:context=".ui.activity.EncryptionActivity">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/publicKeyLayout"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent">
+            android:theme="@style/ToolBarTheme"
+            app:title="@string/Symmetric_and_asymmetric_encryption"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="?attr/homeAsUpIndicator" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/publicKey"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/publicKey"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/privateKeyLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/publicKeyLayout">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/privateKey"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/privateKey"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/plaintextLayout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintEnd_toStartOf="@id/startBarrier"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/privateKeyLayout">
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/operatingFlow"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/plaintext"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:hint="@string/Plaintext"
-                android:inputType="textMultiLine" />
+                android:inputType="textMultiLine"
+                android:text="@={viewModel.plaintext}" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/ciphertextLayout"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.helper.widget.Flow
+            android:id="@+id/operatingFlow"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/endBarrier"
-            app:layout_constraintTop_toBottomOf="@id/privateKeyLayout">
+            app:constraint_referenced_ids="algorithm,mode,padding,generateKey,generateAsymmetricKeys,encryption,decrypt,timing"
+            app:flow_wrapMode="aligned"
+            app:layout_constraintBottom_toTopOf="@id/publicKeyLayout"
+            app:layout_constraintTop_toBottomOf="@id/plaintextLayout" />
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/ciphertext"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/Ciphertext"
-                android:inputType="textMultiLine" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <TextView
-            android:id="@+id/timing"
+        <Button
+            android:id="@+id/algorithm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/privateKeyLayout" />
+            android:onClick="@{()->viewModel.onAlgorithm()}"
+            android:text="@={viewModel.algorithm}" />
+
+        <Button
+            android:id="@+id/mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.onMode()}"
+            android:text="@={viewModel.mode}" />
+
+        <Button
+            android:id="@+id/padding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.onPadding()}"
+            android:text="@={viewModel.padding}" />
+
+        <Button
+            android:id="@+id/generateKey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.onGenerateKey()}"
+            android:text="@string/Generate_key" />
+
+        <Button
+            android:id="@+id/generateAsymmetricKeys"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="@{()->viewModel.onGenerateAsymmetricKeys()}"
+            android:text="@string/Generate_asymmetric_keys"
+            android:visibility="@{viewModel.privateKeyVisibility}" />
 
         <Button
             android:id="@+id/encryption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/encryption"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/timing" />
-
+            android:onClick="@{()->viewModel.encryption()}"
+            android:text="@string/encryption" />
 
         <Button
             android:id="@+id/decrypt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/Decrypt"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/encryption" />
+            android:onClick="@{()->viewModel.decrypt()}"
+            android:text="@string/Decrypt" />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/startBarrier"
+        <TextView
+            android:id="@+id/timing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:barrierDirection="start"
-            app:constraint_referenced_ids="encryption,timing,decrypt" />
+            android:text="@{viewModel.timing}" />
 
-        <androidx.constraintlayout.widget.Barrier
-            android:id="@+id/endBarrier"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:barrierDirection="end"
-            app:constraint_referenced_ids="encryption,timing,decrypt" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/publicKeyLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/privateKeyLayout"
+            app:layout_constraintTop_toBottomOf="@id/operatingFlow">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/publicKey"
+                android:inputType="textMultiLine"
+                android:text="@={viewModel.publicKey}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/privateKeyLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="@{viewModel.privateKeyVisibility}"
+            app:layout_constraintBottom_toTopOf="@id/ciphertextLayout"
+            app:layout_constraintTop_toBottomOf="@id/publicKeyLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/privateKey"
+                android:inputType="textMultiLine"
+                android:text="@={viewModel.privateKey}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ciphertextLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/privateKeyLayout">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/Ciphertext"
+                android:inputType="textMultiLine"
+                android:text="@={viewModel.ciphertext}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.core.widget.NestedScrollView>
+</layout>

@@ -2,20 +2,16 @@ package com.sq26.experience.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.compose.ui.viewinterop.viewModel
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.sq26.experience.data.HomeMenu
 import com.sq26.experience.databinding.ItemRecyclerviewBinding
-import com.sq26.experience.ui.fragment.HomeFragmentDirections
 import com.sq26.experience.util.Log
-import com.sq26.experience.viewmodel.HomeViewModel
-import javax.inject.Inject
+import com.sq26.experience.viewmodel.MainViewModel
 
 //获取数据模型
-class HomeMenuAdapter(private val homeViewModel: HomeViewModel) :
+class HomeMenuAdapter(private val mainViewModel: MainViewModel) :
     ListAdapter<HomeMenu, HomeMenuAdapter.ViewHolder>(HomeMenuDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         //数据绑定
@@ -45,52 +41,10 @@ class HomeMenuAdapter(private val homeViewModel: HomeViewModel) :
                     Log.i("$this")
                     if (type == 0) {
                         //刷新菜单
-                        homeViewModel.refreshHomeMenuList(id)
+                        mainViewModel.refreshHomeMenuList(id)
                     } else {
                         //设置要跳转的页面
-                        val directions = when (id) {
-                            "encryption" ->
-                                HomeFragmentDirections.actionHomeFragmentToEncryptionActivity()
-                            "aidl" ->
-                                HomeFragmentDirections.actionHomeFragmentToAIDLActivity()
-                            "javaTest" ->
-                                HomeFragmentDirections.actionHomeFragmentToTestActivity()
-                            "kotlin" ->
-                                HomeFragmentDirections.actionHomeFragmentToKotlinActivity()
-                            "Navigation" ->
-                                HomeFragmentDirections.actionHomeFragmentToNavigationActivity()
-                            "Paging" ->
-                                HomeFragmentDirections.actionHomeFragmentToPagingActivity()
-                            "DataBinding" ->
-                                HomeFragmentDirections.actionHomeFragmentToDataBindingActivity()
-                            "ScanCode" ->
-                                HomeFragmentDirections.actionHomeFragmentToQrCodeDemoActivity()
-                            "camera" ->
-                                HomeFragmentDirections.actionHomeFragmentToCameraActivity()
-                            "statusBar" ->
-                                HomeFragmentDirections.actionHomeFragmentToStatusBarActivity()
-                            "authorizedOperation" ->
-                                HomeFragmentDirections.actionHomeFragmentToAuthorizedOperationActivity()
-                            "fileManagement" ->
-                                HomeFragmentDirections.actionHomeFragmentToFileHomeActivity()
-                            "downloadManagement" ->
-                                HomeFragmentDirections.actionHomeFragmentToDownloadManagementActivity()
-                            "network" ->
-                                HomeFragmentDirections.actionHomeFragmentToNetworkActivity()
-                            "WiFiDirect" ->
-                                HomeFragmentDirections.actionHomeFragmentToWiFiDirectActivity()
-                            "AppManagement" ->
-                                HomeFragmentDirections.actionHomeFragmentToAppManagementActivity()
-                            "pullToRefresh" ->
-                                HomeFragmentDirections.actionHomeFragmentToPullToRefreshActivity()
-                            "RecyclerView" ->
-                                HomeFragmentDirections.actionHomeFragmentToRecyclerViewActivity()
-                            "WorkManger" ->
-                                HomeFragmentDirections.actionHomeFragmentToWorkManagerActivity()
-                            else ->
-                                HomeFragmentDirections.actionHomeFragmentToStartFragment()
-                        }
-                        it.findNavController().navigate(directions)
+                        mainViewModel.startTo(id)
                     }
                 }
             }

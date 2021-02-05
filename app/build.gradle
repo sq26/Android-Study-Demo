@@ -60,6 +60,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.21"
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.1'
+    //Android ktx,KTX 扩展程序可以为 Jetpack、Android 平台及其他 API 提供简洁的惯用 Kotlin 代码。
+    implementation 'androidx.core:core:1.5.0-beta01'
     androidTestImplementation 'androidx.test:runner:1.3.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     //Google团队开发的Material风格的新组件支持库
@@ -76,10 +78,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife:10.2.3'
     kapt 'com.jakewharton:butterknife-compiler:10.2.3'
     //fastJson json解析库
-    implementation 'com.alibaba:fastjson:1.2.74'
-    //RxJava链式异步处理库
-//    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-//    implementation 'io.reactivex.rxjava2:rxjava:2.2.11'
+    implementation 'com.alibaba:fastjson:1.2.75'
     //zxing框架核心
     implementation 'com.google.zxing:core:3.4.1'
     //Fresco框架
@@ -93,7 +92,7 @@ dependencies {
     //AndroidPdfViewer 查看pdf的控件
     implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
     //Android的原始Socket，HTTP（s）客户端/服务器和WebSocket库
-    implementation 'com.koushikdutta.async:androidasync:3.0.9'
+    implementation 'com.koushikdutta.async:androidasync:3.1.0'
     //生命周期感知型组件
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
@@ -110,14 +109,15 @@ dependencies {
     kapt "androidx.room:room-compiler:2.2.6"
     //Kotlin扩展程序和协同程序对Room的支持
     implementation "androidx.room:room-ktx:2.2.6"
-    // paging 组件(数据分页)
-    implementation "androidx.paging:paging-runtime-ktx:2.1.2"
+    // Paging 3 组件(数据分页)
+    implementation "androidx.paging:paging-runtime-ktx:3.0.0-alpha13"
+    implementation "androidx.paging:paging-compose:1.0.0-alpha06"
     //navigation组件(fragment管理)
-    implementation "androidx.navigation:navigation-runtime-ktx:2.3.2"
-    implementation "androidx.navigation:navigation-fragment-ktx:2.3.2"
-    implementation "androidx.navigation:navigation-ui-ktx:2.3.2"
-    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.2"
-    implementation "androidx.navigation:navigation-compose:1.0.0-alpha04"
+    implementation "androidx.navigation:navigation-runtime-ktx:2.3.3"
+    implementation "androidx.navigation:navigation-fragment-ktx:2.3.3"
+    implementation "androidx.navigation:navigation-ui-ktx:2.3.3"
+    implementation "androidx.navigation:navigation-dynamic-features-fragment:2.3.3"
+    implementation 'androidx.navigation:navigation-compose:1.0.0-alpha06'
     //activity的kotlin强化库
     implementation "androidx.activity:activity-ktx:1.1.0"
     //Fragment KTX 提供了一系列扩展程序以简化 Fragment API。
@@ -125,8 +125,6 @@ dependencies {
     //Android 上的 Kotlin 协程
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2'
-    //Android ktx,KTX 扩展程序可以为 Jetpack、Android 平台及其他 API 提供简洁的惯用 Kotlin 代码。
-    implementation "androidx.core:core-ktx:1.3.2"
     //Collection 扩展程序包含在 Android 的节省内存的集合库中使用的实用函数，包括 ArrayMap、LongParseArray、LruCache 等等。
     implementation "androidx.collection:collection-ktx:1.1.0"
     //ViewModel KTX 库提供了一个 viewModelScope() 函数，可让您更轻松地从 ViewModel 启动协程。
@@ -134,13 +132,22 @@ dependencies {
     // 您可以使用 viewModelScope()，而无需为每个 ViewModel 创建一个新范围。
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
     //使用 Hilt 实现依赖项注入
-    implementation "com.google.dagger:hilt-android:2.28.3-alpha"
-    kapt "com.google.dagger:hilt-android-compiler:2.28.3-alpha"
+    implementation 'com.google.dagger:hilt-android:2.31.2-alpha'
+    kapt 'com.google.dagger:hilt-android-compiler:2.31.2-alpha'
     //使用 Hilt 注入 ViewModel 对象
-    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha02"
-    kapt "androidx.hilt:hilt-compiler:1.0.0-alpha02"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03"
+    kapt "androidx.hilt:hilt-compiler:1.0.0-alpha03"
     //使用 Hilt 注入 WorkManager
-    implementation 'androidx.hilt:hilt-work:1.0.0-alpha02'
+    implementation 'androidx.hilt:hilt-work:1.0.0-alpha03'
     //添加 WorkManager 的依赖项Kotlin + coroutines
-    implementation "androidx.work:work-runtime-ktx:2.4.0"
+    implementation "androidx.work:work-runtime-ktx:2.5.0"
+    //CameraX核心库
+    implementation "androidx.camera:camera-core:1.1.0-alpha01"
+    implementation "androidx.camera:camera-camera2:1.1.0-alpha01"
+    // CameraX生命周期库
+    implementation "androidx.camera:camera-lifecycle:1.1.0-alpha01"
+    // CameraX View类
+    implementation "androidx.camera:camera-view:1.0.0-alpha21"
+    // CameraX扩展库
+    implementation "androidx.camera:camera-extensions:1.0.0-alpha21"
 }

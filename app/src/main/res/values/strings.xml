@@ -1,13 +1,12 @@
 <resources>
     <string name="app_name">experience</string>
-    <string name="AndroidJetpackComponents">Android Jetpack组件</string>
     <string name="NavigationComponents">Navigation组件(管理Fragment的切换)</string>
     <string name="PagingComponents">Paging组件(RecyclerView分页库)</string>
     <string name="WorkMangerComponents">WorkManger组件(后台任务库)</string>
     <string name="Data_BindingComponents">Data Binding组件(数据绑定)</string>
 
-    <string name="Features">功能</string>
     <string name="QRCode_recognition">QRCode识别</string>
+    <string name="Scan_code">扫码</string>
     <string name="camera">相机</string>
     <string name="Invasive_experience">侵入式体验(通知栏和导航栏控制)</string>
     <string name="Authorized_operation">授权操作</string>
@@ -39,12 +38,17 @@
     <string name="view">视图</string>
     <string name="PullDownToRefresh">下拉刷新,上拉加载更多</string>
     <string name="RecyclerView_use">RecyclerView的使用</string>
+    <string name="Symmetric_and_asymmetric_encryption">对称和非对称加密</string>
+
     <string name="encryption">加密</string>
     <string name="Decrypt">解密</string>
     <string name="Plaintext">明文</string>
     <string name="Ciphertext">密文</string>
     <string name="publicKey">公共密钥</string>
     <string name="privateKey">私有密钥</string>
+    <string name="Generate_key">生成密钥</string>
+    <string name="Generate_asymmetric_keys">生成非对称密钥</string>
+
 
     <string name="There_is_no_application_that_can_open_this_file">没有可以打开此文件的应用程序!</string>
     <string name="File_has_been_downloaded">文件已经下载!</string>
@@ -53,7 +57,15 @@
 
     <string name="add">添加</string>
     <string name="imageBrowse">图片浏览</string>
+
+    <string name="Calendar_Data">日历数据</string>
+    <string name="Contact_person">联系人</string>
+    <string name="position">位置</string>
+    <string name="microphone">麦克风</string>
+    <string name="phone">电话</string>
+    <string name="sensor">传感器</string>
+    <string name="SMS">短信</string>
+    <string name="storage">存储</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="hello_blank_fragment_2">Hello blank fragment2</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.sq26.experience.R
 import kotlin.concurrent.thread
 
 /**app的全局数据库
@@ -13,7 +14,7 @@ import kotlin.concurrent.thread
  * version:数据库的版本
  * exportSchema:是否将数据库导出到文件夹中
  */
-@Database(entities = [HomeMenu::class, RecyclerViewItem::class], version = 1, exportSchema = false)
+@Database(entities = [HomeMenu::class, RecyclerViewItem::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun homeMenuDao(): HomeMenuDao
     abstract fun recyclerViewDao(): RecyclerViewDao
@@ -41,10 +42,10 @@ abstract class AppDatabase : RoomDatabase() {
                         override fun onOpen(db: SupportSQLiteDatabase) {
                             super.onOpen(db)
                             //初始化首页功能菜单
-                            initHomeMenu(getInstance(context))
+                            initHomeMenu(getInstance(context),context)
                         }
                     })
-//                    .addMigrations(MIGRATION_1_2())
+                    .addMigrations(MIGRATION_1_2())
                     //构建
                     .build()
                     //also内联扩展函数,传入调用对象本身,返回调用对象本身,内部的lambda表达式处理对象的初始属性设置和赋值等操作
@@ -55,20 +56,30 @@ abstract class AppDatabase : RoomDatabase() {
         }
 
         private fun MIGRATION_1_2(): Migration {
-            //从1升级到2只增加了一个表,所以并不需要写sql语句
+            //从1升级到2加了一个字段
             return object : Migration(1, 2) {
                 override fun migrate(database: SupportSQLiteDatabase) {
                     //在这里添加版本变化后所需要执行的sql语句
-//                    database.execSQL("")
+                    //创建零时表,所有的字段必须是not null
+                    database.execSQL("create table new_RecyclerViewItem(id INTEGER primary key not null,sort INTEGER not null,color INTEGER not null)")
+                    //将旧表数据加入新表,要与新表的字段数量对应
+                    database.execSQL("insert into new_RecyclerViewItem select id,id,color from RecyclerViewItem")
+                    //删除旧表
+                    database.execSQL("drop table RecyclerViewItem")
+                    //将新表重命名成旧表
+                    database.execSQL("ALTER TABLE new_RecyclerViewItem RENAME TO RecyclerViewItem")
+                    //直接添加新值
+//                    database.execSQL("ALTER TABLE new_RecyclerViewItem add column sort INTEGER")
+
                 }
             }
         }
 
-        fun initHomeMenu(appDatabase: AppDatabase) {
+        fun initHomeMenu(appDatabase: AppDatabase,context: Context) {
             thread {
                 val homeMenuList = mutableListOf<HomeMenu>()
                 homeMenuList.add(HomeMenu("0", "技术功能", 0))
-                homeMenuList.add(HomeMenu("encryption", "对称和非对称加密", 1, "0"))
+                homeMenuList.add(HomeMenu("encryption", context.getString(R.string.Symmetric_and_asymmetric_encryption), 1, "0"))
                 homeMenuList.add(HomeMenu("aidl", "AIDL进程间通讯", 1, "0"))
                 homeMenuList.add(HomeMenu("javaTest", "java测试", 1, "0"))
                 homeMenuList.add(HomeMenu("kotlin", "kotlin语言学习", 1, "0"))
@@ -78,8 +89,7 @@ abstract class AppDatabase : RoomDatabase() {
                 homeMenuList.add(HomeMenu("WorkManger", "WorkManger框架(后台任务库)", 1, "1"))
                 homeMenuList.add(HomeMenu("DataBinding", "Data Binding框架(数据绑定)", 1, "1"))
                 homeMenuList.add(HomeMenu("2", "android功能", 0))
-                homeMenuList.add(HomeMenu("ScanCode", "扫码", 1, "2"))
-                homeMenuList.add(HomeMenu("camera", "相机", 1, "2"))
+                homeMenuList.add(HomeMenu("camera", context.getString(R.string.camera), 1, "2"))
                 homeMenuList.add(HomeMenu("statusBar", "侵入式体验(通知栏和导航栏控制)", 1, "2"))
                 homeMenuList.add(HomeMenu("authorizedOperation", "授权操作", 1, "2"))
                 homeMenuList.add(HomeMenu("fileManagement", "文件管理", 1, "2"))

@@ -10,7 +10,7 @@ import androidx.navigation.fragment.navArgs
 import com.sq26.experience.R
 import com.sq26.experience.databinding.FragmentBlank2Binding
 
-abstract class Blank2Fragment : Fragment() {
+class Blank2Fragment : Fragment() {
     private lateinit var binding: FragmentBlank2Binding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

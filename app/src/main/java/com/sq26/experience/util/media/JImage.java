@@ -9,9 +9,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.sq26.experience.R;
-import com.sq26.experience.util.permissions.JPermissions;
-import com.sq26.experience.util.permissions.PermissionUtil;
-
 
 public class JImage {
     //全部
@@ -113,29 +110,29 @@ public class JImage {
         private void requestPermissions() {
             String[] permissions;
             //判断是不是拍照
-            if (sourceType == PHOTO)
+//            if (sourceType == PHOTO)
                 //选择拍照申请拍照的权限
-                permissions = PermissionUtil.Group.CAMERA;
-            else
+//                permissions = PermissionUtil.Group.CAMERA;
+//            else
                 //否则就是相册的权限,也就是储存权限
-                permissions = PermissionUtil.Group.STORAGE;
+//                permissions = PermissionUtil.Group.STORAGE;
             //开始调用权限申请
-            JPermissions.init(context)
-                    .permissions(permissions)
-                    .success(new JPermissions.SuccessCallback() {
-                        @Override
-                        public void success() {
-                            //成功后去执行fragment,进去内容获取操作
-                            startFragment();
-                        }
-                    })
-                    .failure(new JPermissions.FailureCallback() {
-                        @Override
-                        public void failure(String[] successArray, String[] failureArray, String[] noPromptArray) {
-                            //失败后弹出提示(暂时没想好怎么提示)
-                        }
-                    })
-                    .start();
+//            JPermissions.init(context)
+//                    .permissions(permissions)
+//                    .success(new JPermissions.SuccessCallback() {
+//                        @Override
+//                        public void success() {
+//                            //成功后去执行fragment,进去内容获取操作
+//                            startFragment();
+//                        }
+//                    })
+//                    .failure(new JPermissions.FailureCallback() {
+//                        @Override
+//                        public void failure(String[] successArray, String[] failureArray, String[] noPromptArray) {
+//                            //失败后弹出提示(暂时没想好怎么提示)
+//                        }
+//                    })
+//                    .start();
         }
 
         private void startFragment() {

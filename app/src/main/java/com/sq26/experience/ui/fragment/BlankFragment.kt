@@ -27,7 +27,7 @@ import com.sq26.experience.util.Log
  * Use the [BlankFragment.newInstance] factory method to
  * 创建此片段的一个实例。
  */
-abstract class BlankFragment : Fragment() {
+class BlankFragment : Fragment() {
     private val viewModel: BlankViewModel by viewModels()
 
     //获取宿主activity的viewModel
