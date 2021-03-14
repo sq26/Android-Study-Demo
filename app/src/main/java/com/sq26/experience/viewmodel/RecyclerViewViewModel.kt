@@ -1,22 +1,21 @@
 package com.sq26.experience.viewmodel
 
 import android.content.Context
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.sq26.experience.data.RecyclerViewDao
 import com.sq26.experience.data.RecyclerViewItem
-import com.sq26.experience.util.Log
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
-
-class RecyclerViewViewModel @ViewModelInject constructor(
+@HiltViewModel
+class RecyclerViewViewModel @Inject constructor(
     private val recyclerViewRepository: RecyclerViewRepository,
-    @ActivityContext private val context: Context
+//    @ActivityContext private val context: Context
 ) : ViewModel() {
 
     fun insert() {

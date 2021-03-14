@@ -6,7 +6,6 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
-import androidx.datastore.createDataStore
 import com.sq26.experience.R
 import com.sq26.experience.base.BaseViewModel
 import com.sq26.experience.databinding.ActivityDataStoreBinding
@@ -30,21 +29,19 @@ class DataStoreActivity : AppCompatActivity() {
 }
 
 @HiltViewModel
-class DataStoreViewModel @Inject constructor(
-
-) : BaseViewModel() {
+class DataStoreViewModel @Inject constructor() : BaseViewModel() {
 
     fun show(view: View) {
         Log.i("测试")
         AlertDialog.Builder(view.context).setTitle("测试").show()
     }
 
-    fun save(view: View){
-//       val view.context.createDataStore()
-    }
-
-    fun load(view: View){
-
-    }
+//    fun save(view: View){
+////       val view.context.createDataStore()
+//    }
+//
+//    fun load(view: View){
+//
+//    }
 
 }

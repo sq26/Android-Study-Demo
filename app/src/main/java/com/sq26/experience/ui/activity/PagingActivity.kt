@@ -5,12 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
@@ -24,10 +22,12 @@ import com.sq26.experience.databinding.ActivityPagingBinding
 import com.sq26.experience.databinding.ItemRecyclerviewItemBinding
 import com.sq26.experience.util.Log
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PagingActivity : AppCompatActivity() {
@@ -73,8 +73,8 @@ class PagingActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 }
-
-class PagingViewModel @ViewModelInject constructor(
+@HiltViewModel
+class PagingViewModel @Inject constructor(
     private val recyclerViewDao: RecyclerViewDao
 ) : ViewModel() {
     val title = "Paging分页库"

@@ -22,16 +22,16 @@
             android:onClick="@{viewModel::show}"
             android:text="弹出框" />
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{viewModel::save}"
-            android:text="保存" />
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="@{viewModel::load}"
-            android:text="读取" />
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:onClick="@{viewModel::save}"-->
+<!--            android:text="保存" />-->
+<!--        <com.google.android.material.button.MaterialButton-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:onClick="@{viewModel::load}"-->
+<!--            android:text="读取" />-->
 
 
     </LinearLayout>

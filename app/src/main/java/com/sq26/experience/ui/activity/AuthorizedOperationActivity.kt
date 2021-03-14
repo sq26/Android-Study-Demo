@@ -9,7 +9,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityAuthorizedOperationBinding
@@ -23,6 +22,21 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AuthorizedOperationActivity : AppCompatActivity() {
     private val authorizedOperationViewModel: AuthorizedOperationViewModel by viewModels()
+    //JPermissions需要先在activity注册声明才能start()
+    private val jPermissions = JPermissions(this)
+        .success {
+            AlertDialog.Builder(this).setMessage("申请成功").setPositiveButton("确定", null).show()
+        }
+        .failure { successList, failure, noPrompt ->
+            AlertDialog.Builder(this).setTitle("申请失败")
+                .setMessage("成功的权限:$successList\n失败的权限:$failure\n被永久拒绝的权限:$noPrompt")
+                .setPositiveButton("确定", null)
+                .setNegativeButton("打开权限设置页面") { _, _ ->
+                    JPermissions.openSettings(this)
+                }
+                .show()
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityAuthorizedOperationBinding>(
@@ -41,7 +55,7 @@ class AuthorizedOperationActivity : AppCompatActivity() {
             menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             //设置菜单的点击事件
             menuItem.setOnMenuItemClickListener {
-                authorizedOperationViewModel.startPermissions(this@AuthorizedOperationActivity)
+                authorizedOperationViewModel.startPermissions(jPermissions)
                 true
             }
             //设置导航键的点击事件
@@ -130,8 +144,9 @@ class AuthorizedOperationViewModel @Inject constructor(
 
     //存储
     var storage = false
+
     //申请权限
-    fun startPermissions(context: Context) {
+    fun startPermissions(jPermissions: JPermissions) {
         val requestPermissions = mutableListOf<String>()
         if (calendarData) {
             //允许程序读取用户的日程信息
@@ -173,8 +188,6 @@ class AuthorizedOperationViewModel @Inject constructor(
             requestPermissions.add(Manifest.permission.ADD_VOICEMAIL)
             //允许程序使用SIP视频服务
             requestPermissions.add(Manifest.permission.USE_SIP)
-            //允许程序监视，修改或放弃播出电话
-            requestPermissions.add(Manifest.permission.PROCESS_OUTGOING_CALLS)
             //android 8.0以上功能
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
                 //允许您的应用读取设备中存储的电话号码。
@@ -205,19 +218,6 @@ class AuthorizedOperationViewModel @Inject constructor(
             requestPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
-        JPermissions(context, requestPermissions.toTypedArray())
-            .success {
-                AlertDialog.Builder(context).setMessage("申请成功").setPositiveButton("确定", null).show()
-            }
-            .failure { successList, failure, noPrompt ->
-                AlertDialog.Builder(context).setTitle("申请失败")
-                    .setMessage("成功的权限:$successList\n失败的权限:$failure\n被永久拒绝的权限:$noPrompt")
-                    .setPositiveButton("确定", null)
-                    .setNegativeButton("打开权限设置页面") { _, _ ->
-                        JPermissions.openSettings(context)
-                    }
-                    .show()
-            }
-            .start()
+        jPermissions.setRequestPermissions(requestPermissions.toTypedArray()).start()
     }
 }

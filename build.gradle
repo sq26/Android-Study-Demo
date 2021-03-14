@@ -1,6 +1,17 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    //在单个位置定义版本(以防止某个框架的不同组件版本不同产生异常)
+    ext {
+
+        roomVersion = "2.2.6"
+        lifecycleVersion = "2.3.0"
+        hiltVersion = '2.33-beta'
+        navigationVersion = "2.3.4"
+        coroutinesVersion = "1.4.2"
+        cameraxVersion = "1.1.0-alpha02"
+    }
+
     //gradle脚本执行所需依赖，分别是对应的maven库和插件
     repositories {
         //Butter Knife需要的支持
@@ -11,15 +22,15 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.2'
         //kotlin支持
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.21'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31'
         //Butter Knife需要的支持
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.3'
         //使用 Safe Args 确保类型安全
         //如需在目的地之间导航，建议使用 Safe Args Gradle 插件。
         // 该插件可以生成简单的对象和构建器类，这些类支持在目的地之间进行类型安全的导航和参数传递。
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.3"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.4"
         //Hilt插件, Hilt是 Android 的依赖项注入库，可减少在项目中执行手动依赖项注入的样板代码。
-        classpath 'com.google.dagger:hilt-android-gradle-plugin:2.28.3-alpha'
+        classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

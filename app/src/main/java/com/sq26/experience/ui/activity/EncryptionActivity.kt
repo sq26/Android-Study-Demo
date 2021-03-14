@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Base64
 import android.view.View
-import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -12,19 +11,18 @@ import androidx.databinding.Bindable
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
-import butterknife.BindView
-import butterknife.ButterKnife
-import butterknife.OnClick
-import com.google.android.material.textfield.TextInputEditText
 import com.sq26.experience.BR
 import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityEncryptionBinding
 import com.sq26.experience.util.Encrypt
+import com.sq26.experience.viewmodel.BaseViewModel
+import com.sq26.experience.viewmodel.ObservableViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
 import javax.crypto.Cipher
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EncryptionActivity : AppCompatActivity() {
@@ -44,9 +42,9 @@ class EncryptionActivity : AppCompatActivity() {
     }
 }
 
-class EncryptionViewModel @ViewModelInject constructor(
-    @ActivityContext private val context: Context
-) : ViewModel(), Observable {
+@HiltViewModel
+class EncryptionViewModel @Inject constructor(
+) : ObservableViewModel() {
     //公用密钥
     @Bindable
     var publicKey = ""
@@ -84,7 +82,7 @@ class EncryptionViewModel @ViewModelInject constructor(
     var timing = ""
 
     //设置加密算法
-    fun onAlgorithm() {
+    fun onAlgorithm(view: View) {
         val item = arrayOf(
             "AES",
             "AES_128",
@@ -97,17 +95,17 @@ class EncryptionViewModel @ViewModelInject constructor(
             "DESede",
             "RSA"
         )
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(view.context)
             .setItems(item) { _, i ->
                 algorithm = item[i]
-                callbacks.notifyChange(this, BR.algorithm)
+                notifyPropertyChanged(BR.algorithm)
                 privateKeyVisibility = if (algorithm == "RSA") View.VISIBLE else View.GONE
-                callbacks.notifyChange(this, BR.privateKeyVisibility)
+                notifyPropertyChanged(BR.privateKeyVisibility)
             }.show()
     }
 
     //设置加密模式
-    fun onMode() {
+    fun onMode(view: View) {
         val item = arrayOf(
             "CBC",
             "CFB",
@@ -119,15 +117,15 @@ class EncryptionViewModel @ViewModelInject constructor(
             "NONE",
             "Poly1305"
         )
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(view.context)
             .setItems(item) { _, i ->
                 mode = item[i]
-                callbacks.notifyChange(this, BR.mode)
+                notifyPropertyChanged(BR.mode)
             }.show()
     }
 
     //设置填充模式
-    fun onPadding() {
+    fun onPadding(view: View) {
         val item = arrayOf(
             "ISO10126Padding",
             "NoPadding",
@@ -140,15 +138,15 @@ class EncryptionViewModel @ViewModelInject constructor(
             "OAEPwithSHA-384andMGF1Padding",
             "OAEPwithSHA-512andMGF1Padding"
         )
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(view.context)
             .setItems(item) { _, i ->
                 padding = item[i]
-                callbacks.notifyChange(this, BR.padding)
+                notifyPropertyChanged(BR.padding)
             }.show()
     }
     //生成密钥
 
-    fun onGenerateKey() {
+    fun onGenerateKey(view: View) {
         val item = arrayOf(
             "AES",
             "DES",
@@ -196,7 +194,7 @@ class EncryptionViewModel @ViewModelInject constructor(
             "PBKDF2withHmacSHA384",
             "PBKDF2withHmacSHA512",
         )
-        AlertDialog.Builder(context)
+        AlertDialog.Builder(view.context)
             .setItems(item) { _, i ->
                 publicKey = Base64.encodeToString(
                     Encrypt.getRawKey(
@@ -206,8 +204,7 @@ class EncryptionViewModel @ViewModelInject constructor(
                         "123456"
                     ), Base64.DEFAULT
                 )
-                callbacks.notifyChange(this, BR.publicKey)
-                callbacks.notifyChange(this, BR.padding)
+                notifyPropertyChanged(BR.publicKey)
             }.show()
 
     }
@@ -215,9 +212,9 @@ class EncryptionViewModel @ViewModelInject constructor(
     fun onGenerateAsymmetricKeys() {
         val keyPair = Encrypt.getRSAKeyPair(1025)
         publicKey = Base64.encodeToString(Encrypt.getRSAPublicKey(keyPair), Base64.DEFAULT)
-        callbacks.notifyChange(this, BR.publicKey)
+        notifyPropertyChanged(BR.publicKey)
         privateKey = Base64.encodeToString(Encrypt.getRSAPrivateKey(keyPair), Base64.DEFAULT)
-        callbacks.notifyChange(this, BR.privateKey)
+        notifyPropertyChanged(BR.privateKey)
     }
 
     //加密
@@ -233,9 +230,9 @@ class EncryptionViewModel @ViewModelInject constructor(
             .setOpmode(Cipher.ENCRYPT_MODE)
             .setOnComplete {
                 ciphertext = Base64.encodeToString(it, Base64.DEFAULT)
-                callbacks.notifyChange(this, BR.ciphertext)
+                notifyPropertyChanged(BR.ciphertext)
                 timing = (System.currentTimeMillis() - time).toString()
-                callbacks.notifyChange(this, BR.timing)
+                notifyPropertyChanged(BR.timing)
             }.start()
     }
 
@@ -259,18 +256,10 @@ class EncryptionViewModel @ViewModelInject constructor(
             .setOpmode(Cipher.DECRYPT_MODE)
             .setOnComplete {
                 plaintext = String(it)
-                callbacks.notifyChange(this, BR.plaintext)
+                notifyPropertyChanged(BR.plaintext)
                 timing = (System.currentTimeMillis() - time).toString()
-                callbacks.notifyChange(this, BR.timing)
+                notifyPropertyChanged(BR.timing)
             }.start()
     }
 
-    private val callbacks = PropertyChangeRegistry()
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
-        callbacks.add(callback)
-    }
-
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
-        callbacks.remove(callback)
-    }
 }

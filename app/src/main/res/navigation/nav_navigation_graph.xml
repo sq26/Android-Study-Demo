@@ -24,7 +24,7 @@
             android:id="@+id/action_blankFragment_to_blank3Fragment"
             app:destination="@id/blank3Fragment"
             app:enterAnim="@anim/fragment_enter"
-            app:exitAnim="@anim/fragment_fade_exit"
+            app:exitAnim="@anim/nav_default_exit_anim"
             app:popEnterAnim="@anim/nav_default_enter_anim"
             app:popExitAnim="@anim/nav_default_exit_anim" />
         <action

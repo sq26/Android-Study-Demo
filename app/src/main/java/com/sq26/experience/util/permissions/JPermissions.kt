@@ -20,8 +20,14 @@ import java.util.*
  */
 class JPermissions(
     private val context: Context,
-    private val requestPermissions: Array<String>
+    requestPermissions: Array<String> = arrayOf()
 ) {
+    private var requestPermissions: Array<String> = arrayOf()
+
+    init {
+        this.requestPermissions = requestPermissions
+    }
+
     companion object {
         fun openSettings(context: Context) {
             val intent = Intent()
@@ -66,12 +72,18 @@ class JPermissions(
                 failureCallback.invoke(successList, failureList, refuseList)
         }
 
+    fun setRequestPermissions(requestPermissions: Array<String>):JPermissions{
+        this.requestPermissions = requestPermissions
+        return this
+    }
+
     //成功的回调
-    private lateinit var successCallback: () -> Unit
+    private var successCallback: () -> Unit = {}
 
     //失败的回调
     //successList:成功的列表,failure失败的列表,noPrompt:不能继续申请的权限的列表
-    private lateinit var failureCallback: (successList: List<String>, failure: List<String>, noPrompt: List<String>) -> Unit
+    private var failureCallback: (successList: List<String>, failure: List<String>, noPrompt: List<String>) -> Unit =
+        { _, _, _ -> }
 
     //设置成功的回调
     fun success(block: () -> Unit): JPermissions {

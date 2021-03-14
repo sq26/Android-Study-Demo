@@ -2,23 +2,19 @@ package com.sq26.experience.viewmodel
 
 import android.content.Context
 import android.content.Intent
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.sq26.experience.data.HomeMenu
 import com.sq26.experience.data.HomeMenuDao
 import com.sq26.experience.ui.activity.*
 import com.sq26.experience.ui.activity.file.FileHomeActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @HiltViewModel
-class MainViewModel @Inject internal constructor(
+class MainViewModel @Inject constructor(
     private val homeRepository: HomeRepository
 ) : ViewModel() {
     val title = "首页"

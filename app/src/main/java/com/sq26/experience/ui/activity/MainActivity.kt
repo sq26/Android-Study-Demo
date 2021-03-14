@@ -1,23 +1,20 @@
 package com.sq26.experience.ui.activity
 
 import android.os.Bundle
-import android.view.Gravity
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
 import com.sq26.experience.R
 import androidx.databinding.DataBindingUtil.setContentView
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.navigateUp
 import com.sq26.experience.adapter.HomeMenuAdapter
 import com.sq26.experience.databinding.ActivityMainBinding
 import com.sq26.experience.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val mainViewModel: MainViewModel by viewModels()
+    private val mainViewModel by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView<ActivityMainBinding>(this, R.layout.activity_main).apply {
@@ -26,10 +23,10 @@ class MainActivity : AppCompatActivity() {
             //设置导航键的点击事件
             toolbar.setNavigationOnClickListener {
                 //弹出侧边栏
-                drawerLayout.openDrawer(Gravity.LEFT)
+                drawerLayout.openDrawer(GravityCompat.START)
             }
             //获取菜单适配器
-            val homeMenuAdapter = HomeMenuAdapter(mainViewModel,this@MainActivity)
+            val homeMenuAdapter = HomeMenuAdapter(mainViewModel, this@MainActivity)
             //设置适配器
             menuRecyclerView.adapter = homeMenuAdapter
             //设置数据监听
@@ -39,7 +36,7 @@ class MainActivity : AppCompatActivity() {
                 drawerLayout.closeDrawers()
             }
             //获取菜单类型适配器
-            val homeMenuTypeAdapter = HomeMenuAdapter(mainViewModel,this@MainActivity)
+            val homeMenuTypeAdapter = HomeMenuAdapter(mainViewModel, this@MainActivity)
             //设置适配器
             menuTypeRecyclerView.adapter = homeMenuTypeAdapter
             //设置数据监听

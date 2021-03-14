@@ -53,28 +53,28 @@
             android:id="@+id/algorithm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->viewModel.onAlgorithm()}"
+            android:onClick="@{viewModel::onAlgorithm}"
             android:text="@={viewModel.algorithm}" />
 
         <Button
             android:id="@+id/mode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->viewModel.onMode()}"
+            android:onClick="@{viewModel::onMode}"
             android:text="@={viewModel.mode}" />
 
         <Button
             android:id="@+id/padding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->viewModel.onPadding()}"
+            android:onClick="@{viewModel::onPadding}"
             android:text="@={viewModel.padding}" />
 
         <Button
             android:id="@+id/generateKey"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:onClick="@{()->viewModel.onGenerateKey()}"
+            android:onClick="@{viewModel::onGenerateKey}"
             android:text="@string/Generate_key" />
 
         <Button

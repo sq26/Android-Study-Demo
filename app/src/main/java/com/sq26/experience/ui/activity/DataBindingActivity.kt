@@ -3,14 +3,12 @@ package com.sq26.experience.ui.activity
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.databinding.Bindable
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.sq26.experience.BR
 import com.sq26.experience.R
@@ -18,14 +16,10 @@ import com.sq26.experience.databinding.ActivityDataBindingBinding
 import com.sq26.experience.util.Log
 import com.sq26.experience.util.kotlin.toast
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.withContext
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DataBindingActivity : AppCompatActivity() {
@@ -48,9 +42,9 @@ class DataBindingActivity : AppCompatActivity() {
         }
     }
 }
-
-class DataBindingViewModel @ViewModelInject constructor(
-    @ActivityContext private val context: Context
+@HiltViewModel
+class DataBindingViewModel @Inject constructor(
+//    @ActivityContext private val context: Context
 ) : ViewModel(), Observable {
     private val callbacks = PropertyChangeRegistry()
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
@@ -76,9 +70,9 @@ class DataBindingViewModel @ViewModelInject constructor(
     }
 
     fun onClick() {
-        AlertDialog.Builder(context)
-            .setMessage("viewModel绑定点击事件")
-            .show()
+//        AlertDialog.Builder(context)
+//            .setMessage("viewModel绑定点击事件")
+//            .show()
 //        Toast.makeText(context, "viewModel绑定点击事件", Toast.LENGTH_SHORT).show()
     }
 

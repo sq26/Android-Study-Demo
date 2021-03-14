@@ -5,18 +5,16 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.ViewModel
 import com.sq26.experience.R
 import com.sq26.experience.app.OkHttpUtil
 import com.sq26.experience.databinding.ActivityNetworkBinding
 import com.sq26.experience.util.Log
-import com.sq26.experience.util.network.download.Download
-import com.sq26.experience.util.network.download.DownloadDatabase
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
-import okhttp3.OkHttpClient
 import okhttp3.Request
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class NetworkActivity : AppCompatActivity() {
@@ -59,9 +57,9 @@ class NetworkActivity : AppCompatActivity() {
 
     }
 }
-
-class NetworkViewModel @ViewModelInject constructor(
-    @ActivityContext context: Context
+@HiltViewModel
+class NetworkViewModel @Inject constructor(
+//    @ActivityContext context: Context
 ) : ViewModel() {
 
     var content = ""

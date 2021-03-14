@@ -1,22 +1,14 @@
 package com.sq26.experience.ui.activity
 
-import android.content.Context
 import android.os.Bundle
-import android.view.View
-import android.view.WindowInsets
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.BaseObservable
 import androidx.databinding.DataBindingUtil
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityStatusBarBinding
-import com.sq26.experience.util.Log
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ActivityContext
 import javax.inject.Inject
 
 @AndroidEntryPoint

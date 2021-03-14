@@ -7,7 +7,7 @@
 
         <variable
             name="viewModel"
-            type="com.sq26.experience.ui.activity.CameraViewModel" />
+            type="com.sq26.experience.viewmodel.CameraViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
