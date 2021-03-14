@@ -16,7 +16,9 @@ import com.sq26.experience.databinding.ActivityAuthorizedOperationBinding
 import com.sq26.experience.util.Log
 import com.sq26.experience.util.permissions.JPermissions
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AuthorizedOperationActivity : AppCompatActivity() {
@@ -39,7 +41,7 @@ class AuthorizedOperationActivity : AppCompatActivity() {
             menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             //设置菜单的点击事件
             menuItem.setOnMenuItemClickListener {
-                authorizedOperationViewModel.startPermissions()
+                authorizedOperationViewModel.startPermissions(this@AuthorizedOperationActivity)
                 true
             }
             //设置导航键的点击事件
@@ -98,8 +100,9 @@ class AuthorizedOperationActivity : AppCompatActivity() {
     }
 }
 
-class AuthorizedOperationViewModel @ViewModelInject constructor(
-    @ActivityContext private val context: Context
+@HiltViewModel
+class AuthorizedOperationViewModel @Inject constructor(
+
 ) : ViewModel() {
     //日历数据
     var calendarData = false
@@ -128,7 +131,7 @@ class AuthorizedOperationViewModel @ViewModelInject constructor(
     //存储
     var storage = false
     //申请权限
-    fun startPermissions() {
+    fun startPermissions(context: Context) {
         val requestPermissions = mutableListOf<String>()
         if (calendarData) {
             //允许程序读取用户的日程信息

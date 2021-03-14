@@ -2,6 +2,7 @@ package com.sq26.experience.util
 
 import android.util.Log
 import com.sq26.experience.util.Log.Companion.i
+import java.util.*
 
 class Log {
     companion object {
@@ -12,8 +13,8 @@ class Log {
         var isEnable = true
 
         //详情(黑色)
-        fun i(msg: String, tag: String = TAG, isThread: Boolean = false) {
-            print(Log.INFO, tag, msg, isThread)
+        fun i(msg: Any?="null", tag: String = TAG, isThread: Boolean = false) {
+            print(Log.INFO, tag, msg.toString(), isThread)
         }
 
         //调试(黑色)

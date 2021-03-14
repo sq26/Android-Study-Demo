@@ -13,6 +13,7 @@ import com.sq26.experience.adapter.HomeMenuAdapter
 import com.sq26.experience.databinding.ActivityMainBinding
 import com.sq26.experience.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -28,7 +29,7 @@ class MainActivity : AppCompatActivity() {
                 drawerLayout.openDrawer(Gravity.LEFT)
             }
             //获取菜单适配器
-            val homeMenuAdapter = HomeMenuAdapter(mainViewModel)
+            val homeMenuAdapter = HomeMenuAdapter(mainViewModel,this@MainActivity)
             //设置适配器
             menuRecyclerView.adapter = homeMenuAdapter
             //设置数据监听
@@ -38,7 +39,7 @@ class MainActivity : AppCompatActivity() {
                 drawerLayout.closeDrawers()
             }
             //获取菜单类型适配器
-            val homeMenuTypeAdapter = HomeMenuAdapter(mainViewModel)
+            val homeMenuTypeAdapter = HomeMenuAdapter(mainViewModel,this@MainActivity)
             //设置适配器
             menuTypeRecyclerView.adapter = homeMenuTypeAdapter
             //设置数据监听

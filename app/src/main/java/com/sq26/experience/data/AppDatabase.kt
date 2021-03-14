@@ -88,6 +88,7 @@ abstract class AppDatabase : RoomDatabase() {
                 homeMenuList.add(HomeMenu("Paging", "Paging框架(RecyclerView分页库)", 1, "1"))
                 homeMenuList.add(HomeMenu("WorkManger", "WorkManger框架(后台任务库)", 1, "1"))
                 homeMenuList.add(HomeMenu("DataBinding", "Data Binding框架(数据绑定)", 1, "1"))
+                homeMenuList.add(HomeMenu("DataStore", "DataStore框架(数据储存)", 1, "1"))
                 homeMenuList.add(HomeMenu("2", "android功能", 0))
                 homeMenuList.add(HomeMenu("camera", context.getString(R.string.camera), 1, "2"))
                 homeMenuList.add(HomeMenu("statusBar", "侵入式体验(通知栏和导航栏控制)", 1, "2"))

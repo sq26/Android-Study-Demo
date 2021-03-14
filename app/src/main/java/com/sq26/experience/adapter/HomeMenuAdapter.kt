@@ -1,5 +1,6 @@
 package com.sq26.experience.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -9,9 +10,14 @@ import com.sq26.experience.data.HomeMenu
 import com.sq26.experience.databinding.ItemRecyclerviewBinding
 import com.sq26.experience.util.Log
 import com.sq26.experience.viewmodel.MainViewModel
+import dagger.hilt.android.qualifiers.ActivityContext
+import javax.inject.Inject
 
 //获取数据模型
-class HomeMenuAdapter(private val mainViewModel: MainViewModel) :
+class HomeMenuAdapter @Inject constructor(
+    private val mainViewModel: MainViewModel,
+    private val context: Context
+) :
     ListAdapter<HomeMenu, HomeMenuAdapter.ViewHolder>(HomeMenuDiffCallback()) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         //数据绑定
@@ -44,7 +50,7 @@ class HomeMenuAdapter(private val mainViewModel: MainViewModel) :
                         mainViewModel.refreshHomeMenuList(id)
                     } else {
                         //设置要跳转的页面
-                        mainViewModel.startTo(id)
+                        mainViewModel.startTo(context,id)
                     }
                 }
             }

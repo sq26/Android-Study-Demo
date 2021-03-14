@@ -2,7 +2,7 @@
 
     <!-- Base application theme. -->
     <!--    基础应用主题-->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- 在这里自定义主题。. -->
         <!--        应用的主要色调，actionBar默认使用该颜色，Toolbar导航栏的底色-->
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -40,15 +40,15 @@
         <!--        RadioButton checkbox等控件的文字颜色-->
         <!--        <item name="android:textColorPrimaryDisableOnly"></item>-->
         <!--        应用的主要文字颜色，actionBar的标题文字默认使用该颜色-->
-<!--        <item name="android:textColorPrimary">@android:color/white</item>-->
+        <!--        <item name="android:textColorPrimary">@android:color/white</item>-->
         <!--        switch thumbs 默认状态的颜色. (switch off)-->
         <!--        <item name="colorSwitchThumbNormal"></item>-->
 
         <!--        不要ActionBar(要使用toolbar需要去除ActionBar)-->
-        <item name="windowActionBar">false</item>
+<!--        <item name="windowActionBar">false</item>-->
         <!--        不要窗口标题-->
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowNoTitle">true</item>
+<!--        <item name="windowNoTitle">true</item>-->
+<!--        <item name="android:windowNoTitle">true</item>-->
     </style>
 
     <!--    toolbar主题-->
@@ -74,5 +74,4 @@
         <!--        设置CheckBox选中的颜色-->
         <item name="android:colorControlActivated">@color/colorAccent</item>
     </style>
-
 </resources>

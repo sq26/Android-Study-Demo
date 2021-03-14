@@ -2,9 +2,12 @@ package com.sq26.experience.ui.activity
 
 import android.content.Context
 import android.os.Bundle
+import android.view.View
 import android.view.WindowInsets
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.BaseObservable
 import androidx.databinding.DataBindingUtil
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
@@ -18,7 +21,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class StatusBarActivity : AppCompatActivity() {
-    private  val statusBarViewModel: StatusBarViewModel by viewModels()
+    private val statusBarViewModel: StatusBarViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityStatusBarBinding>(this, R.layout.activity_status_bar)
@@ -41,6 +44,7 @@ class StatusBarActivity : AppCompatActivity() {
 //        }
 
 //        View decorView = getWindow().getDecorView();
+
 //        Integer uiOptions = 0;
 //        if (checkbox1.isChecked()) {
 //            uiOptions = uiOptions | View.SYSTEM_UI_FLAG_LOW_PROFILE;
@@ -70,8 +74,9 @@ class StatusBarActivity : AppCompatActivity() {
     }
 }
 
-class StatusBarViewModel @ViewModelInject constructor(
-    @ActivityContext private val context: Context
+@HiltViewModel
+class StatusBarViewModel @Inject constructor(
 ) : ViewModel() {
-    val liveData = MutableLiveData(true)
+
+
 }

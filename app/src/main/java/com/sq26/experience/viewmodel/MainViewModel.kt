@@ -8,6 +8,7 @@ import com.sq26.experience.data.HomeMenu
 import com.sq26.experience.data.HomeMenuDao
 import com.sq26.experience.ui.activity.*
 import com.sq26.experience.ui.activity.file.FileHomeActivity
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -16,10 +17,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class MainViewModel @ViewModelInject internal constructor(
-    private val homeRepository: HomeRepository,
-    @ActivityContext private val context: Context
+@HiltViewModel
+class MainViewModel @Inject internal constructor(
+    private val homeRepository: HomeRepository
 ) : ViewModel() {
     val title = "首页"
 
@@ -43,7 +43,7 @@ class MainViewModel @ViewModelInject internal constructor(
     val homeMenuTypeList: LiveData<List<HomeMenu>> =
         homeRepository.getHomeMenuTypeList().asLiveData()
 
-    fun startTo(id: String) {
+    fun startTo(context: Context,id: String) {
         val intent = Intent(context, EncryptionActivity::class.java)
         //在新的窗口打开
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
@@ -85,6 +85,8 @@ class MainViewModel @ViewModelInject internal constructor(
                 intent.setClass(context, RecyclerViewActivity::class.java)
             "WorkManger" ->
                 intent.setClass(context, WorkManagerActivity::class.java)
+            "DataStore" ->
+                intent.setClass(context, DataStoreActivity::class.java)
         }
         context.startActivity(intent)
     }
