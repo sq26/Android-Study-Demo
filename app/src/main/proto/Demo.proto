@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package com.sq26.proto;
+
+message DemoItem {
+  string text = 1;
+  int32 photo = 2;
+
+}

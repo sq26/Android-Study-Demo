@@ -9,9 +9,10 @@ interface IAidlInterface {
      * Demonstrates some basic types that you can use as parameters
      * and return values in AIDL.
      */
+     //发送信息
     void pushText(String text);
-
-    void registerCallback(String packageName,ICallbackAidlInterface callback);
-
-    void unregisterCallback(String packageName);
+    //注册接收信息的回调
+    void registerCallback(String name,ICallbackAidlInterface callback);
+    //注销接收信息的回调
+    void unregisterCallback(String name);
 }

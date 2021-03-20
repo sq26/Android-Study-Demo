@@ -1,55 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.activity.file.FileHomeActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <data>
+
+        <variable
+            name="openAlbum"
+            type="android.view.View.OnClickListener" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/ToolBarTheme"
-        app:layout_constraintTop_toTopOf="parent"
-        app:navigationIcon="@drawable/ic_baseline_arrow_back_24" />
+        android:layout_height="match_parent"
+        tools:context=".ui.activity.file.FileHomeActivity">
 
-    <GridLayout
-        android:id="@+id/gridLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:alignmentMode="alignBounds"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/ToolBarTheme"
+            app:layout_constraintTop_toTopOf="parent"
+            app:navigationIcon="@drawable/ic_baseline_arrow_back_24"
+            app:title="@string/file_management" />
 
-        <ImageView
-            android:id="@+id/image"
-            android:layout_height="48dp"
-            android:layout_row="0"
-            android:layout_column="0"
-            android:layout_columnWeight="1"
-            android:src="@drawable/ic_baseline_image_24" />
+        <GridLayout
+            android:id="@+id/gridLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alignmentMode="alignBounds"
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-        <ImageView
-            android:id="@+id/video"
-            android:layout_height="48dp"
-            android:layout_row="0"
-            android:layout_column="1"
-            android:layout_columnWeight="1"
-            android:src="@drawable/ic_baseline_video_library_24" />
+            <ImageView
+                android:id="@+id/image"
+                android:layout_height="48dp"
+                android:layout_row="0"
+                android:layout_column="0"
+                android:layout_columnWeight="1"
+                android:onClick="@{openAlbum}"
+                android:src="@drawable/ic_baseline_image_24" />
 
-        <ImageView
-            android:id="@+id/music"
-            android:layout_height="48dp"
-            android:layout_row="0"
-            android:layout_column="2"
-            android:layout_columnWeight="1"
-            android:src="@drawable/ic_baseline_queue_music_24" />
-    </GridLayout>
+            <ImageView
+                android:id="@+id/video"
+                android:layout_height="48dp"
+                android:layout_row="0"
+                android:layout_column="1"
+                android:layout_columnWeight="1"
+                android:src="@drawable/ic_baseline_video_library_24" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rootFileRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@id/gridLayout" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/music"
+                android:layout_height="48dp"
+                android:layout_row="0"
+                android:layout_column="2"
+                android:layout_columnWeight="1"
+                android:src="@drawable/ic_baseline_queue_music_24" />
+        </GridLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rootFileRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/gridLayout" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

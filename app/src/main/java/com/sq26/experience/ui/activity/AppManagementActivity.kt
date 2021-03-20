@@ -3,7 +3,6 @@ package com.sq26.experience.ui.activity
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
@@ -15,9 +14,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.MutableLiveData
 import com.sq26.experience.R
 import com.sq26.experience.adapter.AppManagementAdapter
-import com.sq26.experience.base.BaseViewModel
 import com.sq26.experience.databinding.ActivityAppManagementBinding
 import com.sq26.experience.util.Log
+import com.sq26.experience.viewmodel.ObservableViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -93,7 +92,7 @@ data class AppInfo(
 )
 
 @HiltViewModel
-class AppManagementViewModel @Inject constructor() : BaseViewModel() {
+class AppManagementViewModel @Inject constructor() : ObservableViewModel() {
     val appListLiveData = MutableLiveData<List<AppInfo>>();
     private val appList = mutableListOf<AppInfo>()
 

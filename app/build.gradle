@@ -8,9 +8,18 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 //导航的插件,safeargs用于在fragment之间跳转传输少量数据,去掉后面的.kotlin就是适用于 Java 模块或 Java 和 Kotlin 混合模块的 Java 语言代码
 apply plugin: "androidx.navigation.safeargs.kotlin"
+//启用protobuf语言插件
+apply plugin: "com.google.protobuf"
+
+//控制台有乱码
+//Android Studio\bin下的
+//studio.exe.vmoptions和
+//studio64.exe.vmoptions文件的内容最后加入
+//-Dfile.encoding=UTF-8
 
 android {
     compileSdkVersion 30
+    buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "com.sq26.experience"
         minSdkVersion 21
@@ -51,7 +60,29 @@ android {
         jvmTarget = "1.8"
 //        freeCompilerArgs += ["-Xopt-in=kotlin.RequiresOptIn"]
     }
-    buildToolsVersion '30.0.3'
+}
+
+//protobuf的编译配置
+protobuf {
+    //在这查找最新版本
+    // https://mvnrepository.com/artifact/com.google.protobuf
+    protoc {
+        //编译器版本
+        artifact = 'com.google.protobuf:protoc:3.0.0'
+    }
+    plugins {
+        //编译javaLite的插件版本
+        javalite {
+            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                javalite {}
+            }
+        }
+    }
 }
 
 dependencies {
@@ -139,6 +170,10 @@ dependencies {
     implementation "androidx.camera:camera-view:1.0.0-alpha22"
     // CameraX扩展库
     implementation "androidx.camera:camera-extensions:1.0.0-alpha22"
-    //数据储存
+    //类型化数据储存,将数据作为自定义数据类型的实例进行存储。此实现要求您使用协议缓冲区来定义架构，但可以确保类型安全。
     implementation "androidx.datastore:datastore:1.0.0-alpha08"
+    //便捷数据储存,使用键存储和访问数据。此实现不需要预定义的架构，也不确保类型安全。
+    implementation "androidx.datastore:datastore-preferences:1.0.0-alpha08"
+    //protobuf的使用依赖
+    implementation "com.google.protobuf:protobuf-lite:3.0.1"
 }

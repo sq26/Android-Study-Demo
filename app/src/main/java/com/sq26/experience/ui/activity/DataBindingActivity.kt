@@ -1,10 +1,8 @@
 package com.sq26.experience.ui.activity
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.databinding.Bindable
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.Observable
@@ -17,7 +15,6 @@ import com.sq26.experience.util.Log
 import com.sq26.experience.util.kotlin.toast
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ActivityContext
 import java.util.*
 import javax.inject.Inject
 

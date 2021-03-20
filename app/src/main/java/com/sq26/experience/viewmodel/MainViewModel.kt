@@ -43,6 +43,7 @@ class MainViewModel @Inject constructor(
         val intent = Intent(context, EncryptionActivity::class.java)
         //在新的窗口打开
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+        intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
         when (id) {
             "encryption" ->
                 intent.setClass(context, EncryptionActivity::class.java)

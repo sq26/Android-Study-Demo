@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -17,25 +18,12 @@ import com.sq26.experience.util.permissions.JPermissions
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ActivityContext
+import org.json.JSONObject
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AuthorizedOperationActivity : AppCompatActivity() {
     private val authorizedOperationViewModel: AuthorizedOperationViewModel by viewModels()
-    //JPermissions需要先在activity注册声明才能start()
-    private val jPermissions = JPermissions(this)
-        .success {
-            AlertDialog.Builder(this).setMessage("申请成功").setPositiveButton("确定", null).show()
-        }
-        .failure { successList, failure, noPrompt ->
-            AlertDialog.Builder(this).setTitle("申请失败")
-                .setMessage("成功的权限:$successList\n失败的权限:$failure\n被永久拒绝的权限:$noPrompt")
-                .setPositiveButton("确定", null)
-                .setNegativeButton("打开权限设置页面") { _, _ ->
-                    JPermissions.openSettings(this)
-                }
-                .show()
-        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +43,7 @@ class AuthorizedOperationActivity : AppCompatActivity() {
             menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
             //设置菜单的点击事件
             menuItem.setOnMenuItemClickListener {
-                authorizedOperationViewModel.startPermissions(jPermissions)
+                authorizedOperationViewModel.startPermissions(this@AuthorizedOperationActivity)
                 true
             }
             //设置导航键的点击事件
@@ -114,10 +102,7 @@ class AuthorizedOperationActivity : AppCompatActivity() {
     }
 }
 
-@HiltViewModel
-class AuthorizedOperationViewModel @Inject constructor(
-
-) : ViewModel() {
+class AuthorizedOperationViewModel : ViewModel() {
     //日历数据
     var calendarData = false
 
@@ -146,7 +131,7 @@ class AuthorizedOperationViewModel @Inject constructor(
     var storage = false
 
     //申请权限
-    fun startPermissions(jPermissions: JPermissions) {
+    fun startPermissions(context: Context) {
         val requestPermissions = mutableListOf<String>()
         if (calendarData) {
             //允许程序读取用户的日程信息
@@ -169,7 +154,7 @@ class AuthorizedOperationViewModel @Inject constructor(
             //允许程序通过GPS芯片接收卫星的定位信息
             requestPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
             //允许程序通过WiFi或移动基站的方式获取用户错略的经纬度信息
-            requestPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
+//            requestPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION)
         }
         if (microphone) {
             //允许程序录制声音通过手机或耳机的麦克
@@ -218,6 +203,19 @@ class AuthorizedOperationViewModel @Inject constructor(
             requestPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
-        jPermissions.setRequestPermissions(requestPermissions.toTypedArray()).start()
+        JPermissions(context, requestPermissions.toTypedArray())
+            .success {
+                AlertDialog.Builder(context).setMessage("申请成功").setPositiveButton("确定", null).show()
+            }
+            .failure { successList, failure, noPrompt ->
+                AlertDialog.Builder(context).setTitle("申请失败")
+                    .setMessage("成功的权限:$successList\n失败的权限:$failure\n被永久拒绝的权限:$noPrompt")
+                    .setPositiveButton("确定", null)
+                    .setNegativeButton("打开权限设置页面") { _, _ ->
+                        JPermissions.openSettings(context)
+                    }
+                    .show()
+            }
+            .start()
     }
 }

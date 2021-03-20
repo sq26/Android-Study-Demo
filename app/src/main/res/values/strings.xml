@@ -4,6 +4,7 @@
     <string name="PagingComponents">Paging组件(RecyclerView分页库)</string>
     <string name="WorkMangerComponents">WorkManger组件(后台任务库)</string>
     <string name="Data_BindingComponents">Data Binding组件(数据绑定)</string>
+    <string name="DataStore">DataStore框架(数据储存)</string>
 
     <string name="QRCode_recognition">QRCode识别</string>
     <string name="Scan_code">扫码</string>

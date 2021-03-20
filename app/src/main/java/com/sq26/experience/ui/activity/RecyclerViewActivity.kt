@@ -3,17 +3,21 @@ package com.sq26.experience.ui.activity
 import android.annotation.SuppressLint
 import android.graphics.Canvas
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.*
 import com.sq26.experience.R
-import com.sq26.experience.adapter.RecyclerView1Adapter
+import com.sq26.experience.adapter.CommonListAdapter
+import com.sq26.experience.adapter.CommonListViewHolder
 import com.sq26.experience.data.RecyclerViewItem
 import com.sq26.experience.databinding.ActivityRecyclerViewBinding
+import com.sq26.experience.databinding.ItemRecyclerviewItemBinding
 import com.sq26.experience.util.Log
 import com.sq26.experience.viewmodel.RecyclerViewViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,7 +53,27 @@ class RecyclerViewActivity : AppCompatActivity() {
                 )
             )
             //声明adapter
-            val adapter = RecyclerView1Adapter()
+            val adapter = object : CommonListAdapter<RecyclerViewItem>(DiffCallback()) {
+                //创建视图
+                override fun createView(parent: ViewGroup, viewType: Int): CommonListViewHolder<*> {
+                    return object : CommonListViewHolder<ItemRecyclerviewItemBinding>(
+                        ItemRecyclerviewItemBinding.inflate(
+                            LayoutInflater.from(parent.context),
+                            parent,
+                            false
+                        )
+                    ) {
+                        //绑定数据
+                        override fun bind(position: Int) {
+                            v.item = getItem(position)
+                            //刷新数据
+                            v.executePendingBindings()
+                        }
+
+                        fun getItem() = v.item
+                    }
+                }
+            }
             //设置adapter
             recyclerView.adapter = adapter
             //移动顺序
@@ -100,6 +124,7 @@ class RecyclerViewActivity : AppCompatActivity() {
                             0, 0
                         )
                 }
+
                 //当用户拖动一个Item进行移动从旧的位置到新的位置的时候会调用该方法
                 override fun onMove(
                     recyclerView: RecyclerView,
@@ -107,18 +132,7 @@ class RecyclerViewActivity : AppCompatActivity() {
                     target: RecyclerView.ViewHolder
                 ): Boolean {
                     //这里处理item交换位置
-                    adapter.notifyItemMoved(
-                        viewHolder.adapterPosition,
-                        target.adapterPosition
-                    )
-                    //这里处理数据交换位置
-                    val item = (viewHolder as RecyclerView1Adapter.ViewHolder).getItem()!!
-                    val targetItem = (target as RecyclerView1Adapter.ViewHolder).getItem()!!
-                    val sort = item.sort
-                    item.sort = targetItem.sort
-                    targetItem.sort = sort
-                    moveMap[item.id] = item
-                    moveMap[targetItem.id] = targetItem
+
                     //返回true表示处理移动完毕,返回false拖动的item不能与新位置的item交换位置
                     return true
                 }
@@ -127,7 +141,7 @@ class RecyclerViewActivity : AppCompatActivity() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     //手指触摸滑动的距离达到RecyclerView宽度的一半时，再松开手指，此时该Item会继续向原先滑动方向滑过去并且调用onSwiped方法进行删除，否则会反向滑回原来的位置。
                     //删除当前列的item
-                    viewModel.delete((viewHolder as RecyclerView1Adapter.ViewHolder).getItem())
+//                    viewModel.delete((viewHolder as RecyclerView1Adapter.ViewHolder).getItem())
                 }
 
                 //是否支持长按滑动
@@ -216,4 +230,25 @@ class RecyclerViewActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+}
+
+//DiffUtil是一个实用程序类，它计算两个列表之间的差异并输出
+//将一个列表转换为另一个列表的更新操作列表。
+class DiffCallback : DiffUtil.ItemCallback<RecyclerViewItem>() {
+    //判断唯一标识是否相同
+    override fun areItemsTheSame(
+        oldItem: RecyclerViewItem,
+        newItem: RecyclerViewItem
+    ): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+    //判断内容是否相同
+    override fun areContentsTheSame(
+        oldItem: RecyclerViewItem,
+        newItem: RecyclerViewItem
+    ): Boolean {
+        return oldItem == newItem
+    }
+
 }
