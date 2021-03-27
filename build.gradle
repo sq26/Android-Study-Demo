@@ -4,11 +4,11 @@ buildscript {
     //在单个位置定义版本(以防止某个框架的不同组件版本不同产生异常)
     ext {
         roomVersion = "2.2.6"
-        lifecycleVersion = "2.3.0"
+        lifecycleVersion = "2.3.1"
         hiltVersion = '2.33-beta'
         navigationVersion = "2.3.4"
         coroutinesVersion = "1.4.2"
-        cameraxVersion = "1.1.0-alpha02"
+        cameraxVersion = "1.1.0-alpha03"
     }
 
     //gradle脚本执行所需依赖，分别是对应的maven库和插件

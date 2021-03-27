@@ -23,6 +23,6 @@ class DownloadManagementActivity : AppCompatActivity() {
     }
 }
 
-class view(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-}
+//class view(itemView: View) : RecyclerView.ViewHolder(itemView) {
+//
+//}

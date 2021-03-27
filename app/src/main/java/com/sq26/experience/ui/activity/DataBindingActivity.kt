@@ -2,17 +2,18 @@ package com.sq26.experience.ui.activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import androidx.databinding.Bindable
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.Observable
-import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.*
 import com.sq26.experience.BR
 import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityDataBindingBinding
 import com.sq26.experience.util.Log
 import com.sq26.experience.util.kotlin.toast
+import com.sq26.experience.viewmodel.ObservableViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
@@ -42,14 +43,8 @@ class DataBindingActivity : AppCompatActivity() {
 @HiltViewModel
 class DataBindingViewModel @Inject constructor(
 //    @ActivityContext private val context: Context
-) : ViewModel(), Observable {
-    private val callbacks = PropertyChangeRegistry()
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
-        callbacks.add(callback)
-    }
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
-        callbacks.remove(callback)
-    }
+) : ObservableViewModel(), Observable {
+
     //Bindable注解给currentTime打上标识,可用于之后的手动数据更新
     @Bindable
     var currentTime = System.currentTimeMillis()
@@ -63,7 +58,7 @@ class DataBindingViewModel @Inject constructor(
         currentTime = System.currentTimeMillis()
         currentTime2 = System.currentTimeMillis()
         //只刷新currentTime,这样就可以只用刷新currentTime的数据而不刷新currentTime2
-        callbacks.notifyChange(this, BR.currentTime)
+        notifyPropertyChanged(BR.currentTime)
     }
 
     fun onClick() {
@@ -82,6 +77,18 @@ class DataBindingViewModel @Inject constructor(
 
     var editText = MutableLiveData<String>()
 
+    @Bindable
+    var vis = false
+    set(value) {
+        if (field != value){
+            field = value
+            notifyPropertyChanged(BR.vis)
+        }
+    }
+
+    fun setVis(view:View){
+        vis = !vis
+    }
 
     // 协程内部的转换
 //    val currentTimeTransformed = currentTime.switchMap {

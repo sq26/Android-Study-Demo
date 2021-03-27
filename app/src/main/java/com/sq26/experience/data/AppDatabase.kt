@@ -102,6 +102,9 @@ abstract class AppDatabase : RoomDatabase() {
                 homeMenuList.add(HomeMenu("3", "视图", 0))
                 homeMenuList.add(HomeMenu("pullToRefresh", "下拉刷新,上拉加载更多", 1, "3"))
                 homeMenuList.add(HomeMenu("RecyclerView", "RecyclerView的使用", 1, "3"))
+                homeMenuList.add(HomeMenu("MotionLayout", "MotionLayout的使用", 1, "3"))
+
+
 
                 appDatabase.homeMenuDao().updateAll(homeMenuList)
             }
