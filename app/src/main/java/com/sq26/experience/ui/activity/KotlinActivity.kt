@@ -1,12 +1,22 @@
 package com.sq26.experience.ui.activity
 
+import android.app.Activity
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.*
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sq26.experience.databinding.ActivityKotlinBinding
 import com.sq26.experience.util.Log
 import com.squareup.moshi.*
+import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -14,9 +24,43 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.lang.Exception
 import javax.inject.Inject
+import javax.inject.Singleton
 
+
+fun ComponentActivity.setReceiver(fun1: () -> Unit) {
+    val local = "$packageName.local"
+    val localBroadcast = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            Log.i("接收到本地消息")
+            fun1()
+        }
+    }
+
+    val intentFilter = IntentFilter(local)
+    var b = false
+    lifecycle.addObserver(object : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+        fun onResume() {
+            if (b)
+                registerReceiver(localBroadcast, intentFilter)
+            b = true
+            Log.i("运行中")
+        }
+
+        @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+        fun onPause() {
+            unregisterReceiver(localBroadcast)
+            Log.i("暂停中")
+        }
+
+    })
+    registerReceiver(localBroadcast, intentFilter)
+}
+
+@AndroidEntryPoint
 class KotlinActivity : AppCompatActivity() {
     private lateinit var binding: ActivityKotlinBinding
+    private val viewModel: KotlinViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityKotlinBinding.inflate(layoutInflater)
@@ -35,6 +79,21 @@ class KotlinActivity : AppCompatActivity() {
             val jsonData = moshi.adapter(JsonData::class.java).fromJson(json)
 
             Log.i(jsonData.toString())
+        }
+
+        setReceiver {
+            //在这里做操作也可以把操作写死
+            MaterialAlertDialogBuilder(this)
+                .setMessage("成功")
+                .show()
+
+        }
+
+        binding.text1.text = "发出广播"
+        binding.text1.setOnClickListener {
+
+            viewModel.start()
+
         }
 
 
@@ -76,7 +135,7 @@ class KotlinActivity : AppCompatActivity() {
 @JsonClass(generateAdapter = true)
 data class JsonData(
     val name: String,
-    val url: String="",
+    val url: String = "",
     val address: String,
     val domain_list: List<Domain>
 )
@@ -120,6 +179,26 @@ class StringAdapter : JsonAdapter<String>() {
         writer.value(value)
     }
 }
+
+@HiltViewModel
+class KotlinViewModel @Inject constructor(
+    private val requestClass: RequestClass
+) : ViewModel() {
+    fun start() = requestClass.requestError()
+}
+
+@Singleton
+class RequestClass @Inject constructor(@ApplicationContext private val context: Context) {
+
+    fun requestError() {
+        context.sendBroadcast(Intent("${context.packageName}.local").apply {
+            //指定包名
+            setPackage(context.packageName)
+        })
+    }
+
+}
+
 
 
 

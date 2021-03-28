@@ -16,7 +16,7 @@ class MotionLayoutActivity : AppCompatActivity() {
             R.layout.activity_motion_layout
         ).apply {
 
-
+            motionLayout.transitionToStart()
         }
     }
 }

@@ -2,6 +2,7 @@ package com.sq26.experience.di
 
 import android.content.Context
 import com.sq26.experience.data.AppDatabase
+import com.sq26.experience.data.FileRootDao
 import com.sq26.experience.data.HomeMenuDao
 import com.sq26.experience.data.RecyclerViewDao
 import dagger.Module
@@ -35,5 +36,10 @@ class DatabaseModule {
     @Provides
     fun provideRecyclerViewDao(appDatabase: AppDatabase): RecyclerViewDao {
         return appDatabase.recyclerViewDao()
+    }
+
+    @Provides
+    fun provideFileRootDao(appDatabase: AppDatabase): FileRootDao {
+        return appDatabase.fileRootDao()
     }
 }

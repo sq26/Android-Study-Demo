@@ -14,10 +14,16 @@ import kotlin.concurrent.thread
  * version:数据库的版本
  * exportSchema:是否将数据库导出到文件夹中
  */
-@Database(entities = [HomeMenu::class, RecyclerViewItem::class], version = 2, exportSchema = false)
+@Database(
+    entities = [HomeMenu::class, RecyclerViewItem::class, FileRoot::class],
+    version = 3,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
+    //dao层会自动生产
     abstract fun homeMenuDao(): HomeMenuDao
     abstract fun recyclerViewDao(): RecyclerViewDao
+    abstract fun fileRootDao(): FileRootDao
 
     companion object {
         //Volatile注解,申明线程安全(每次读取刷新cpu缓存)
@@ -42,10 +48,11 @@ abstract class AppDatabase : RoomDatabase() {
                         override fun onOpen(db: SupportSQLiteDatabase) {
                             super.onOpen(db)
                             //初始化首页功能菜单
-                            initHomeMenu(getInstance(context),context)
+                            initHomeMenu(getInstance(context), context)
                         }
                     })
                     .addMigrations(MIGRATION_1_2())
+                    .addMigrations(MIGRATION_2_3())
                     //构建
                     .build()
                     //also内联扩展函数,传入调用对象本身,返回调用对象本身,内部的lambda表达式处理对象的初始属性设置和赋值等操作
@@ -75,11 +82,35 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
-        fun initHomeMenu(appDatabase: AppDatabase,context: Context) {
+        private fun MIGRATION_2_3(): Migration {
+            //从2升级到3加了张表
+            return object : Migration(2, 3) {
+                override fun migrate(database: SupportSQLiteDatabase) {
+                    //创建表
+                    //PRIMARY KEY(uri)将uri设置为主键，NOT NULL设置对应的键不能为空
+                    database.execSQL("create table if not exists FileRoot(" +
+                            "name Text not null," +
+                            "rom Text not null," +
+                            "uri Text not null," +
+                            "canRead INTEGER not null," +
+                            "canWrite INTEGER not null," +
+                            "PRIMARY KEY(uri))")
+                }
+            }
+        }
+
+        fun initHomeMenu(appDatabase: AppDatabase, context: Context) {
             thread {
                 val homeMenuList = mutableListOf<HomeMenu>()
                 homeMenuList.add(HomeMenu("0", "技术功能", 0))
-                homeMenuList.add(HomeMenu("encryption", context.getString(R.string.Symmetric_and_asymmetric_encryption), 1, "0"))
+                homeMenuList.add(
+                    HomeMenu(
+                        "encryption",
+                        context.getString(R.string.Symmetric_and_asymmetric_encryption),
+                        1,
+                        "0"
+                    )
+                )
                 homeMenuList.add(HomeMenu("aidl", "AIDL进程间通讯", 1, "0"))
                 homeMenuList.add(HomeMenu("javaTest", "java测试", 1, "0"))
                 homeMenuList.add(HomeMenu("kotlin", "kotlin语言学习", 1, "0"))
