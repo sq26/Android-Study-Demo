@@ -3,6 +3,7 @@ package com.sq26.experience.ui.activity
 import android.os.Bundle
 import androidx.activity.addCallback
 import androidx.activity.viewModels
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.sq26.experience.R
@@ -20,6 +21,17 @@ class MainActivity : AppCompatActivity() {
         setContentView<ActivityMainBinding>(this, R.layout.activity_main).apply {
             lifecycleOwner = this@MainActivity
             viewModel = mainViewModel
+
+            val toggle = ActionBarDrawerToggle(
+                this@MainActivity,
+                drawerLayout,
+                toolbar,
+                R.string.app_name,
+                R.string.app_name
+            )
+            drawerLayout.addDrawerListener(toggle)
+            toggle.syncState()
+
             //设置导航键的点击事件
             toolbar.setNavigationOnClickListener {
                 //弹出侧边栏

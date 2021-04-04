@@ -21,8 +21,6 @@ import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
 import com.sq26.experience.R;
-import com.sq26.experience.adapter.CommonAdapter;
-import com.sq26.experience.adapter.ViewHolder;
 
 import java.util.ArrayList;
 import java.util.HashMap;

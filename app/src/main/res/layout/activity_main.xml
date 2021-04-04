@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="viewModel"
             type="com.sq26.experience.viewmodel.MainViewModel" />
@@ -12,29 +13,29 @@
     <androidx.drawerlayout.widget.DrawerLayout
         android:id="@+id/drawerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.appcompat.widget.Toolbar
+            <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar"
+                style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:theme="@style/ToolBarTheme"
                 app:layout_constraintTop_toTopOf="parent"
-                app:navigationIcon="@drawable/ic_baseline_menu_24"
                 app:title="@{viewModel.title}" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/menuRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                tools:listitem="@layout/item_recyclerview"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/toolbar" />
+                app:layout_constraintTop_toBottomOf="@id/toolbar"
+                tools:listitem="@layout/item_recyclerview" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -42,15 +43,14 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:background="@android:color/white"
-            android:orientation="vertical">
+            android:fitsSystemWindows="true">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/menuTypeRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:listitem="@layout/item_recyclerview"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                />
+                tools:listitem="@layout/item_recyclerview" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.drawerlayout.widget.DrawerLayout>

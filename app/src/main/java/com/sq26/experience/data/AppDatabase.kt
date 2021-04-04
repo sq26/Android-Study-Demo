@@ -130,6 +130,7 @@ abstract class AppDatabase : RoomDatabase() {
                 homeMenuList.add(HomeMenu("network", "网络", 1, "2"))
                 homeMenuList.add(HomeMenu("WiFiDirect", "WIFI直连", 1, "2"))
                 homeMenuList.add(HomeMenu("AppManagement", "app管理", 1, "2"))
+                homeMenuList.add(HomeMenu("MediaOperating", "媒体操作", 1, "2"))
                 homeMenuList.add(HomeMenu("3", "视图", 0))
                 homeMenuList.add(HomeMenu("pullToRefresh", "下拉刷新,上拉加载更多", 1, "3"))
                 homeMenuList.add(HomeMenu("RecyclerView", "RecyclerView的使用", 1, "3"))

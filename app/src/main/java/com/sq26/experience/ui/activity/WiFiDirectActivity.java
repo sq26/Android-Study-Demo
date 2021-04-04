@@ -18,9 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONObject;
 import com.sq26.experience.R;
-import com.sq26.experience.adapter.CommonAdapter;
 import com.sq26.experience.adapter.RecyclerViewListAdapter;
 import com.sq26.experience.adapter.ViewHolder;
 

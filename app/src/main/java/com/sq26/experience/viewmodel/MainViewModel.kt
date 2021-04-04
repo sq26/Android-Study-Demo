@@ -86,6 +86,8 @@ class MainViewModel @Inject constructor(
                 intent.setClass(context, DataStoreActivity::class.java)
             "MotionLayout" ->
                 intent.setClass(context, MotionLayoutActivity::class.java)
+            "MediaOperating"->
+                intent.setClass(context, MediaOperatingActivity::class.java)
         }
         context.startActivity(intent)
     }

@@ -195,8 +195,8 @@
         </activity>
         <!-- 图片选择页 -->
         <activity android:name=".ui.util.SelectImageActivity" />
-        <!-- 媒体管理页 -->
-        <activity android:name=".ui.activity.MediaManagementActivity" />
+        <!-- 媒体操作页 -->
+        <activity android:name=".ui.activity.MediaOperatingActivity" />
         <!-- 文件操作页 -->
         <activity android:name=".ui.activity.file.FileOperateActivity" />
         <!-- 权限申请页 -->

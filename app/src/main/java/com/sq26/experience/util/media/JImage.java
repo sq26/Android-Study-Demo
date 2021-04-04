@@ -1,5 +1,6 @@
 package com.sq26.experience.util.media;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 
@@ -9,6 +10,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.sq26.experience.R;
+import com.sq26.experience.util.permissions.JPermissions;
+
+import java.util.List;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function0;
+import kotlin.jvm.functions.Function3;
 
 public class JImage {
     //全部
@@ -39,6 +47,7 @@ public class JImage {
         private boolean isCompression = false;
         //压缩后的图片和拍照的图片是否是长期保留(true保存在app内部,默认保存在app缓存中)
         private boolean isLastingSave = false;
+
         //构建
         public Builder(AppCompatActivity context) {
             this.context = context;
@@ -110,34 +119,30 @@ public class JImage {
         private void requestPermissions() {
             String[] permissions;
             //判断是不是拍照
-//            if (sourceType == PHOTO)
+            if (sourceType == PHOTO)
                 //选择拍照申请拍照的权限
-//                permissions = PermissionUtil.Group.CAMERA;
-//            else
+                permissions = new String[]{Manifest.permission.CAMERA};
+            else
                 //否则就是相册的权限,也就是储存权限
-//                permissions = PermissionUtil.Group.STORAGE;
+                permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE};
             //开始调用权限申请
-//            JPermissions.init(context)
-//                    .permissions(permissions)
-//                    .success(new JPermissions.SuccessCallback() {
-//                        @Override
-//                        public void success() {
-//                            //成功后去执行fragment,进去内容获取操作
-//                            startFragment();
-//                        }
-//                    })
-//                    .failure(new JPermissions.FailureCallback() {
-//                        @Override
-//                        public void failure(String[] successArray, String[] failureArray, String[] noPromptArray) {
-//                            //失败后弹出提示(暂时没想好怎么提示)
-//                        }
-//                    })
-//                    .start();
+            new JPermissions(context,permissions)
+                    .success(() -> {
+                        //成功后去执行fragment,进去内容获取操作
+                        startFragment();
+                        return null;
+                    })
+                    .failure((strings, strings2, strings3) -> {
+                        //失败后弹出提示(暂时没想好怎么提示)
+                        return null;
+                    })
+                    .start();
         }
 
         private void startFragment() {
             //创建可选择图片的fragment,并初始化回调
-            imageFragment = new ImageFragment(sourceType, maxCount, isCompression,isLastingSave, new ImageFragment.OnImageReturnCallback() {
+            imageFragment = new ImageFragment(sourceType, maxCount, isCompression, isLastingSave, new ImageFragment.OnImageReturnCallback() {
                 @Override
                 public void success(String... paths) {
                     //成功获取到图片后的回调

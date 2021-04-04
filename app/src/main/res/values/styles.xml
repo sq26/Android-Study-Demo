@@ -9,7 +9,7 @@
         <!--        应用的主要暗色调，statusBarColor默认使用该颜色-->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <!--        状态栏颜色，默认使用colorPrimaryDark-->
-        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
         <!--        窗口背景颜色-->
         <item name="android:windowBackground">@color/windowBackground</item>
         <!--        底部导航栏栏颜色-->
@@ -43,6 +43,7 @@
         <!--        <item name="android:textColorPrimary">@android:color/white</item>-->
         <!--        switch thumbs 默认状态的颜色. (switch off)-->
         <!--        <item name="colorSwitchThumbNormal"></item>-->
+
 
         <!--        不要ActionBar(要使用toolbar需要去除ActionBar)-->
 <!--        <item name="windowActionBar">false</item>-->
