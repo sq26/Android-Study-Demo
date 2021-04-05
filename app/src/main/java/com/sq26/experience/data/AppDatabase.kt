@@ -15,15 +15,17 @@ import kotlin.concurrent.thread
  * exportSchema:是否将数据库导出到文件夹中
  */
 @Database(
-    entities = [HomeMenu::class, RecyclerViewItem::class, FileRoot::class],
+    entities = [HomeMenu::class, RecyclerViewItem::class, FileRoot::class, DownloadEntity::class],
     version = 3,
     exportSchema = false
 )
+
 abstract class AppDatabase : RoomDatabase() {
     //dao层会自动生产
     abstract fun homeMenuDao(): HomeMenuDao
     abstract fun recyclerViewDao(): RecyclerViewDao
     abstract fun fileRootDao(): FileRootDao
+    abstract fun downloadDao(): DownloadDao
 
     companion object {
         //Volatile注解,申明线程安全(每次读取刷新cpu缓存)
@@ -88,13 +90,15 @@ abstract class AppDatabase : RoomDatabase() {
                 override fun migrate(database: SupportSQLiteDatabase) {
                     //创建表
                     //PRIMARY KEY(uri)将uri设置为主键，NOT NULL设置对应的键不能为空
-                    database.execSQL("create table if not exists FileRoot(" +
-                            "name Text not null," +
-                            "rom Text not null," +
-                            "uri Text not null," +
-                            "canRead INTEGER not null," +
-                            "canWrite INTEGER not null," +
-                            "PRIMARY KEY(uri))")
+                    database.execSQL(
+                        "create table if not exists FileRoot(" +
+                                "name Text not null," +
+                                "rom Text not null," +
+                                "uri Text not null," +
+                                "canRead INTEGER not null," +
+                                "canWrite INTEGER not null," +
+                                "PRIMARY KEY(uri))"
+                    )
                 }
             }
         }

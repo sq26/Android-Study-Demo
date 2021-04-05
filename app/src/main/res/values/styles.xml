@@ -46,10 +46,10 @@
 
 
         <!--        不要ActionBar(要使用toolbar需要去除ActionBar)-->
-<!--        <item name="windowActionBar">false</item>-->
+        <!--        <item name="windowActionBar">false</item>-->
         <!--        不要窗口标题-->
-<!--        <item name="windowNoTitle">true</item>-->
-<!--        <item name="android:windowNoTitle">true</item>-->
+        <!--        <item name="windowNoTitle">true</item>-->
+        <!--        <item name="android:windowNoTitle">true</item>-->
     </style>
 
     <!--    toolbar主题-->
@@ -63,6 +63,9 @@
         <!--        解决Toolbar的Title与NavigationIcon距离过宽-->
         <item name="contentInsetStartWithNavigation">0dp</item>
     </style>
+
+    <style name="MaterialToolbarStyle" parent="Widget.MaterialComponents.Toolbar.PrimarySurface" />
+
 
     <!--    全屏dialog-->
     <style name="DialogFullscreen" parent="@android:style/Theme.Material.Light.DialogWhenLarge">

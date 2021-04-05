@@ -3,6 +3,7 @@ package com.sq26.experience.util.network.download
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import java.util.concurrent.Flow
 
 @Entity(tableName = "download")
 data class DownloadEntity(

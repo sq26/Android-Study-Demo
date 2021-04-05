@@ -1,10 +1,7 @@
 package com.sq26.experience.di
 
 import android.content.Context
-import com.sq26.experience.data.AppDatabase
-import com.sq26.experience.data.FileRootDao
-import com.sq26.experience.data.HomeMenuDao
-import com.sq26.experience.data.RecyclerViewDao
+import com.sq26.experience.data.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,5 +38,10 @@ class DatabaseModule {
     @Provides
     fun provideFileRootDao(appDatabase: AppDatabase): FileRootDao {
         return appDatabase.fileRootDao()
+    }
+
+    @Provides
+    fun provideDownloadDao(appDatabase: AppDatabase): DownloadDao {
+        return appDatabase.downloadDao()
     }
 }
