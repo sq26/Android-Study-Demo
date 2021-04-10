@@ -1,9 +1,6 @@
 package com.sq26.experience.ui.activity
 
-import android.app.ActivityManager
-import android.content.Context
 import android.os.Bundle
-import android.text.format.Formatter
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.ViewGroup

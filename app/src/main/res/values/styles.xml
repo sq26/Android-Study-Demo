@@ -9,7 +9,7 @@
         <!--        应用的主要暗色调，statusBarColor默认使用该颜色-->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <!--        状态栏颜色，默认使用colorPrimaryDark-->
-        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <!--        窗口背景颜色-->
         <item name="android:windowBackground">@color/windowBackground</item>
         <!--        底部导航栏栏颜色-->
@@ -50,6 +50,18 @@
         <!--        不要窗口标题-->
         <!--        <item name="windowNoTitle">true</item>-->
         <!--        <item name="android:windowNoTitle">true</item>-->
+    </style>
+
+    <style name="HomeAppTheme" parent="AppTheme">
+        <!--        状态栏颜色，默认使用colorPrimaryDark-->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="FileImageAppTheme" parent="AppTheme">
+        <!--        状态栏颜色，默认使用colorPrimaryDark-->
+        <item name="android:statusBarColor">@color/translucent</item>
+        <!--        窗口背景颜色-->
+        <item name="android:windowBackground">@android:color/black</item>
     </style>
 
     <!--    toolbar主题-->

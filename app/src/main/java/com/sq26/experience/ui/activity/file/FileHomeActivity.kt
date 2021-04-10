@@ -138,7 +138,7 @@ class FileHomeActivity : AppCompatActivity() {
                 }
 
                 setOpenAlbum {
-                    startActivity(Intent(this@FileHomeActivity, FileImageActivity::class.java))
+                    startActivity(Intent(this@FileHomeActivity, FileImageDirectoryActivity::class.java))
                 }
             }
 

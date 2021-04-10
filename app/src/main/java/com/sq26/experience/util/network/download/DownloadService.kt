@@ -261,7 +261,7 @@ class DownloadService : Service() {
         //遍历可下载的任务
         for (item in downloadEntityList) {
             //判断正在执行的任务数是否到达3个
-            if (downloadDao.getDownloadForStatus(DownloadStatus.INIT) < 3) {
+            if (downloadDao.getDownloadForStatus(DownloadStatus.INIT) < 1) {
                 //没有到达就添加新的下载
                 //将状态设置为下载中
                 item.status = DownloadStatus.INIT
