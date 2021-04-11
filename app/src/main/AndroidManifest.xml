@@ -204,7 +204,8 @@
         <!-- 权限申请页 -->
         <activity android:name=".ui.activity.AuthorizedOperationActivity" />
         <!-- 通知栏管理页 -->
-        <activity android:name=".ui.activity.StatusBarActivity" />
+        <activity android:name=".ui.activity.StatusBarActivity"
+            android:theme="@style/ActivityBarTheme"/>
         <!-- 相机页 -->
         <activity android:name=".ui.activity.CameraActivity" />
         <!-- 测试页 -->

@@ -1,9 +1,11 @@
 package com.sq26.experience.binding
 
 import android.view.View
+import android.widget.CompoundButton
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
+import com.google.android.material.checkbox.MaterialCheckBox
 import com.sq26.experience.util.Log
 
 //指定自定义方法名称
@@ -26,6 +28,14 @@ object BaseBindingMethod {
     fun setVis(view: View, b: Boolean) {
         view.isVisible = b
         Log.i("自定义属性方法")
+    }
+
+    //让MaterialCheckBox属性可以绑定开关监听
+    @BindingAdapter("android:onCheckedChange")
+    //需要加JvmStatic才能创建使用java的静态对象
+    @JvmStatic
+    fun setOnCheckedChange(view: MaterialCheckBox, listener: CompoundButton.OnCheckedChangeListener) {
+        view.setOnCheckedChangeListener(listener)
     }
 
     //自定义类型转换
