@@ -1,6 +1,7 @@
 package com.sq26.experience.ui.activity
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle

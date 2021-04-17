@@ -139,8 +139,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity android:name=".ui.activity.file.FileImageDirectoryActivity"
-            android:theme="@style/FileImageAppTheme"></activity>
+        <activity android:name="com.sq26.experience.ui.activity.file.FileImageActivity"
+            android:theme="@style/FileImageAppTheme"/>
+        <activity
+            android:name=".ui.activity.file.FileImageDirectoryActivity"
+            android:theme="@style/FileImageAppTheme"/>
         <activity android:name=".ui.activity.DataStoreActivity" />
         <activity android:name=".ui.activity.MotionLayoutActivity" />
         <activity android:name=".ui.activity.NavigationDemoActivity" />
@@ -204,8 +207,9 @@
         <!-- 权限申请页 -->
         <activity android:name=".ui.activity.AuthorizedOperationActivity" />
         <!-- 通知栏管理页 -->
-        <activity android:name=".ui.activity.StatusBarActivity"
-            android:theme="@style/ActivityBarTheme"/>
+        <activity
+            android:name=".ui.activity.StatusBarActivity"
+            android:theme="@style/ActivityBarTheme" />
         <!-- 相机页 -->
         <activity android:name=".ui.activity.CameraActivity" />
         <!-- 测试页 -->
@@ -213,7 +217,8 @@
         <!-- 二维码识别页 -->
         <activity android:name=".ui.activity.ScanCodeActivity" />
         <!--        主页-->
-        <activity android:name=".ui.activity.MainActivity"
+        <activity
+            android:name=".ui.activity.MainActivity"
             android:theme="@style/HomeAppTheme">
             <intent-filter>
                 <!-- 应用程序入口 -->
@@ -223,17 +228,17 @@
             </intent-filter>
         </activity>
         <!--
-                        下载服务
-                        name :服务所在的位置
-                        process:指定服务运行的进程
-                    -->
+                            下载服务
+                            name :服务所在的位置
+                            process:指定服务运行的进程
+                        -->
         <service
             android:name=".util.network.download.DownloadService"
             android:process=":sq26" />
         <!--
-                        跨进程通信服务
-                        需要声明android:exported="true"，这样别的APP才能访问。
-                    -->
+                            跨进程通信服务
+                            需要声明android:exported="true"，这样别的APP才能访问。
+                        -->
         <service
             android:name=".service.AIDLService"
             android:exported="true"
@@ -247,12 +252,12 @@
             </intent-filter>
         </service>
         <!--
-                        该provider用于本地文件访问
-                        authorities：是该项目的包名+provider
-                        grantUriPermissions：必须是true，表示授予 URI 临时访问权限
-                        exported：必须是false
-                        resource：中的@xml/file_paths是我们接下来要在资源文件目录下添加的文件
-                    -->
+                            该provider用于本地文件访问
+                            authorities：是该项目的包名+provider
+                            grantUriPermissions：必须是true，表示授予 URI 临时访问权限
+                            exported：必须是false
+                            resource：中的@xml/file_paths是我们接下来要在资源文件目录下添加的文件
+                        -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.FileProvider"

@@ -6,7 +6,7 @@ buildscript {
         roomVersion = "2.2.6"
         lifecycleVersion = "2.3.1"
         hiltVersion = '2.33-beta'
-        navigationVersion = "2.3.4"
+        navigationVersion = "2.3.5"
         coroutinesVersion = "1.4.2"
         cameraxVersion = "1.1.0-alpha03"
     }
@@ -21,13 +21,13 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.3'
         //kotlin支持
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32'
         //Butter Knife需要的支持
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.3'
         //使用 Safe Args 确保类型安全
         //如需在目的地之间导航，建议使用 Safe Args Gradle 插件。
         // 该插件可以生成简单的对象和构建器类，这些类支持在目的地之间进行类型安全的导航和参数传递。
-        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.4"
+        classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.3.5"
         //Hilt插件, Hilt是 Android 的依赖项注入库，可减少在项目中执行手动依赖项注入的样板代码。
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"
         //protobuf序列化语言的插件,可自动生成对应的 Java 文件。

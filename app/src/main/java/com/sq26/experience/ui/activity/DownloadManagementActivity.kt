@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.sq26.experience.R
 import com.sq26.experience.adapter.CommonListAdapter
 import com.sq26.experience.adapter.CommonListViewHolder
@@ -72,41 +73,51 @@ class DownloadManagementActivity : AppCompatActivity() {
                             val item = getItem(position)
                             v.item = item
                             executePendingBindings()
-                            download.getItem(item.id).observe(this@DownloadManagementActivity) {
-                                Log.i(it, "item")
-                                v.alreadySize.text = it.alreadySize.toString()
-                                v.size.text = it.size.toString()
-                                v.status.text = it.status.toString()
-                                when (it.status) {
-                                    DownloadStatus.DOWNLOADING -> {
-                                        v.button.text = "暂停"
-                                        v.button.isVisible = true
-                                        v.button.setOnClickListener {
-                                            download.pause(item.id)
+                            download.getDownloadFlow(item.id)
+                                .observe(this@DownloadManagementActivity) {
+                                    Log.i(it, "item")
+                                    v.alreadySize.text = it.alreadySize.toString()
+                                    v.size.text = it.size.toString()
+                                    v.status.text = it.status.toString()
+                                    when (it.status) {
+                                        DownloadStatus.DOWNLOADING -> {
+                                            v.button.text = "暂停"
+                                            v.button.isVisible = true
+                                            v.button.setOnClickListener {
+                                                download.pause(item.id)
+                                            }
+                                        }
+                                        DownloadStatus.PAUSE -> {
+                                            v.button.text = "继续"
+                                            v.button.isVisible = true
+                                            v.button.setOnClickListener {
+                                                download.continuance(item.id)
+                                            }
+                                        }
+                                        else ->
+                                            v.button.isVisible = false
+                                    }
+                                    if (it.status == DownloadStatus.ERROR || it.status == DownloadStatus.COMPLETE) {
+                                        v.button2.text = "删除"
+                                        v.button2.setOnClickListener {
+                                            MaterialAlertDialogBuilder(this@DownloadManagementActivity)
+                                                .setMessage("是否保留文件")
+                                                .setPositiveButton("是") { _, _ ->
+                                                    download.delete(item.id)
+                                                }
+                                                .setNegativeButton("删除") { _, _ ->
+                                                    download.delete(item.id, false)
+                                                }
+                                                .show()
+
+                                        }
+                                    } else {
+                                        v.button2.text = "取消"
+                                        v.button2.setOnClickListener {
+                                            download.delete(item.id, false)
                                         }
                                     }
-                                    DownloadStatus.PAUSE -> {
-                                        v.button.text = "继续"
-                                        v.button.isVisible = true
-                                        v.button.setOnClickListener {
-                                            download.continuance(item.id)
-                                        }
-                                    }
-                                    else ->
-                                        v.button.isVisible = false
                                 }
-                                if (it.status == DownloadStatus.ERROR || it.status == DownloadStatus.COMPLETE) {
-                                    v.button2.text = "删除"
-                                    v.button2.setOnClickListener {
-
-                                    }
-                                } else {
-                                    v.button2.text = "取消"
-                                    v.button2.setOnClickListener {
-
-                                    }
-                                }
-                            }
                         }
 
                     }
@@ -117,19 +128,11 @@ class DownloadManagementActivity : AppCompatActivity() {
             downloadRecyclerView.adapter = adapter
 
             download.queryAllFlow().observe(this@DownloadManagementActivity) {
+                Log.i(it)
                 adapter.submitList(it)
             }
 
 
-//            download.queryItem(5).observe(this@DownloadManagementActivity) {
-//                Log.i(it, "item")
-//            }
-
-//            button.setOnClickListener {
-//                lifecycleScope.launch(Dispatchers.IO) {
-//                    download.updataService()
-//                }
-//            }
             delete.setOnClickListener {
                 lifecycleScope.launch(Dispatchers.IO) {
                     download.deleteAll()
@@ -139,7 +142,3 @@ class DownloadManagementActivity : AppCompatActivity() {
 
     }
 }
-
-//class view(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//
-//}

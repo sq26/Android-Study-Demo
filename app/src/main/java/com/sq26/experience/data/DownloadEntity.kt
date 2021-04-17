@@ -1,6 +1,5 @@
 package com.sq26.experience.data
 
-import androidx.lifecycle.LiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.room.*
 import com.sq26.experience.util.network.download.DownloadStatus
@@ -27,10 +26,37 @@ data class DownloadEntity(
     var alreadySize: Long = 0,
     //错误次数
     var errorFrequency: Int = 0,
-    //是否暂停
-    var pauseFlag: Boolean = false,
     //是否删除
     var deleteFlag: Boolean = false,
+    //是否保留文件
+    var isKeepFile: Boolean = true
+)
+
+data class DownloadEntityStatus(
+    val id: Long,
+    val status: Int
+)
+
+data class DownloadEntityErrorFrequency(
+    val id: Long,
+    val errorFrequency: Int
+)
+
+data class DownloadEntitySize(
+    val id: Long,
+    val size: Long
+)
+
+data class DownloadEntityAlreadySize(
+    val id: Long,
+    val alreadySize: Long,
+    val errorFrequency: Int = 0
+)
+
+data class DownloadEntityDelete(
+    val id: Long,
+    //是否删除
+    var deleteFlag: Boolean = true,
     //是否保留文件
     var isKeepFile: Boolean = true
 )
@@ -52,25 +78,17 @@ interface DownloadDao {
     @Query("select * from download")
     fun queryAllList(): Flow<List<DownloadEntity>>
 
-    //查询所有
-    @Query("select * from download")
-    fun getAllDownloadList(): LiveData<List<DownloadEntity>>
-
     //查询所有未完成下载
     @Query("select * from download where status in(${DownloadStatus.WAIT},${DownloadStatus.AUTO_PAUSE})")
     fun getUndoneDownloadList(): List<DownloadEntity>
 
     //查询所有未初始化下载
-    @Query("select * from download where status in(${DownloadStatus.CREATE})")
+    @Query("select * from download where status in(${DownloadStatus.CREATE},${DownloadStatus.INIT})")
     fun getUndoneInitDownloadList(): List<DownloadEntity>
 
     //查询指定id的下载记录
     @Query("select * from download where id == :id")
     fun getDownloadForId(id: Long): DownloadEntity
-
-    //查询指定id的下载记录
-    @Query("select * from download where id == :id")
-    fun queryItemForId(id: Long): Flow<DownloadEntity>
 
     //查询对应url的数据
     @Query("select * from download where url == :url")
@@ -84,13 +102,13 @@ interface DownloadDao {
     @Query("select * from download where fileName == :fileName and fileUri == :fileUri")
     fun getDownloadForUrlAndFileNameAndDirPath(fileName: String, fileUri: String): DownloadEntity
 
+    //查询所有未初始化下载
+    @Query("select * from download where status in(${DownloadStatus.COMPLETE},${DownloadStatus.ERROR}) and deleteFlag == :deleteFlag")
+    fun getDeleteFlagList(deleteFlag: Boolean = true): List<DownloadEntity>
+
     //新增一条
     @Insert
     fun addItem(item: DownloadEntity)
-
-    //修改一条数据
-    @Update
-    fun updateItem(item: DownloadEntity)
 
     //新增一组
     @Insert
@@ -100,5 +118,27 @@ interface DownloadDao {
     @Query("DELETE FROM download")
     fun deleteAll()
 
+    //修改下载状态
+    @Update(entity = DownloadEntity::class)
+    fun updateStatus(item: DownloadEntityStatus)
 
+    //修改错误次数
+    @Update(entity = DownloadEntity::class)
+    fun updateErrorFrequency(item: DownloadEntityErrorFrequency)
+
+    //修改文件大小
+    @Update(entity = DownloadEntity::class)
+    fun updateSize(item: DownloadEntitySize)
+
+    //更新已下载大小
+    @Update(entity = DownloadEntity::class)
+    fun updateAlreadySize(item: DownloadEntityAlreadySize)
+
+    //更新删除设置
+    @Update(entity = DownloadEntity::class)
+    fun updateDelete(item: DownloadEntityDelete)
+
+    //删除指定的数据
+    @Delete
+    fun deleteForItem(downloadEntity: DownloadEntity)
 }

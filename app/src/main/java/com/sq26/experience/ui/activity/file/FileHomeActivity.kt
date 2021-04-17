@@ -66,6 +66,7 @@ class FileHomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityFileHomeBinding>(this, R.layout.activity_file_home)
             .apply {
+                lifecycleOwner = this@FileHomeActivity
                 toolbar.setNavigationOnClickListener {
                     onBackPressedDispatcher.onBackPressed()
                 }
@@ -138,7 +139,7 @@ class FileHomeActivity : AppCompatActivity() {
                 }
 
                 setOpenAlbum {
-                    startActivity(Intent(this@FileHomeActivity, FileImageDirectoryActivity::class.java))
+                    startActivity(Intent(this@FileHomeActivity, FileImageActivity::class.java))
                 }
             }
 

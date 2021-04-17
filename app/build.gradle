@@ -37,6 +37,7 @@ android {
             }
         }
     }
+
     //视图绑定功能启用
     buildFeatures {
         viewBinding true
@@ -100,7 +101,7 @@ dependencies {
     //constraintLayout布局控件
     implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
     //RecyclerView控件
-    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.2.0'
     //CardView控件,纸片布局
     implementation 'androidx.cardview:cardview:1.0.0'
     //Butter Knife,黄油刀,view注解框架
