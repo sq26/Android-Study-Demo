@@ -176,99 +176,99 @@ public class DownloadManagement {
         //开始执行下载
         public Builder start() {
             //通过数据库查询这个链接的下载记录
-            JSONObject jsonObject = DownloadManagementHelperUtil.query(context, url);
-            //判断有没有下载过
-            if (jsonObject == null) {
-                //没有下载过
-                //以下载链接创建下载记录
-                DownloadManagementHelperUtil.insert(context, url);
-                //申请权限
-                requestPermissions();
-            } else {
-                //有下载过
-                //判读有没有下载id
-                if (jsonObject.getLong("id") != null) {
-                    //判断当前下载计划的状态
-                    //STATUS_FAILED下载失败（并不会重试）
-                    //STATUS_PAUSED下载正在等待重试或恢复。
-                    //STATUS_PENDING下载等待启动。
-                    //STATUS_RUNNING正在运行下载。
-                    //STATUS_SUCCESSFUL下载成功完成。
-                    switch (getDownloadManagerStatus(context, jsonObject.getLong("id"))) {
-                        //当下载失败（并不会重试）。
-                        case DownloadManager.STATUS_FAILED:
-                            //设置下载失败的回调
-                            if (onFailure != null)
-                                onFailure.failure(DownloadManager.STATUS_FAILED);
-                            break;
-                        //当下载正在等待重试或恢复。
-                        case DownloadManager.STATUS_PAUSED:
-                            //设置下载失败的回调
-                            if (onFailure != null)
-                                onFailure.failure(DownloadManager.STATUS_PAUSED);
-                            break;
-                        //当下载等待启动。
-                        case DownloadManager.STATUS_PENDING:
-                            AppUtil.showToast(context, R.string.File_download_waiting_to_start);
-                            downloadId = jsonObject.getLong("id");
-                            //开始进行实时查询
-                            startProgress();
-                            break;
-                        //当前正在运行下载中。
-                        case DownloadManager.STATUS_RUNNING:
-                            AppUtil.showToast(context, R.string.File_Download_in_progress);
-                            downloadId = jsonObject.getLong("id");
-                            //开始进行实时查询
-                            startProgress();
-                            break;
-                        //当下载成功完成。
-                        case DownloadManager.STATUS_SUCCESSFUL:
-                            //判断文件路径是否存在
-                            if (FileUtil.isFileExists(jsonObject.getString("path"))) {
-                                //存在
-                                //判断是否自动打开文件
-                                if (isOpenFile)
-                                    //调用系统打开方式打开文件
-                                    FileUtil.openFile(context, jsonObject.getString("path"));
-                                //判断有没有设置完成回调
-                                if (onComplete != null)
-                                    //回调完成状态
-                                    onComplete.complete(jsonObject.getString("path"));
-                            } else {
-                                //不存在
-                                //判断系统下载记录里的文件是否存在
-                                String path = getDownloadManagerFilePath(context, jsonObject.getLong("id"));
-                                if (FileUtil.isFileExists(path)) {
-                                    //存在
-                                    //更新本地下载记录
-                                    DownloadManagementHelperUtil.update(context, url, jsonObject.getLong("id"), path);
-                                    //判断是否自动打开文件
-                                    if (isOpenFile)
-                                        //调用系统打开方式打开文件
-                                        FileUtil.openFile(context, jsonObject.getString("path"));
-                                    //判断有没有设置完成回调
-                                    if (onComplete != null)
-                                        //回调完成状态
-                                        onComplete.complete(jsonObject.getString("path"));
-                                } else {
-                                    //不存在
-                                    //申请权限
-                                    requestPermissions();
-                                }
-                            }
-                            break;
-                        //其他情况
-                        default:
-                            //申请权限
-                            requestPermissions();
-                            break;
-                    }
-                } else {
-                    //没有下载id,重下
-                    //申请权限
-                    requestPermissions();
-                }
-            }
+//            JSONObject jsonObject = DownloadManagementHelperUtil.query(context, url);
+//            //判断有没有下载过
+//            if (jsonObject == null) {
+//                //没有下载过
+//                //以下载链接创建下载记录
+//                DownloadManagementHelperUtil.insert(context, url);
+//                //申请权限
+//                requestPermissions();
+//            } else {
+//                //有下载过
+//                //判读有没有下载id
+//                if (jsonObject.getLong("id") != null) {
+//                    //判断当前下载计划的状态
+//                    //STATUS_FAILED下载失败（并不会重试）
+//                    //STATUS_PAUSED下载正在等待重试或恢复。
+//                    //STATUS_PENDING下载等待启动。
+//                    //STATUS_RUNNING正在运行下载。
+//                    //STATUS_SUCCESSFUL下载成功完成。
+//                    switch (getDownloadManagerStatus(context, jsonObject.getLong("id"))) {
+//                        //当下载失败（并不会重试）。
+//                        case DownloadManager.STATUS_FAILED:
+//                            //设置下载失败的回调
+//                            if (onFailure != null)
+//                                onFailure.failure(DownloadManager.STATUS_FAILED);
+//                            break;
+//                        //当下载正在等待重试或恢复。
+//                        case DownloadManager.STATUS_PAUSED:
+//                            //设置下载失败的回调
+//                            if (onFailure != null)
+//                                onFailure.failure(DownloadManager.STATUS_PAUSED);
+//                            break;
+//                        //当下载等待启动。
+//                        case DownloadManager.STATUS_PENDING:
+//                            AppUtil.showToast(context, R.string.File_download_waiting_to_start);
+//                            downloadId = jsonObject.getLong("id");
+//                            //开始进行实时查询
+//                            startProgress();
+//                            break;
+//                        //当前正在运行下载中。
+//                        case DownloadManager.STATUS_RUNNING:
+//                            AppUtil.showToast(context, R.string.File_Download_in_progress);
+//                            downloadId = jsonObject.getLong("id");
+//                            //开始进行实时查询
+//                            startProgress();
+//                            break;
+//                        //当下载成功完成。
+//                        case DownloadManager.STATUS_SUCCESSFUL:
+//                            //判断文件路径是否存在
+//                            if (FileUtil.isFileExists(jsonObject.getString("path"))) {
+//                                //存在
+//                                //判断是否自动打开文件
+//                                if (isOpenFile)
+//                                    //调用系统打开方式打开文件
+//                                    FileUtil.openFile(context, jsonObject.getString("path"));
+//                                //判断有没有设置完成回调
+//                                if (onComplete != null)
+//                                    //回调完成状态
+//                                    onComplete.complete(jsonObject.getString("path"));
+//                            } else {
+//                                //不存在
+//                                //判断系统下载记录里的文件是否存在
+//                                String path = getDownloadManagerFilePath(context, jsonObject.getLong("id"));
+//                                if (FileUtil.isFileExists(path)) {
+//                                    //存在
+//                                    //更新本地下载记录
+//                                    DownloadManagementHelperUtil.update(context, url, jsonObject.getLong("id"), path);
+//                                    //判断是否自动打开文件
+//                                    if (isOpenFile)
+//                                        //调用系统打开方式打开文件
+//                                        FileUtil.openFile(context, jsonObject.getString("path"));
+//                                    //判断有没有设置完成回调
+//                                    if (onComplete != null)
+//                                        //回调完成状态
+//                                        onComplete.complete(jsonObject.getString("path"));
+//                                } else {
+//                                    //不存在
+//                                    //申请权限
+//                                    requestPermissions();
+//                                }
+//                            }
+//                            break;
+//                        //其他情况
+//                        default:
+//                            //申请权限
+//                            requestPermissions();
+//                            break;
+//                    }
+//                } else {
+//                    //没有下载id,重下
+//                    //申请权限
+//                    requestPermissions();
+//                }
+//            }
             return this;
         }
 
@@ -350,7 +350,7 @@ public class DownloadManagement {
             //启动下载并获取下载链接
             downloadId = downloadManager.enqueue(request);
             //更新一下下载id
-            DownloadManagementHelperUtil.update(context, url, downloadId, "");
+//            DownloadManagementHelperUtil.update(context, url, downloadId, "");
             //开始进行实时查询
             startProgress();
         }
@@ -439,7 +439,7 @@ public class DownloadManagement {
                                 //获取文件的本地保存路径(文件路径有前缀,暴力替换感觉不行,暂时没有更好的方法)
                                 String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "");
                                 //更新下载记录
-                                DownloadManagementHelperUtil.update(context, url, downloadId, path);
+//                                DownloadManagementHelperUtil.update(context, url, downloadId, path);
                                 //判读有没有注册下载完成监听
                                 if (onComplete != null)
                                     //回调下载完成监听
@@ -499,7 +499,7 @@ public class DownloadManagement {
                                     //获取文件的本地保存路径(文件路径有前缀,暴力替换感觉不行,暂时没有更好的方法)
                                     String path = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI)).replace("file://", "");
                                     //更新下载记录
-                                    DownloadManagementHelperUtil.update(context, url, downloadId, path);
+//                                    DownloadManagementHelperUtil.update(context, url, downloadId, path);
                                     //判断是否打开文件
                                     if (isOpenFile) {
                                         //打开文件

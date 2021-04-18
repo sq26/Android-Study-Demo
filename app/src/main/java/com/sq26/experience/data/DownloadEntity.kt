@@ -29,7 +29,9 @@ data class DownloadEntity(
     //是否删除
     var deleteFlag: Boolean = false,
     //是否保留文件
-    var isKeepFile: Boolean = true
+    var isKeepFile: Boolean = true,
+    //是否可以删除记录
+    var isDelete: Boolean = false
 )
 
 data class DownloadEntityStatus(
@@ -61,6 +63,12 @@ data class DownloadEntityDelete(
     var isKeepFile: Boolean = true
 )
 
+data class DownloadEntityIsDelete(
+    val id: Long,
+    //是否保留文件
+    var isDelete: Boolean = true
+)
+
 object DownloadEntityDiffCallback : DiffUtil.ItemCallback<DownloadEntity>() {
     override fun areItemsTheSame(oldItem: DownloadEntity, newItem: DownloadEntity): Boolean {
         return oldItem.id == newItem.id
@@ -90,6 +98,10 @@ interface DownloadDao {
     @Query("select * from download where id == :id")
     fun getDownloadForId(id: Long): DownloadEntity
 
+    //查询指定id的下载记录
+    @Query("select * from download where id == :id")
+    fun getDownloadForIdAndNull(id: Long): DownloadEntity?
+
     //查询对应url的数据
     @Query("select * from download where url == :url")
     fun getDownloadForUrl(url: String): DownloadEntity
@@ -102,9 +114,9 @@ interface DownloadDao {
     @Query("select * from download where fileName == :fileName and fileUri == :fileUri")
     fun getDownloadForUrlAndFileNameAndDirPath(fileName: String, fileUri: String): DownloadEntity
 
-    //查询所有未初始化下载
-    @Query("select * from download where status in(${DownloadStatus.COMPLETE},${DownloadStatus.ERROR}) and deleteFlag == :deleteFlag")
-    fun getDeleteFlagList(deleteFlag: Boolean = true): List<DownloadEntity>
+    //查询所有删除完毕的数据
+    @Query("select * from download where isDelete == :isDelete")
+    fun getDeleteFlagList(isDelete: Boolean = true): List<DownloadEntity>
 
     //新增一条
     @Insert
@@ -137,6 +149,9 @@ interface DownloadDao {
     //更新删除设置
     @Update(entity = DownloadEntity::class)
     fun updateDelete(item: DownloadEntityDelete)
+    //更新删除设置
+    @Update(entity = DownloadEntity::class)
+    fun updateIsDelete(item: DownloadEntityIsDelete)
 
     //删除指定的数据
     @Delete

@@ -4,7 +4,7 @@ import android.util.Log
 
 object Log {
     //默认tag,可以在app中初始化
-    var TAG = "app"
+    const val TAG = "app"
 
     //是否启用打印
     var isEnable = true
@@ -59,8 +59,14 @@ object Log {
 }
 
 
-//给string类添加简单打印
-fun Any.log() {
-    com.sq26.experience.util.Log.i(this.toString())
+//给对象加上简单打印
+fun Any.i(tag: String = com.sq26.experience.util.Log.TAG, isThread: Boolean = false) {
+    com.sq26.experience.util.Log.i(this.toString(),tag,isThread)
+}
+fun Any.w(tag: String = com.sq26.experience.util.Log.TAG, isThread: Boolean = false) {
+    com.sq26.experience.util.Log.w(this.toString(),tag,isThread)
+}
+fun Any.e(tag: String = com.sq26.experience.util.Log.TAG, isThread: Boolean = false) {
+    com.sq26.experience.util.Log.e(this.toString(),tag,isThread)
 }
 

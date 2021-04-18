@@ -6,8 +6,8 @@ import android.net.Uri
 import android.os.Environment
 import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.asLiveData
-import com.sq26.experience.app.MyApp
 import com.sq26.experience.data.DownloadDao
+import com.sq26.experience.data.DownloadEntity
 import com.sq26.experience.data.DownloadEntityDelete
 import com.sq26.experience.data.DownloadEntityStatus
 import com.sq26.experience.util.FileUtil
@@ -15,12 +15,11 @@ import com.sq26.experience.util.Log
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
-import okhttp3.internal.wait
 import java.io.File
+import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.concurrent.thread
@@ -77,16 +76,21 @@ class Download @Inject constructor(
 
     //flow在没有观察者后会自动取消
     fun getDownloadFlow(id: Long) = flow {
-        var item = downloadDao.getDownloadForId(id)
-        emit(item)
-        while (item.status != DownloadStatus.COMPLETE && item.status != DownloadStatus.ERROR && item.status != DownloadStatus.PAUSE) {
-            item = downloadDao.getDownloadForId(id)
-            //需要通过阻塞函数来检查是否需要取消协程
-            delay(if (item.status == DownloadStatus.WAIT || item.status == DownloadStatus.PAUSE) 1000 else 300)
-            emit(item)
-            Log.i("循环getItem")
+        var downloadEntity = downloadDao.getDownloadForIdAndNull(id)
+        downloadEntity?.let {
+            emit(it)
+            while (it.status != DownloadStatus.COMPLETE && it.status != DownloadStatus.ERROR && it.status != DownloadStatus.PAUSE) {
+                downloadEntity = downloadDao.getDownloadForIdAndNull(id)
+                downloadEntity?.let { item ->
+                    //需要通过阻塞函数来检查是否需要取消协程
+                    delay(if (item.status == DownloadStatus.WAIT || item.status == DownloadStatus.PAUSE) 1000 else 300)
+                    emit(item)
+                }
+            }
+            downloadEntity?.let { item ->
+                emit(item)
+            }
         }
-        emit(item)
     }.flowOn(Dispatchers.IO).asLiveData()
 
     suspend fun add(
@@ -97,7 +101,7 @@ class Download @Inject constructor(
             //申明documentFile
             val documentFile = DocumentFile.fromSingleUri(context, uri)!!
             //创建下载信息
-            var downloadEntity = com.sq26.experience.data.DownloadEntity(
+            var downloadEntity = DownloadEntity(
                 url = url,
                 fileUri = uri.toString(),
                 fileName = documentFile.name ?: ""
@@ -169,7 +173,7 @@ class Download @Inject constructor(
             //申明documentFile
             val documentFile = DocumentFile.fromFile(file)
             //创建下载信息
-            var downloadEntity = com.sq26.experience.data.DownloadEntity(
+            var downloadEntity = DownloadEntity(
                 url = url,
                 fileUri = documentFile.uri.toString(),
                 fileName = newFileName
@@ -228,6 +232,16 @@ class Download @Inject constructor(
             } else {
                 downloadDao.updateDelete(DownloadEntityDelete(id, isKeepFile = isKeepFile))
                 downloadDao.updateStatus(DownloadEntityStatus(id, DownloadStatus.PAUSE))
+                var isDelete = false
+                while (!isDelete) {
+                    Thread.sleep(100)
+                    downloadDao.getDownloadForIdAndNull(id)?.let {
+                        if (it.isDelete) {
+                            isDelete = true
+                            downloadDao.deleteForItem(it)
+                        }
+                    }
+                }
             }
         }
     }

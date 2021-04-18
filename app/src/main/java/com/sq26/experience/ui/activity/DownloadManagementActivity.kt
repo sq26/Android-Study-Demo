@@ -1,5 +1,7 @@
 package com.sq26.experience.ui.activity
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -18,7 +20,9 @@ import com.sq26.experience.data.DownloadEntityDiffCallback
 import com.sq26.experience.databinding.ActivityDownloadManagementBinding
 import com.sq26.experience.databinding.ItemDownloadBinding
 import com.sq26.experience.util.Log
+import com.sq26.experience.util.i
 import com.sq26.experience.util.network.download.Download
+import com.sq26.experience.util.network.download.DownloadService
 import com.sq26.experience.util.network.download.DownloadStatus
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -137,6 +141,10 @@ class DownloadManagementActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     download.deleteAll()
                 }
+            }
+
+            closeServer.setOnClickListener {
+                stopService(Intent(this@DownloadManagementActivity, DownloadService::class.java))
             }
         }
 

@@ -31,11 +31,10 @@ class StatusBarActivity : AppCompatActivity() {
                 viewModel = statusBarViewModel
                 isInsetsController = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
 
+                toolbar.setNavigationOnClickListener {
+                    onBackPressedDispatcher.onBackPressed()
+                }
             }
-
-//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-//            window.insetsController.
-//        }
 
         statusBarViewModel.change.observe(this) {
             Log.i("变化")
@@ -138,38 +137,62 @@ class StatusBarViewModel @Inject constructor(
 
     fun showStatusBar(view: CompoundButton, isChecked: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //设置侵入式体验
+            view.windowInsetsController?.systemBarsBehavior =
+                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             if (isChecked)
                 view.windowInsetsController?.show(WindowInsetsCompat.Type.statusBars())
             else
                 view.windowInsetsController?.hide(WindowInsetsCompat.Type.statusBars())
-            view.windowInsetsController?.systemBarsBehavior =
-                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
 //            view.windowInsetsController?.systemBarsBehavior =
 //                WindowInsetsController.BEHAVIOR_DEFAULT
         }
     }
 
     fun showNavigationBar(view: CompoundButton, isChecked: Boolean) {
-        if (isChecked)
-            ViewCompat.getWindowInsetsController(view)
-                ?.show(WindowInsetsCompat.Type.navigationBars())
-        else
-            ViewCompat.getWindowInsetsController(view)
-                ?.hide(WindowInsetsCompat.Type.navigationBars())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //设置侵入式体验
+            view.windowInsetsController?.systemBarsBehavior =
+                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            if (isChecked)
+                view.windowInsetsController?.show(WindowInsetsCompat.Type.navigationBars())
+            else
+                view.windowInsetsController?.hide(WindowInsetsCompat.Type.navigationBars())
+
+//            view.windowInsetsController?.systemBarsBehavior =
+//                WindowInsetsController.BEHAVIOR_DEFAULT
+        }
     }
 
 
     fun showSystemBar(view: CompoundButton, isChecked: Boolean) {
-        if (isChecked)
-            ViewCompat.getWindowInsetsController(view)?.show(WindowInsetsCompat.Type.systemBars())
-        else
-            ViewCompat.getWindowInsetsController(view)?.hide(WindowInsetsCompat.Type.systemBars())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //设置侵入式体验
+            view.windowInsetsController?.systemBarsBehavior =
+                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            if (isChecked)
+                view.windowInsetsController?.show(WindowInsetsCompat.Type.systemBars())
+            else
+                view.windowInsetsController?.hide(WindowInsetsCompat.Type.systemBars())
+
+//            view.windowInsetsController?.systemBarsBehavior =
+//                WindowInsetsController.BEHAVIOR_DEFAULT
+        }
     }
 
     fun showTest(view: CompoundButton, isChecked: Boolean) {
-        if (isChecked)
-            ViewCompat.getWindowInsetsController(view)?.show(WindowInsetsCompat.Type.captionBar())
-        else
-            ViewCompat.getWindowInsetsController(view)?.hide(WindowInsetsCompat.Type.captionBar())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            //设置侵入式体验
+            view.windowInsetsController?.systemBarsBehavior =
+                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            if (isChecked)
+                view.windowInsetsController?.show(WindowInsetsCompat.Type.captionBar())
+            else
+                view.windowInsetsController?.hide(WindowInsetsCompat.Type.captionBar())
+
+//            view.windowInsetsController?.systemBarsBehavior =
+//                WindowInsetsController.BEHAVIOR_DEFAULT
+        }
     }
 }

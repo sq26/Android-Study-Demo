@@ -12,8 +12,10 @@ import com.sq26.experience.data.*
 import com.sq26.experience.data.DownloadDao
 import com.sq26.experience.data.DownloadEntity
 import com.sq26.experience.util.Log
+import com.sq26.experience.util.i
 import dagger.hilt.android.AndroidEntryPoint
 import okhttp3.*
+import java.io.File
 import java.io.IOException
 import java.util.concurrent.*
 import javax.inject.Inject
@@ -25,9 +27,12 @@ class DownloadService : Service() {
     //声明下载表的操作类
     @Inject
     lateinit var downloadDao: DownloadDao
+    //service是否已关闭
+    private var isDestroy = false
 
     //服务第一次启动时会调用这个方法
     override fun onCreate() {
+        isDestroy = false
         Log.i("启动", "服务")
 //        Debug.waitForDebugger()
         super.onCreate()
@@ -344,7 +349,7 @@ class DownloadService : Service() {
                     } catch (e: Exception) {
                         e.printStackTrace()
                         //socket异常,手动调用取消请求引起
-                        Log.i("socket异常,手动调用取消请求引起")
+                        "socket异常,手动调用取消请求引起".i()
                         -1
                     }
 //                catch (e: SocketTimeoutException) {
@@ -445,11 +450,35 @@ class DownloadService : Service() {
             //判断是否保留文件
             if (!downloadEntity.isKeepFile) {
                 //删除文件
-                DocumentFile.fromSingleUri(applicationContext, Uri.parse(downloadEntity.fileUri))
-                    ?.delete()
+                val uri = Uri.parse(downloadEntity.fileUri)
+                if (uri.scheme == "file") {
+                    if (DocumentFile.fromFile(File(Uri.parse(downloadEntity.fileUri).path ?: ""))
+                            .delete()
+                    ) {
+                        "文件已删除".i()
+                        downloadDao.updateIsDelete(DownloadEntityIsDelete(id))
+                    } else {
+                        "文件删除失败".i()
+                        downloadDao.updateIsDelete(DownloadEntityIsDelete(id))
+                    }
+                } else {
+                    if (DocumentFile.fromSingleUri(
+                            applicationContext,
+                            Uri.parse(downloadEntity.fileUri)
+                        )
+                            ?.delete() == true
+                    ) {
+                        "文件已删除".i()
+                        downloadDao.updateIsDelete(DownloadEntityIsDelete(id))
+                    } else {
+                        "文件删除失败".i()
+                        downloadDao.updateIsDelete(DownloadEntityIsDelete(id))
+                    }
+                }
+            } else {
+                "可以删除了".i()
+                downloadDao.updateIsDelete(DownloadEntityIsDelete(id))
             }
-            //删除记录
-            downloadDao.deleteForItem(downloadEntity)
         }
     }
 
@@ -466,8 +495,10 @@ class DownloadService : Service() {
 
     //服务即将关闭前的回调
     override fun onDestroy() {
-        Log.i("服务", "关闭")
+        isDestroy = true
+        "关闭前".i("服务")
         super.onDestroy()
+        "关闭后".i("服务")
     }
 
     override fun onBind(p0: Intent?): IBinder? {

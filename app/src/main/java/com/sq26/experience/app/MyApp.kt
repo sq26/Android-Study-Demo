@@ -18,9 +18,5 @@ class MyApp : Application() {
         app = this
         //初始化Fresco图片框架
         Fresco.initialize(this)
-        //初始化Logger日志框架
-        Log.isEnable = true
-        Log.TAG = "APP"
-
     }
 }
