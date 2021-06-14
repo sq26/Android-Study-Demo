@@ -1,6 +1,8 @@
 package com.sq26.experience.util
 
 import android.util.Log
+import java.io.*
+import kotlin.concurrent.thread
 
 object Log {
     //默认tag,可以在app中初始化
@@ -54,6 +56,27 @@ object Log {
             else
                 Log.println(priority, tag, msg.substring(index))
             index += size
+        }
+    }
+
+    //日志本地保存系统采集
+    fun readLog(file: File) {
+        thread {
+            val readArray = arrayOf("logcat", "-d")
+            val clearArray = arrayOf("logcat", "-c")
+            val process = Runtime.getRuntime().exec(readArray)
+            val bufferedReader = BufferedReader(InputStreamReader(process.inputStream))
+            val randomAccessFile = RandomAccessFile(file,"rwd")
+            while (bufferedReader.readLine().also {
+                    if (it!=null){
+                        randomAccessFile.seek(file.length())
+                        randomAccessFile.write("\n$it".toByteArray(Charsets.UTF_8))
+                    }
+                } != null) {
+                Runtime.getRuntime().exec(clearArray)
+            }
+            randomAccessFile.close()
+            readLog(file)
         }
     }
 }

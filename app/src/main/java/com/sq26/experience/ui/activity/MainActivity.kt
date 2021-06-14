@@ -13,6 +13,7 @@ import com.sq26.experience.adapter.HomeMenuAdapter
 import com.sq26.experience.databinding.ActivityMainBinding
 import com.sq26.experience.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.Exception
 
 @AndroidEntryPoint
 class  MainActivity : AppCompatActivity() {
@@ -37,6 +38,13 @@ class  MainActivity : AppCompatActivity() {
             toolbar.setNavigationOnClickListener {
                 //弹出侧边栏
                 drawerLayout.openDrawer(GravityCompat.START)
+
+//                try {
+                    var s:String? = null
+                    s!!.toString()
+//                }catch (e:Exception){
+//                    e.printStackTrace()
+//                }
             }
             //获取菜单适配器
             val homeMenuAdapter = HomeMenuAdapter(mainViewModel, this@MainActivity)
