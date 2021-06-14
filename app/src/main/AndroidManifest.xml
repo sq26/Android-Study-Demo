@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_SOCIAL_STREAM" /> <!-- 允许程序写短信 -->
     <uses-permission android:name="android.permission.WRITE_SMS" /> <!-- 允许程序写入个人资料数据 -->
     <uses-permission android:name="android.permission.WRITE_PROFILE" /> <!-- 允许程序写入外部存储,如SD卡上写文件 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 写入联系人,但不可读取 -->
+    <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 写入联系人,但不可读取 -->
     <uses-permission android:name="android.permission.WRITE_CONTACTS" /> <!-- 允许程序写入（但是不能读）用户的联系人数据 -->
     <uses-permission android:name="android.permission.PERMISSIONS_STORAGE" /> <!-- 允许程序进行外部储存操作 -->
     <uses-permission android:name="android.permission.WRITE_CALL_LOG" /> <!-- 允许程序写入日程，但不可读取 -->
@@ -122,11 +122,16 @@
     <uses-permission-sdk-23 android:name="android.permission.SET_PROCESS_LIMIT" /> <!-- 允许程序设置系统时区 -->
     <uses-permission-sdk-23 android:name="android.permission.SET_TIME_ZONE" /> <!-- 允许程序发送一个永久的进程信号 -->
     <uses-permission-sdk-23 android:name="android.permission.SIGNAL_PERSISTENT_PROCESSES" /> <!-- 允许程序打开、关闭、禁用状态栏 -->
-    <uses-permission-sdk-23 android:name="android.permission.STATUS_BAR" /> <!-- 允许程序更新设备状态 -->
-    <uses-permission-sdk-23 android:name="android.permission.UPDATE_DEVICE_STATS" /> <!-- 允许程序写入网络GPRS接入点设置 -->
-    <uses-permission-sdk-23 android:name="android.permission.WRITE_APN_SETTINGS" /> <!-- 允许程序修改Google服务地图 -->
-    <uses-permission-sdk-23 android:name="android.permission.WRITE_GSERVICES" /> <!-- 允许程序读取或写入系统设置 -->
-    <uses-permission-sdk-23 android:name="android.permission.WRITE_SETTINGS" /> <!-- 允许应用程序读取或写入安全系统设置 -->
+    <uses-permission-sdk-23 android:name="android.permission.STATUS_BAR" />
+    <!-- 允许程序更新设备状态 -->
+    <uses-permission-sdk-23 android:name="android.permission.UPDATE_DEVICE_STATS" />
+    <!-- 允许程序写入网络GPRS接入点设置 -->
+    <uses-permission-sdk-23 android:name="android.permission.WRITE_APN_SETTINGS" />
+    <!-- 允许程序修改Google服务地图 -->
+    <uses-permission-sdk-23 android:name="android.permission.WRITE_GSERVICES" />
+    <!-- 允许程序读取或写入系统设置 -->
+    <uses-permission-sdk-23 android:name="android.permission.WRITE_SETTINGS" />
+    <!-- 允许应用程序读取或写入安全系统设置 -->
     <uses-permission-sdk-23 android:name="android.permission.WRITE_SECURE_SETTINGS" />
 
     <application

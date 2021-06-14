@@ -6,7 +6,10 @@ import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
 import com.google.android.material.checkbox.MaterialCheckBox
+import com.sq26.experience.util.AntiShake
 import com.sq26.experience.util.Log
+import com.sq26.experience.util.OnClickAntiShakeListener
+import com.sq26.experience.util.i
 
 //指定自定义方法名称
 //@BindingMethods(
@@ -25,8 +28,10 @@ object BaseBindingMethod {
     @BindingAdapter("android:vis")
     //需要加JvmStatic才能创建使用java的静态对象
     @JvmStatic
-    fun setVis(view: View, b: Boolean) {
-        view.isVisible = b
+    fun setVis(view: View, b: Boolean?) {
+        b?.let {
+            view.isVisible = it
+        }
         Log.i("自定义属性方法")
     }
 
@@ -34,8 +39,28 @@ object BaseBindingMethod {
     @BindingAdapter("android:onCheckedChange")
     //需要加JvmStatic才能创建使用java的静态对象
     @JvmStatic
-    fun setOnCheckedChange(view: MaterialCheckBox, listener: CompoundButton.OnCheckedChangeListener) {
-        view.setOnCheckedChangeListener(listener)
+    fun setOnCheckedChange(
+        view: MaterialCheckBox,
+        listener: CompoundButton.OnCheckedChangeListener?
+    ) {
+        listener?.let {
+            view.setOnCheckedChangeListener(it)
+        }
+    }
+
+    //单击防手抖点击事件
+    @BindingAdapter("app:onClickAntiShake")
+    //需要加JvmStatic才能创建使用java的静态对象
+    @JvmStatic
+    fun setOnClickAntiShake(view: View, listener: View.OnClickListener?) {
+        listener?.let { l ->
+            val id = System.nanoTime()
+            "${id}检查有没有被重复调用".i()
+            view.setOnClickListener {
+                if (!AntiShake.check(id))
+                    l.onClick(it)
+            }
+        }
     }
 
     //自定义类型转换
@@ -44,8 +69,16 @@ object BaseBindingMethod {
     @BindingConversion
     @JvmStatic
     fun convertBooleanToInt(boolean: Boolean): Int {
-        Log.i("自定义转换")
         return if (boolean) View.VISIBLE else View.GONE
+    }
+
+    //自定义类型转换
+    //当接收属性需要Int类型,输入的却是boolean类型时,自动转换类型,感觉这种方法容易有冲突,还是用自定义方法比较合适
+    //这个自动转换用于将true和false换成显示和隐藏
+    @BindingConversion
+    @JvmStatic
+    fun convertStringToLong(string: String): Long {
+        return string.toLong()
     }
 
 }

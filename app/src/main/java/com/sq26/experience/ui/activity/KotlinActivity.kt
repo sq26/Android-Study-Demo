@@ -5,11 +5,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.*
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityKotlinBinding
 import com.sq26.experience.util.Log
 import com.squareup.moshi.*
@@ -56,12 +59,11 @@ class KotlinActivity : AppCompatActivity() {
     private val viewModel: KotlinViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityKotlinBinding.inflate(layoutInflater)
-        setContentView(binding.root)
 
+        binding =
+            DataBindingUtil.setContentView(this, R.layout.activity_kotlin)
 
         binding.text.text = "moshi"
-
         binding.text.setOnClickListener {
             val json =
                 "{\"name\":null,\"address\":{\"city\":\"北京\",\"country\":\"中国\"},\"domain_list\":[{\"name\":\"ICP备案查询\",\"url\":\"https://icp.sojson.com\"},{\"name\":\"JSON在线解析\",\"url\":\"https://www.sojson.com\"},{\"name\":\"房贷计算器\",\"url\":\"https://fang.sojson.com\"}]}"
@@ -82,13 +84,11 @@ class KotlinActivity : AppCompatActivity() {
 
         }
 
-        binding.text1.text = "发出广播"
         binding.text1.setOnClickListener {
 
             viewModel.start()
 
         }
-
 
 //        var id = 0
 //        binding.text1.setOnClickListener {

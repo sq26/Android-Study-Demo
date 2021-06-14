@@ -11,8 +11,11 @@ import androidx.lifecycle.*
 import com.sq26.experience.BR
 import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityDataBindingBinding
+import com.sq26.experience.util.AntiShake
 import com.sq26.experience.util.Log
+import com.sq26.experience.util.i
 import com.sq26.experience.util.kotlin.toast
+import com.sq26.experience.util.setOnClickAntiShake
 import com.sq26.experience.viewmodel.ObservableViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,6 +39,12 @@ class DataBindingActivity : AppCompatActivity() {
 
             setOnClick {
                 toast("DataBinding绑定点击事件")
+            }
+            setOnClickAntiShake {
+                "一号button点击:${System.currentTimeMillis()}".i()
+            }
+            button333.setOnClickAntiShake {
+                "三号button点击:${System.currentTimeMillis()}".i()
             }
         }
     }
@@ -73,6 +82,10 @@ class DataBindingViewModel @Inject constructor(
     fun onTest() {
         Log.i(checked.toString(), "checked")
         editText.postValue("123")
+    }
+
+    fun onClickAntiShake(view: View){
+        "二号button点击:${System.currentTimeMillis()}".i()
     }
 
     var editText = MutableLiveData<String>()

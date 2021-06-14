@@ -2,9 +2,11 @@ package com.sq26.experience.util.network.download
 
 import android.app.ActivityManager
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.content.IntentFilter
+import android.net.*
 import android.os.IBinder
 import androidx.documentfile.provider.DocumentFile
 import com.sq26.experience.app.OkHttpUtil
@@ -27,8 +29,11 @@ class DownloadService : Service() {
     //声明下载表的操作类
     @Inject
     lateinit var downloadDao: DownloadDao
+
     //service是否已关闭
     private var isDestroy = false
+
+    private var netWorkStatus = 0//0无网络,1移动网络,2wifi网络
 
     //服务第一次启动时会调用这个方法
     override fun onCreate() {
@@ -36,6 +41,37 @@ class DownloadService : Service() {
         Log.i("启动", "服务")
 //        Debug.waitForDebugger()
         super.onCreate()
+
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        connectivityManager.registerNetworkCallback(NetworkRequest.Builder().build(),
+            object : ConnectivityManager.NetworkCallback() {
+                //网络不可用时回调
+                override fun onLost(network: Network) {
+                    super.onLost(network)
+                    netWorkStatus = 0
+                    "网络不可用".i()
+                }
+
+                override fun onCapabilitiesChanged(
+                    network: Network,
+                    networkCapabilities: NetworkCapabilities
+                ) {
+                    super.onCapabilitiesChanged(network, networkCapabilities)
+                    if (networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)) {
+                        //有网络
+                        if (networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                            netWorkStatus = 2
+                            "WIFI".i()
+                        } else {
+                            netWorkStatus = 1
+                            "移动".i()
+                        }
+                    }
+                }
+            })
+
     }
 
     //用startService方法启动服务会进入这个方法
@@ -70,124 +106,147 @@ class DownloadService : Service() {
     private val mb1 = 1024 * 1024
 
     private fun initDownload(id: Long) {
+        //判断有网络进入
+        if (netWorkStatus != 0)
         //获取http客户端
         //获取一个新的通信
-        OkHttpUtil.getInstance().newCall(
-            //使用head请求,只获取请求头
-            Request.Builder()
-                .head()
-                .url(downloadDao.getDownloadForId(id).url)
-                .build()
-            //发起请求通信并设置异步回调
-        ).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                //判断失败次数
-                if (downloadDao.getDownloadForId(id).errorFrequency < 3) {
-                    //记录下载失败次数
-                    downloadDao.updateErrorFrequency(
-                        DownloadEntityErrorFrequency(
-                            id,
-                            downloadDao.getDownloadForId(id).errorFrequency + 1
-                        )
-                    )
-                    //重试
-                    initDownload(id)
-                } else {
-                    //修改下载状态为失败
-                    downloadDao.updateStatus(
-                        DownloadEntityStatus(
-                            id,
-                            DownloadStatus.ERROR
-                        )
-                    )
+            OkHttpUtil.getInstance().newCall(
+                //使用head请求,只获取请求头
+                Request.Builder()
+                    .head()
+                    .url(downloadDao.getDownloadForId(id).url)
+                    .build()
+                //发起请求通信并设置异步回调
+            ).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+                    //有网络进入
+                    if (netWorkStatus != 0) {
+                        val errorFrequency = downloadDao.getDownloadForId(id).errorFrequency
+                        //判断失败次数
+                        if (errorFrequency < 3) {
+                            //记录下载失败次数
+                            downloadDao.updateErrorFrequency(
+                                DownloadEntityErrorFrequency(
+                                    id,
+                                    errorFrequency + 1
+                                )
+                            )
+                            //重试
+                            initDownload(id)
+                        } else {
+                            //修改下载状态为失败
+                            downloadDao.updateStatus(
+                                DownloadEntityStatus(
+                                    id,
+                                    DownloadStatus.ERROR
+                                )
+                            )
+                        }
+                    }
                 }
-            }
 
-            override fun onResponse(call: Call, response: Response) {
-                //Content-Range用于响应头中，在发出带 Range 的请求后，服务器会在 Content-Range 头部返回当前接受的范围和文件总大小。
-                //Content-Range: bytes 0-499/22400
-                //判断请求是否成功
-                if (response.code == 200 || response.code == 206) {
-                    //获取要下载的文件大小
-                    val size = response.header("Content-Length", "0")?.toLong()!!
-                    //通过判断是否第一次下载
-                    if (downloadDao.getDownloadForId(id).size > 0) {
-                        //判断要下载的文件是否已变化
-                        //判断保存的大小和现在的大小是否一致
-                        if (size != downloadDao.getDownloadForId(id).size) {
-                            //不一致,文件已改变需要清除之前的数据
+                override fun onResponse(call: Call, response: Response) {
+                    //Content-Range用于响应头中，在发出带 Range 的请求后，服务器会在 Content-Range 头部返回当前接受的范围和文件总大小。
+                    //Content-Range: bytes 0-499/22400
+                    //判断请求是否成功
+                    if (response.code == 200 || response.code == 206) {
+                        //获取要下载的文件大小
+                        val size = response.header("Content-Length", "0")?.toLong()!!
+                        //通过判断是否第一次下载
+                        if (downloadDao.getDownloadForId(id).size > 0) {
+                            //判断要下载的文件是否已变化
+                            //判断保存的大小和现在的大小是否一致
+                            if (size != downloadDao.getDownloadForId(id).size) {
+                                //不一致,文件已改变需要清除之前的数据
 //                            val documentFile = DocumentFile.fromSingleUri(
 //                                applicationContext,
 //                                Uri.parse(downloadDao.getDownloadForId(id).fileUri)
 //                            )
-                        } else {
-                            //修改下载状态为等待
-                            downloadDao.updateStatus(
-                                DownloadEntityStatus(
-                                    id,
-                                    DownloadStatus.WAIT
+                            } else {
+                                //修改下载状态为等待
+                                downloadDao.updateStatus(
+                                    DownloadEntityStatus(
+                                        id,
+                                        DownloadStatus.WAIT
+                                    )
                                 )
-                            )
 //                            //更新下载任务
-                            update()
+                                update()
+                                return
+                            }
+                        }
+                        //设置文件大小
+                        downloadDao.updateSize(DownloadEntitySize(id, size))
+
+                        if (totalFree() < mb1) {
+                            Log.i("内存不足")
                             return
                         }
-                    }
-                    //设置文件大小
-                    downloadDao.updateSize(DownloadEntitySize(id, size))
 
-                    if (totalFree() < mb1) {
-                        Log.i("内存不足")
-                        return
-                    }
-
-                    val outputStream =
-                        contentResolver.openOutputStream(Uri.parse(downloadDao.getDownloadForId(id).fileUri))
-
-                    val byteArray = ByteArray(mb1)
-
-                    var i = 0
-
-                    while (i < size) {
-                        val count: Int =
-                            if (mb1 < (size - i)) mb1 else (size - i).toInt()
-                        outputStream?.write(byteArray, 0, count)
-                        i += count
-                    }
-                    outputStream?.flush()
-                    outputStream?.close()
-
-                    //数据填充完成,把下载状态修改为等待下载,如果状态时暂停就不修改状态
-                    if (downloadDao.getDownloadForId(id).status != DownloadStatus.PAUSE)
-                        downloadDao.updateStatus(
-                            DownloadEntityStatus(id, DownloadStatus.WAIT)
-                        )
-                    else
-                    //是暂停判断是否删除
-                        delete(id)
-                    //更新下载任务
-                    update()
-                } else {
-                    //判断失败次数
-                    if (downloadDao.getDownloadForId(id).errorFrequency < 3) {
-                        //记录下载失败次数
-                        downloadDao.updateErrorFrequency(
-                            DownloadEntityErrorFrequency(
-                                id,
-                                downloadDao.getDownloadForId(id).errorFrequency + 1
+                        val outputStream =
+                            contentResolver.openOutputStream(
+                                Uri.parse(
+                                    downloadDao.getDownloadForId(
+                                        id
+                                    ).fileUri
+                                )
                             )
-                        )
-                        //重试
-                        initDownload(id)
-                    } else {
-                        //修改下载状态为失败
-                        downloadDao.updateStatus(DownloadEntityStatus(id, DownloadStatus.ERROR))
+
+                        val byteArray = ByteArray(mb1)
+
+                        var i = 0
+
+                        while (i < size) {
+                            val count: Int =
+                                if (mb1 < (size - i)) mb1 else (size - i).toInt()
+                            outputStream?.write(byteArray, 0, count)
+                            i += count
+                        }
+                        outputStream?.flush()
+                        outputStream?.close()
+
+                        //数据填充完成,把下载状态修改为等待下载,如果状态时暂停就不修改状态
+                        if (downloadDao.getDownloadForId(id).status != DownloadStatus.PAUSE)
+                            downloadDao.updateStatus(
+                                DownloadEntityStatus(id, DownloadStatus.WAIT)
+                            )
+                        else
+                        //是暂停判断是否删除
+                            delete(id)
+                        //判断有无网络
+                        if (netWorkStatus != 0)
                         //更新下载任务
-                        update()
+                            update()
+                    } else {
+                        //判断有无网络
+                        if (netWorkStatus != 0) {
+                            //判断失败次数
+                            val errorFrequency = downloadDao.getDownloadForId(id).errorFrequency
+                            if (errorFrequency < 3) {
+                                //记录下载失败次数
+                                downloadDao.updateErrorFrequency(
+                                    DownloadEntityErrorFrequency(
+                                        id,
+                                        errorFrequency + 1
+                                    )
+                                )
+                                //重试
+                                initDownload(id)
+                            } else {
+                                //修改下载状态为失败
+                                downloadDao.updateStatus(
+                                    DownloadEntityStatus(
+                                        id,
+                                        DownloadStatus.ERROR
+                                    )
+                                )
+                                //更新下载任务
+                                update()
+                            }
+                        }
                     }
                 }
-            }
-        })
+            })
     }
 
     private fun update() {
@@ -234,10 +293,8 @@ class DownloadService : Service() {
 
     //更新初始化任务
     private fun updateInitDownloadTask() {
-        Log.i("更新下载任务")
         //获取可自动开始的未完成下载列表
         val downloadEntityList = downloadDao.getUndoneInitDownloadList()
-        Log.i("下载任务$downloadEntityList")
         //遍历可下载的任务
         for (item in downloadEntityList) {
             //判断是否有正在初始化的数据
@@ -389,6 +446,8 @@ class DownloadService : Service() {
                     updateDownloadTask()
                     //是暂停判断是否删除
                     delete(id)
+                } else if (netWorkStatus == 0) {
+                    downloadDao.updateStatus(DownloadEntityStatus(id, DownloadStatus.AUTO_PAUSE))
                 } else if (len == -1 && downloadDao.getDownloadForId(id).alreadySize != downloadEntity.size) {
                     //判断失败次数
                     val errorFrequency = downloadDao.getDownloadForId(id).errorFrequency
@@ -419,26 +478,28 @@ class DownloadService : Service() {
                 Log.i("剩余内存不足")
             }
         } else {
-            //判断失败次数
-            val errorFrequency = downloadDao.getDownloadForId(id).errorFrequency
-            if (errorFrequency < 3) {
-                //记录下载失败次数
-                downloadDao.updateErrorFrequency(
-                    DownloadEntityErrorFrequency(
-                        id,
-                        errorFrequency + 1
+            //判断有网络进
+            if (netWorkStatus != 0) {
+                //判断失败次数
+                val errorFrequency = downloadDao.getDownloadForId(id).errorFrequency
+                if (errorFrequency < 3) {
+                    //记录下载失败次数
+                    downloadDao.updateErrorFrequency(
+                        DownloadEntityErrorFrequency(
+                            id,
+                            errorFrequency + 1
+                        )
                     )
-                )
-                //重试
-                startDownload(id)
-            } else {
-                //修改下载状态为失败
-                downloadDao.updateStatus(DownloadEntityStatus(id, DownloadStatus.ERROR))
-                //更新下载任务,开始下载另一个任务
-                updateDownloadTask()
+                    //重试
+                    startDownload(id)
+                } else {
+                    //修改下载状态为失败
+                    downloadDao.updateStatus(DownloadEntityStatus(id, DownloadStatus.ERROR))
+                    //更新下载任务,开始下载另一个任务
+                    updateDownloadTask()
+                }
             }
         }
-
     }
 
     //删除

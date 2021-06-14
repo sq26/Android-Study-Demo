@@ -10,6 +10,10 @@
             type="android.view.View.OnClickListener" />
 
         <variable
+            name="onClickAntiShake"
+            type="android.view.View.OnClickListener" />
+
+        <variable
             name="viewmodel"
             type="com.sq26.experience.ui.activity.DataBindingViewModel" />
     </data>
@@ -49,14 +53,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="@{viewmodel.vis}"
-            android:text="显示或隐藏" />
+            android:text="显示或隐藏"
+            android:visibility="@{viewmodel.vis}" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:onClick="@{viewmodel::setVis}"
-            android:text="显示或隐藏"/>
+            android:text="显示或隐藏" />
 
         <Button
             android:layout_width="wrap_content"
@@ -86,6 +90,24 @@
             android:layout_height="wrap_content"
             android:onClick="@{()->viewmodel.onTest()}"
             android:text="测试" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:onClickAntiShake="@{onClickAntiShake}"
+            android:text="点击防抖" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:onClickAntiShake="@{viewmodel::onClickAntiShake}"
+            android:text="点击防抖ViewModel" />
+
+        <Button
+            android:id="@+id/button333"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="动态点击防抖" />
 
         <EditText
             android:layout_width="match_parent"

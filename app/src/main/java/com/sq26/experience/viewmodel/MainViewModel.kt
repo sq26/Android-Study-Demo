@@ -89,7 +89,7 @@ class MainViewModel @Inject constructor(
             "MediaOperating"->
                 intent.setClass(context, MediaOperatingActivity::class.java)
             "notification"->
-                intent.setClass(context, MediaOperatingActivity::class.java)
+                intent.setClass(context, NotificationActivity::class.java)
         }
         context.startActivity(intent)
     }

@@ -7,7 +7,7 @@ object Log {
     const val TAG = "app"
 
     //是否启用打印
-    var isEnable = true
+    private const val isEnable = true
 
     //详情(黑色)
     fun i(msg: Any? = "null", tag: String = TAG, isThread: Boolean = false) {
@@ -61,12 +61,14 @@ object Log {
 
 //给对象加上简单打印
 fun Any.i(tag: String = com.sq26.experience.util.Log.TAG, isThread: Boolean = false) {
-    com.sq26.experience.util.Log.i(this.toString(),tag,isThread)
+    com.sq26.experience.util.Log.i(this.toString(), tag, isThread)
 }
+
 fun Any.w(tag: String = com.sq26.experience.util.Log.TAG, isThread: Boolean = false) {
-    com.sq26.experience.util.Log.w(this.toString(),tag,isThread)
+    com.sq26.experience.util.Log.w(this.toString(), tag, isThread)
 }
+
 fun Any.e(tag: String = com.sq26.experience.util.Log.TAG, isThread: Boolean = false) {
-    com.sq26.experience.util.Log.e(this.toString(),tag,isThread)
+    com.sq26.experience.util.Log.e(this.toString(), tag, isThread)
 }
 

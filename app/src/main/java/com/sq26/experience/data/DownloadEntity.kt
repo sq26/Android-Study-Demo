@@ -18,6 +18,10 @@ data class DownloadEntity(
     var fileUri: String = "",
     //保存的文件名
     var fileName: String = "",
+    //是否必须在WiFi网络中下载
+    var isWifi:Boolean = false,
+    //是否显示通知
+    var isNotification:Boolean = false,
     //下载状态
     var status: Int = DownloadStatus.CREATE,
     //文件大小

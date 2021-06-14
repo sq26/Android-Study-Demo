@@ -9,6 +9,7 @@ buildscript {
         navigationVersion = "2.3.5"
         coroutinesVersion = "1.4.2"
         cameraxVersion = "1.1.0-alpha03"
+        kotlin_version = '1.4.32'
     }
 
     //gradle脚本执行所需依赖，分别是对应的maven库和插件

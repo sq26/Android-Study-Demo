@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -19,11 +20,38 @@ import com.sq26.experience.util.Log
 import com.sq26.experience.viewmodel.ObservableViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.io.File
+import java.io.FileInputStream
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class AppManagementActivity() : AppCompatActivity() {
     private val appManagementViewModel: AppManagementViewModel by viewModels()
+
+    private val CREATE_DOCUMENT = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        it?.data?.data?.apply {
+            val outputStream =
+                contentResolver.openOutputStream(
+                    this
+                )
+            val fileInputStream =
+                FileInputStream(File(appManagementViewModel.appInfo!!.packageInfo.applicationInfo.sourceDir))
+            val bytes = ByteArray(4096)
+            var index: Int = 0
+            while ((fileInputStream.read(bytes).also { i ->
+                    index = i
+                }) != -1) {
+                outputStream?.write(bytes, 0, index)
+                outputStream?.flush()
+            }
+            outputStream?.close()
+            fileInputStream.close()
+            Toast.makeText(this@AppManagementActivity, "保存完毕!", Toast.LENGTH_LONG).show()
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityAppManagementBinding>(
@@ -72,7 +100,7 @@ class AppManagementActivity() : AppCompatActivity() {
             }
 
 
-            val adapter = AppManagementAdapter()
+            val adapter = AppManagementAdapter(appManagementViewModel,CREATE_DOCUMENT)
             recyclerView.adapter = adapter
             appManagementViewModel.appListLiveData.observe(this@AppManagementActivity) {
                 adapter.submitList(it)
@@ -95,13 +123,12 @@ data class AppInfo(
 class AppManagementViewModel @Inject constructor() : ObservableViewModel() {
     val appListLiveData = MutableLiveData<List<AppInfo>>();
     private val appList = mutableListOf<AppInfo>()
-
     var text: String = ""
         set(value) {
             field = value
             filter()
         }
-
+    var appInfo:AppInfo? = null
 
     var system: Boolean = true
         set(value) {

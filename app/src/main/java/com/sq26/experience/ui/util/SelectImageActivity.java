@@ -339,7 +339,7 @@ public class SelectImageActivity extends AppCompatActivity {
             public void onDismiss() {
                 //这里加入重复点击判断,是为了保存一次点击记录,
                 // 这样可以解决在PopupWindow已展开时点击selectFolder造成PopupWindow刚关闭就又瞬间显示的问题,一秒的重复判定可以让刚关闭后的点击无效
-                AntiShake.check(selectFolder.getId());
+//                AntiShake.check(selectFolder.getId());
                 //检测到selectFolderPopupWindow隐藏就将箭头还原
                 arrowDrop.animate().rotation(0).setDuration(500).start();
             }
@@ -349,8 +349,8 @@ public class SelectImageActivity extends AppCompatActivity {
     @OnClick({R.id.selectFolder, R.id.preview})
     public void onViewClicked(View view) {
         //判断是否重复点击
-        if (AntiShake.check(view.getId()))
-            return;
+//        if (AntiShake.check(view.getId()))
+//            return;
         switch (view.getId()) {
             case R.id.selectFolder:
                 Log.d("selectFolder", selectFolderPopupWindow.isShowing() + "");

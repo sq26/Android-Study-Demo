@@ -14,10 +14,20 @@
         tools:context=".ui.activity.NotificationActivity">
 
         <Button
+            android:id="@+id/deleteChannel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="删除" />
+        <Button
             android:id="@+id/notification1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="标准通知" />
 
+        <Button
+            android:id="@+id/download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载通知" />
     </LinearLayout>
 </layout>

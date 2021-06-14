@@ -21,8 +21,8 @@ import kotlin.concurrent.thread
 )
 
 abstract class AppDatabase : RoomDatabase() {
-    //dao层会自动生产
-    abstract fun homeMenuDao(): HomeMenuDao
+        //dao层会自动生产
+        abstract fun homeMenuDao(): HomeMenuDao
     abstract fun recyclerViewDao(): RecyclerViewDao
     abstract fun fileRootDao(): FileRootDao
     abstract fun downloadDao(): DownloadDao
