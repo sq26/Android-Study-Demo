@@ -1,7 +1,8 @@
 package com.sq26.experience.ui.activity
 
 import android.os.Bundle
-import android.util.Log
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -9,14 +10,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import com.sq26.experience.R
 import androidx.databinding.DataBindingUtil.setContentView
-import com.sq26.experience.adapter.HomeMenuAdapter
+import com.sq26.experience.adapter.CommonListAdapter
+import com.sq26.experience.adapter.CommonListViewHolder
 import com.sq26.experience.databinding.ActivityMainBinding
+import com.sq26.experience.databinding.ItemRecyclerviewBinding
+import com.sq26.experience.entity.HomeMenu
+import com.sq26.experience.entity.HomeMenuDiffCallback
 import com.sq26.experience.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.Exception
 
 @AndroidEntryPoint
-class  MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity() {
     private val mainViewModel by viewModels<MainViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,15 +43,38 @@ class  MainActivity : AppCompatActivity() {
                 //弹出侧边栏
                 drawerLayout.openDrawer(GravityCompat.START)
 
-//                try {
-                    var s:String? = null
-                    s!!.toString()
-//                }catch (e:Exception){
-//                    e.printStackTrace()
-//                }
+////                try {
+//                    val s:String? = null
+//                    s!!.toString()
+////                }catch (e:Exception){
+////                    e.printStackTrace()
+////                }
             }
             //获取菜单适配器
-            val homeMenuAdapter = HomeMenuAdapter(mainViewModel, this@MainActivity)
+            val homeMenuAdapter = object : CommonListAdapter<HomeMenu>(HomeMenuDiffCallback()) {
+                override fun createView(parent: ViewGroup, viewType: Int): CommonListViewHolder<*> {
+                    return object : CommonListViewHolder<ItemRecyclerviewBinding>(
+                        ItemRecyclerviewBinding.inflate(
+                            LayoutInflater.from(parent.context),
+                            parent,
+                            false
+                        )
+                    ) {
+                        init {
+                            v.setClickListener {
+                                v.homeMenu?.let {
+                                    //设置要跳转的页面
+                                    mainViewModel.startTo(this@MainActivity, it.id)
+                                }
+                            }
+                        }
+
+                        override fun bind(position: Int) {
+                            v.homeMenu = getItem(position)
+                        }
+                    }
+                }
+            }
             //设置适配器
             menuRecyclerView.adapter = homeMenuAdapter
             //设置数据监听
@@ -57,7 +84,30 @@ class  MainActivity : AppCompatActivity() {
                 drawerLayout.closeDrawers()
             }
             //获取菜单类型适配器
-            val homeMenuTypeAdapter = HomeMenuAdapter(mainViewModel, this@MainActivity)
+            val homeMenuTypeAdapter = object : CommonListAdapter<HomeMenu>(HomeMenuDiffCallback()) {
+                override fun createView(parent: ViewGroup, viewType: Int): CommonListViewHolder<*> {
+                    return object : CommonListViewHolder<ItemRecyclerviewBinding>(
+                        ItemRecyclerviewBinding.inflate(
+                            LayoutInflater.from(parent.context),
+                            parent,
+                            false
+                        )
+                    ) {
+                        init {
+                            v.setClickListener {
+                                v.homeMenu?.let {
+                                    //刷新菜单
+                                    mainViewModel.refreshHomeMenuList(it.id)
+                                }
+                            }
+                        }
+
+                        override fun bind(position: Int) {
+                            v.homeMenu = getItem(position)
+                        }
+                    }
+                }
+            }
             //设置适配器
             menuTypeRecyclerView.adapter = homeMenuTypeAdapter
             //设置数据监听

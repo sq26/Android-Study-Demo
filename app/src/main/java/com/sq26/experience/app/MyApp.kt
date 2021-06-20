@@ -30,13 +30,13 @@ class MyApp : Application() {
         val logFile = File(getExternalFilesDir("log"), "${System.currentTimeMillis()}.txt")
         logFile.absolutePath.i()
         //设置默认异常处理接口
-        Thread.setDefaultUncaughtExceptionHandler(LogUncaughtExceptionHandler{
-            toast("出现意外,5秒钟后退出!")
-            thread {
-                Thread.sleep(5000)
-                android.os.Process.killProcess(android.os.Process.myPid())
-            }
-        })
+//        Thread.setDefaultUncaughtExceptionHandler(LogUncaughtExceptionHandler{
+//            toast("出现意外,5秒钟后退出!")
+//            thread {
+//                Thread.sleep(5000)
+//                android.os.Process.killProcess(android.os.Process.myPid())
+//            }
+//        })
 //        Log.readLog(logFile)
     }
 }

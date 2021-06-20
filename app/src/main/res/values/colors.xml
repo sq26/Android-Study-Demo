@@ -14,5 +14,7 @@
     <color name="translucent">#40000000</color>
     <!--灰色-->
     <color name="gray">#808080</color>
+    <!--黑色-->
+    <color name="black">#000</color>
 
 </resources>

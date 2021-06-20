@@ -3,36 +3,32 @@ package com.sq26.experience.ui.activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.ViewGroup
-import androidx.activity.addCallback
 import androidx.activity.viewModels
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewModelScope
 import androidx.paging.*
-import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.RecyclerView
 import com.sq26.experience.R
-import com.sq26.experience.data.RecyclerViewDao
+import com.sq26.experience.adapter.CommonListViewHolder
+import com.sq26.experience.adapter.ExampleLoadStateAdapter
+import com.sq26.experience.adapter.NetworkThrowable
+import com.sq26.experience.adapter.NoMoreThrowable
 import com.sq26.experience.data.RecyclerViewItem
+import com.sq26.experience.data.RecyclerViewItemCallback
 import com.sq26.experience.databinding.ActivityPagingBinding
 import com.sq26.experience.databinding.ItemRecyclerviewItemBinding
 import com.sq26.experience.util.Log
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@AndroidEntryPoint
 class PagingActivity : AppCompatActivity() {
+
     private val viewModel: PagingViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,14 +36,63 @@ class PagingActivity : AppCompatActivity() {
         DataBindingUtil.setContentView<ActivityPagingBinding>(this, R.layout.activity_paging)
             .apply {
                 lifecycleOwner = this@PagingActivity
-                val adapter = PagingDemoAdapter()
+
+                toolbar.setNavigationOnClickListener {
+                    onBackPressedDispatcher.onBackPressed()
+                }
+                //创建分页库
+                val adapter = object :
+                    PagingDataAdapter<RecyclerViewItem, CommonListViewHolder<ItemRecyclerviewItemBinding>>(
+                        RecyclerViewItemCallback()
+                    ) {
+                    //绑定视图
+                    override fun onBindViewHolder(
+                        holder: CommonListViewHolder<ItemRecyclerviewItemBinding>,
+                        position: Int
+                    ) {
+                        holder.bind(position)
+                    }
+
+                    //创建视图
+                    override fun onCreateViewHolder(
+                        parent: ViewGroup,
+                        viewType: Int
+                    ): CommonListViewHolder<ItemRecyclerviewItemBinding> {
+                        return object : CommonListViewHolder<ItemRecyclerviewItemBinding>(
+                            ItemRecyclerviewItemBinding.inflate(
+                                LayoutInflater.from(parent.context),
+                                parent, false
+                            )
+                        ) {
+                            override fun bind(position: Int) {
+                                v.item = getItem(position)
+                            }
+                        }
+                    }
+                }
+                //设置分割线
                 recyclerView.addItemDecoration(
                     DividerItemDecoration(
                         this@PagingActivity,
                         DividerItemDecoration.VERTICAL
                     )
                 )
-                recyclerView.adapter = adapter
+                swipeRefreshLayout.setOnRefreshListener {
+                    adapter.refresh()
+                }
+
+                //设置适配器,并设置头部和尾部
+                recyclerView.adapter = adapter.withLoadStateHeaderAndFooter(
+                    ExampleLoadStateAdapter { adapter.retry() },
+                    ExampleLoadStateAdapter { adapter.retry() }
+                )
+                //adapter.loadStateFlow是堵塞协程,要单独创建协程运行
+                lifecycleScope.launch {
+                    //collectLatest:在新值发送后会取向上个协程的调用
+                    adapter.loadStateFlow.collectLatest {
+                        swipeRefreshLayout.isRefreshing = it.refresh is LoadState.Loading
+                    }
+                }
 
                 lifecycleScope.launch {
                     viewModel.flow.collectLatest {
@@ -58,20 +103,20 @@ class PagingActivity : AppCompatActivity() {
     }
 }
 
-@HiltViewModel
-class PagingViewModel @Inject constructor() : ViewModel() {
+class PagingViewModel : ViewModel() {
+    private val pageSize = 20
     val flow = Pager(
         PagingConfig(
             //定义单页要加载的数据数量
-            pageSize = 20,
+            pageSize = pageSize,
             //是否显示空占位符,默认值true,最好禁用,不然就全是占位item,看不到正在加载UI了,并且需要设置jumpThreshold在翻页过远时取消请求
             enablePlaceholders = false,
             //初始加载的数据数量,默认为单页加载数量的三倍
-            initialLoadSize = 40,
+            initialLoadSize = pageSize * 2,
             //列表保存的最大数据数量,超出后会删除之前或之后的数据
-            maxSize = 50,
+            maxSize = pageSize * 2,
             //预取距离,距离边界还有多少数据时加载下一页,默认值为一页的数量
-            prefetchDistance = 4
+            prefetchDistance = 1
         )
     ) {
         object : PagingSource<Int, RecyclerViewItem>() {
@@ -84,119 +129,38 @@ class PagingViewModel @Inject constructor() : ViewModel() {
             override suspend fun load(params: LoadParams<Int>): LoadResult<Int, RecyclerViewItem> {
                 val prevKey = params.key ?: 0
                 //params.loadSize:在初次请求时值为initialLoadSize的值,之后取pageSize的值
-                Log.i(params.loadSize)
+                Log.i(params.loadSize, isThread = true)
                 try {
                     val list = mutableListOf<RecyclerViewItem>()
                     //模拟网络加载堵塞3秒
                     delay(3000)
-                    for (i in prevKey..prevKey + params.loadSize) {
+                    for (i in prevKey.until(prevKey + pageSize)) {
                         list.add(RecyclerViewItem(id = i))
                     }
-                    //成功的返回
-                    return LoadResult.Page(
-                        list,
-                        if (prevKey == 0) null else prevKey,
-                        prevKey + params.loadSize
-                    )
+                    //模拟没有更多数据
+                    return if (prevKey >= 100) {
+                        //没有更多数据
+                        LoadResult.Error(NoMoreThrowable())
+                    } else {
+                        //成功的返回
+                        LoadResult.Page(
+                            list,
+                            //上一页key,如果当前页是0则返回null表示没有上一页,否则减去每次加载的页数就是上一页的key
+                            if (prevKey == 0) null else prevKey - pageSize,
+                            //下一页key,当页页加上页数就是下载一次加载的key
+                            prevKey + pageSize
+                        )
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                     //失败的返回
-                    return LoadResult.Error(e)
+                    return LoadResult.Error(NetworkThrowable())
                 }
-
             }
-
         }
     }.flow
         .cachedIn(viewModelScope)
+        .flowOn(Dispatchers.IO)
 
 
 }
-
-class PagingDemoAdapter() : PagingDataAdapter<RecyclerViewItem, PagingDemoAdapter.ViewHolder>(
-    RecyclerViewItemComparator
-) {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(
-            ItemRecyclerviewItemBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
-            )
-        )
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        getItem(position)?.let { holder.bind(it) }
-    }
-
-    inner class ViewHolder(private val itemRecyclerviewItemBinding: ItemRecyclerviewItemBinding) :
-        RecyclerView.ViewHolder(itemRecyclerviewItemBinding.root) {
-
-        init {
-            itemRecyclerviewItemBinding.root.setOnClickListener {
-                itemRecyclerviewItemBinding.item?.apply {
-                    Log.i(this.id.toString(), "Recyclerview")
-                }
-            }
-        }
-
-        fun bind(recyclerViewItem: RecyclerViewItem) {
-            itemRecyclerviewItemBinding.apply {
-                item = recyclerViewItem
-            }
-        }
-    }
-
-    object RecyclerViewItemComparator : DiffUtil.ItemCallback<RecyclerViewItem>() {
-        override fun areItemsTheSame(
-            oldItem: RecyclerViewItem,
-            newItem: RecyclerViewItem
-        ): Boolean {
-            // Id is unique.
-            return oldItem.id == newItem.id
-        }
-
-        override fun areContentsTheSame(
-            oldItem: RecyclerViewItem,
-            newItem: RecyclerViewItem
-        ): Boolean {
-            return oldItem == newItem
-        }
-    }
-
-}
-
-//class ExampleLoadStateAdapter() : LoadStateAdapter<LoadStateViewHolder>() {
-//    override fun onBindViewHolder(holder: LoadStateViewHolder, loadState: LoadState) {
-//        holder.bind(loadState)
-//    }
-//
-//    override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadStateViewHolder =
-//        LoadStateViewHolder(parent)
-//
-//}
-
-//class LoadStateViewHolder(
-//    parent: ViewGroup
-//) : RecyclerView.ViewHolder(
-//    LayoutInflater.from(parent.context)
-//        .inflate(R.layout.load_state_item, parent, false)
-//) {
-//    private val binding = LoadStateItemBinding.bind(itemView)
-//    private val progressBar: ProgressBar = binding.progressBar
-//    private val errorMsg: TextView = binding.errorMsg
-//    private val retry: Button = binding.retryButton
-//        .also {
-//            it.setOnClickListener { retry() }
-//        }
-//
-//    fun bind(loadState: LoadState) {
-//        if (loadState is LoadState.Error) {
-//            errorMsg.text = loadState.error.localizedMessage
-//        }
-//
-//        progressBar.isVisible = loadState is LoadState.Loading
-//        retry.isVisible = loadState is LoadState.Error
-//        errorMsg.isVisible = loadState is LoadState.Error
-//    }
-//}

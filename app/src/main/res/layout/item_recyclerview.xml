@@ -9,7 +9,7 @@
 
         <variable
             name="homeMenu"
-            type="com.sq26.experience.data.HomeMenu" />
+            type="com.sq26.experience.entity.HomeMenu" />
     </data>
 
     <LinearLayout

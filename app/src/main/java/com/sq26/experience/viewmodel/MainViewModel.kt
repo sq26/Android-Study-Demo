@@ -3,43 +3,78 @@ package com.sq26.experience.viewmodel
 import android.content.Context
 import android.content.Intent
 import androidx.lifecycle.*
-import com.sq26.experience.data.HomeMenu
-import com.sq26.experience.data.HomeMenuDao
+import com.sq26.experience.R
+import com.sq26.experience.entity.HomeMenu
 import com.sq26.experience.ui.activity.*
 import com.sq26.experience.ui.activity.file.FileHomeActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val homeRepository: HomeRepository
+    @ApplicationContext context: Context
 ) : ViewModel() {
     val title = "首页"
 
-    //获取数据
-    val homeMenuList = MutableLiveData<List<HomeMenu>>()
+    private val menuAll = listOf(
+        HomeMenu("0", "技术功能", 0),
+        HomeMenu(
+            "encryption",
+            context.getString(R.string.Symmetric_and_asymmetric_encryption),
+            1,
+            "0"
+        ),
+        HomeMenu("aidl", "AIDL进程间通讯", 1, "0"),
+        HomeMenu("javaTest", "java测试", 1, "0"),
+        HomeMenu("kotlin", "kotlin语言学习", 1, "0"),
+        HomeMenu("1", "框架功能", 0),
+        HomeMenu("Navigation", "Navigation导航框架", 1, "1"),
+        HomeMenu("Paging", "Paging框架(RecyclerView分页库)", 1, "1"),
+        HomeMenu("WorkManger", "WorkManger框架(后台任务库)", 1, "1"),
+        HomeMenu("DataBinding", "Data Binding框架(数据绑定)", 1, "1"),
+        HomeMenu("DataStore", "DataStore框架(数据储存)", 1, "1"),
+        HomeMenu("2", "android功能", 0),
+        HomeMenu("camera", context.getString(R.string.camera), 1, "2"),
+        HomeMenu("statusBar", "侵入式体验(通知栏和导航栏控制)", 1, "2"),
+        HomeMenu("authorizedOperation", "授权操作", 1, "2"),
+        HomeMenu("fileManagement", "文件管理", 1, "2"),
+        HomeMenu("downloadManagement", "下载管理", 1, "2"),
+        HomeMenu("network", "网络", 1, "2"),
+        HomeMenu("WiFiDirect", "WIFI直连", 1, "2"),
+        HomeMenu("AppManagement", "app管理", 1, "2"),
+        HomeMenu("MediaOperating", "媒体操作", 1, "2"),
+        HomeMenu("notification", "通知", 1, "2"),
+        HomeMenu("WebView", "WebView交互", 1, "2"),
+        HomeMenu("3", "视图", 0),
+        HomeMenu("pullToRefresh", "下拉刷新,上拉加载更多", 1, "3"),
+        HomeMenu("RecyclerView", "RecyclerView的使用", 1, "3"),
+        HomeMenu("MotionLayout", "MotionLayout的使用", 1, "3")
+    )
 
+    //获取菜单类型数据
+    val homeMenuTypeList = MutableLiveData<List<HomeMenu>>()
+
+    //获取菜单数据对应菜单数据
+    val homeMenuList = MutableLiveData<List<HomeMenu>>()
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            homeMenuList.postValue(homeRepository.getHomeMenuList("0"))
+            homeMenuTypeList.postValue(menuAll.filter { it.type == 0 })
+            refreshHomeMenuList("0")
         }
     }
 
     //刷新数据
     fun refreshHomeMenuList(typeId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            homeMenuList.postValue(homeRepository.getHomeMenuList(typeId))
+            homeMenuList.postValue(menuAll.filter { it.typeId == typeId })
         }
     }
 
-    //获取菜单类型数据
-    val homeMenuTypeList: LiveData<List<HomeMenu>> =
-        homeRepository.getHomeMenuTypeList().asLiveData()
 
-    fun startTo(context: Context,id: String) {
+    fun startTo(context: Context, id: String) {
         val intent = Intent(context, EncryptionActivity::class.java)
         //在新的窗口打开
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
@@ -86,23 +121,11 @@ class MainViewModel @Inject constructor(
                 intent.setClass(context, DataStoreActivity::class.java)
             "MotionLayout" ->
                 intent.setClass(context, MotionLayoutActivity::class.java)
-            "MediaOperating"->
+            "MediaOperating" ->
                 intent.setClass(context, MediaOperatingActivity::class.java)
-            "notification"->
+            "notification" ->
                 intent.setClass(context, NotificationActivity::class.java)
         }
         context.startActivity(intent)
     }
-}
-
-//Singleton注解会将HomeRepository的生命周期绑定到application,也就是回和应用程序一起创建和销毁,是一种更加方便地单例模式,所有依赖HomeRepository的类获取到的都是同一实例
-//Inject注解会使用设置在DatabaseModule中的HomeMenuDao的获取方法
-@Singleton
-class HomeRepository @Inject constructor(
-    private val homeMenuDao: HomeMenuDao
-) {
-
-    fun getHomeMenuList(typeId: String) = homeMenuDao.getHomeMenuList(typeId)
-
-    fun getHomeMenuTypeList() = homeMenuDao.getHomeMenuTypeList()
 }

@@ -1,6 +1,7 @@
 package com.sq26.experience.data
 
 import android.graphics.Color
+import androidx.recyclerview.widget.DiffUtil
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import java.util.*
@@ -22,34 +23,21 @@ private fun getColor(): Int {
     return Color.rgb(r, g, b)
 }
 
-@Dao
-interface RecyclerViewDao {
-    @Insert
-    fun insert(recyclerViewItem: RecyclerViewItem)
+//DiffUtil是一个实用程序类，它计算两个列表之间的差异并输出
+//将一个列表转换为另一个列表的更新操作列表。
+class RecyclerViewItemCallback : DiffUtil.ItemCallback<RecyclerViewItem>() {
+    override fun areItemsTheSame(
+        oldItem: RecyclerViewItem,
+        newItem: RecyclerViewItem
+    ): Boolean {
+        // Id is unique.
+        return oldItem.id == newItem.id
+    }
 
-    @Update
-    fun updateAll(recyclerViewList: List<RecyclerViewItem>)
-
-    @Delete
-    fun delete(recyclerViewItem: RecyclerViewItem)
-
-    @Insert
-    fun insertAll(recyclerViewList: List<RecyclerViewItem>)
-
-    @Query("select * from RecyclerViewItem order by sort asc")
-    fun queryAll(): Flow<List<RecyclerViewItem>>
-
-    @Query("select count(1) from RecyclerViewItem")
-    fun queryCount(): Int
-
-    @Query("select * from RecyclerViewItem limit :start, :limit")
-    fun queryPagingAll(start: Int, limit: Int): List<RecyclerViewItem>
-
-    //获取sort的当前最大值
-    @Query("select max(sort) from RecyclerViewItem")
-    fun getMaxSort(): Int
-
-    //删除所有数据
-    @Query("delete from RecyclerViewItem")
-    fun deleteAll()
+    override fun areContentsTheSame(
+        oldItem: RecyclerViewItem,
+        newItem: RecyclerViewItem
+    ): Boolean {
+        return oldItem == newItem
+    }
 }

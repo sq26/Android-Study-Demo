@@ -19,23 +19,21 @@ import com.sq26.experience.data.RecyclerViewItem
 import com.sq26.experience.databinding.ActivityRecyclerViewBinding
 import com.sq26.experience.databinding.ItemRecyclerviewItemBinding
 import com.sq26.experience.util.Log
+import com.sq26.experience.util.i
 import com.sq26.experience.viewmodel.RecyclerViewViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
-@AndroidEntryPoint
 class RecyclerViewActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityRecyclerViewBinding
     private val viewModel: RecyclerViewViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView<ActivityRecyclerViewBinding>(
+        DataBindingUtil.setContentView<ActivityRecyclerViewBinding>(
             this,
             R.layout.activity_recycler_view
         ).apply {
             //设置标题名
             toolbar.title = "RecyclerView"
-            setSupportActionBar(toolbar)
             //设置布局管理器
             recyclerView.layoutManager = LinearLayoutManager(this@RecyclerViewActivity)
 //        //设置横向分割线
@@ -52,41 +50,72 @@ class RecyclerViewActivity : AppCompatActivity() {
                     DividerItemDecoration.VERTICAL
                 )
             )
-            //声明adapter
-            val adapter = object : CommonListAdapter<RecyclerViewItem>(DiffCallback()) {
-                //创建视图
-                override fun createView(parent: ViewGroup, viewType: Int): CommonListViewHolder<*> {
-                    return object : CommonListViewHolder<ItemRecyclerviewItemBinding>(
-                        ItemRecyclerviewItemBinding.inflate(
-                            LayoutInflater.from(parent.context),
-                            parent,
-                            false
-                        )
-                    ) {
-                        //绑定数据
-                        override fun bind(position: Int) {
-                            v.item = getItem(position)
-                            //刷新数据
-                            v.executePendingBindings()
-                        }
 
-                        fun getItem() = v.item
+            //声明adapter
+            val adapter =
+                object : RecyclerView.Adapter<CommonListViewHolder<ItemRecyclerviewItemBinding>>() {
+                    override fun onCreateViewHolder(
+                        parent: ViewGroup,
+                        viewType: Int
+                    ): CommonListViewHolder<ItemRecyclerviewItemBinding> {
+                        return object : CommonListViewHolder<ItemRecyclerviewItemBinding>(
+                            ItemRecyclerviewItemBinding.inflate(
+                                LayoutInflater.from(parent.context),
+                                parent, false
+                            )
+                        ) {
+                            override fun bind(position: Int) {
+                                v.item = viewModel.list[position]
+                            }
+                        }
                     }
+
+                    override fun onBindViewHolder(
+                        holder: CommonListViewHolder<ItemRecyclerviewItemBinding>,
+                        position: Int
+                    ) {
+                        holder.bind(position)
+                    }
+
+                    override fun getItemCount(): Int {
+                        return viewModel.list.size
+                    }
+
+                }
+
+            toolbar.setNavigationOnClickListener {
+                onBackPressedDispatcher.onBackPressed()
+            }
+            //添加数据
+            toolbar.menu.add(getString(R.string.add)).apply {
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setIcon(R.drawable.ic_baseline_add_24)
+                setOnMenuItemClickListener {
+                    adapter.notifyItemInserted(viewModel.insert())
+                    true
                 }
             }
+            //设置查看方式
+            toolbar.menu.add(getString(R.string.look_over)).apply {
+                setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setIcon(R.drawable.ic_view_module_white_24dp)
+                setOnMenuItemClickListener {
+                    //设置布局管理器
+                    recyclerView.layoutManager =
+                            //判断当前是网格布局,就切换到线性布局,是线性布局就切换到网格布局,if判断的最后一行是返回值
+                        if (recyclerView.layoutManager is GridLayoutManager) {
+                            setIcon(R.drawable.ic_view_list_white_24dp)
+                            LinearLayoutManager(this@RecyclerViewActivity)
+                        } else {
+                            setIcon(R.drawable.ic_view_module_white_24dp)
+                            GridLayoutManager(this@RecyclerViewActivity, 3)
+                        }
+                    true
+                }
+            }
+
             //设置adapter
             recyclerView.adapter = adapter
-            //移动顺序
-            val moveMap = mutableMapOf<Int, RecyclerViewItem>()
-
-            onBackPressedDispatcher.addCallback {
-                //移动序列不为空更新数据顺序
-                if (moveMap.isNotEmpty()) {
-                    viewModel.updateAll(moveMap.values.toList())
-                }
-                //关闭页面
-                finish()
-            }
 
             //设置触摸滑动帮手
             ItemTouchHelper(object : ItemTouchHelper.Callback() {
@@ -132,7 +161,14 @@ class RecyclerViewActivity : AppCompatActivity() {
                     target: RecyclerView.ViewHolder
                 ): Boolean {
                     //这里处理item交换位置
-
+                    val item = viewModel.list[viewHolder.absoluteAdapterPosition]
+                    viewModel.list[viewHolder.absoluteAdapterPosition] =
+                        viewModel.list[target.absoluteAdapterPosition]
+                    viewModel.list[target.absoluteAdapterPosition] = item
+                    adapter.notifyItemMoved(
+                        viewHolder.absoluteAdapterPosition,
+                        target.absoluteAdapterPosition
+                    )
                     //返回true表示处理移动完毕,返回false拖动的item不能与新位置的item交换位置
                     return true
                 }
@@ -141,7 +177,8 @@ class RecyclerViewActivity : AppCompatActivity() {
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     //手指触摸滑动的距离达到RecyclerView宽度的一半时，再松开手指，此时该Item会继续向原先滑动方向滑过去并且调用onSwiped方法进行删除，否则会反向滑回原来的位置。
                     //删除当前列的item
-//                    viewModel.delete((viewHolder as RecyclerView1Adapter.ViewHolder).getItem())
+                    viewModel.delete(viewHolder.absoluteAdapterPosition)
+                    adapter.notifyItemRemoved(viewHolder.absoluteAdapterPosition)
                 }
 
                 //是否支持长按滑动
@@ -193,62 +230,7 @@ class RecyclerViewActivity : AppCompatActivity() {
                     super.clearView(recyclerView, viewHolder)
                 }
             }).attachToRecyclerView(recyclerView)
-            //获取实时列表信息
-            viewModel.getQueryAll().observe(this@RecyclerViewActivity) {
-                Log.i(it.toString(), "it")
-                adapter.submitList(it)
-            }
+
         }
     }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.menu_add_lookover, menu)
-        return true
-    }
-
-    @SuppressLint("UseCompatLoadingForDrawables")
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            //点击导航按钮返回上一页
-            android.R.id.home -> onBackPressed()
-            //添加新的item
-            R.id.action_add -> {
-                viewModel.insert()
-            }
-            //切换布局管理器
-            R.id.action_look_over ->
-                //设置布局管理器
-                binding.recyclerView.layoutManager =
-                        //判断当前是网格布局,就切换到线性布局,是线性布局就切换到网格布局,if判断的最后一行是返回值
-                    if (binding.recyclerView.layoutManager is GridLayoutManager) {
-                        item.icon = getDrawable(R.drawable.ic_view_list_white_24dp)
-                        LinearLayoutManager(this)
-                    } else {
-                        item.icon = getDrawable(R.drawable.ic_view_module_white_24dp)
-                        GridLayoutManager(this, 3)
-                    }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-}
-
-//DiffUtil是一个实用程序类，它计算两个列表之间的差异并输出
-//将一个列表转换为另一个列表的更新操作列表。
-class DiffCallback : DiffUtil.ItemCallback<RecyclerViewItem>() {
-    //判断唯一标识是否相同
-    override fun areItemsTheSame(
-        oldItem: RecyclerViewItem,
-        newItem: RecyclerViewItem
-    ): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    //判断内容是否相同
-    override fun areContentsTheSame(
-        oldItem: RecyclerViewItem,
-        newItem: RecyclerViewItem
-    ): Boolean {
-        return oldItem == newItem
-    }
-
 }
