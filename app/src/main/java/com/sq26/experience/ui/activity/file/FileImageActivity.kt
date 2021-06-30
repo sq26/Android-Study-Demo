@@ -16,19 +16,13 @@ class FileImageActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityFileImageBinding>(this, R.layout.activity_file_image)
-        JPermissions(
-            this,
+        JPermissions(this).success {
+            viewModel.initData(this)
+        }.start(
             arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         )
-            .success {
-                viewModel.initData(this)
-            }
-            .failure { _, _, _ ->
-
-            }
-            .start()
     }
 }

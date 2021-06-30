@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityAuthorizedOperationBinding
@@ -203,7 +204,7 @@ class AuthorizedOperationViewModel : ViewModel() {
             requestPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
-        JPermissions(context, requestPermissions.toTypedArray())
+        JPermissions(context as FragmentActivity)
             .success {
                 AlertDialog.Builder(context).setMessage("申请成功").setPositiveButton("确定", null).show()
             }
@@ -216,6 +217,6 @@ class AuthorizedOperationViewModel : ViewModel() {
                     }
                     .show()
             }
-            .start()
+            .start(requestPermissions.toTypedArray())
     }
 }

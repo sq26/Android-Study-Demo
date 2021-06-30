@@ -107,20 +107,14 @@ class FileImageDirectoryActivity : AppCompatActivity() {
                 adapter.submitList(it)
             }
         }
-        JPermissions(
-            this,
-            arrayOf(
-                Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )
-        )
+        JPermissions(this)
             .success {
                 viewModel.initData(this)
             }
-            .failure { _, _, _ ->
-
-            }
-            .start()
+            .start(arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ))
     }
 }
 

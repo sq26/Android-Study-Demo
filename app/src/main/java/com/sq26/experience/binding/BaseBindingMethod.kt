@@ -49,7 +49,7 @@ object BaseBindingMethod {
     }
 
     //单击防手抖点击事件
-    @BindingAdapter("app:onClickAntiShake")
+    @BindingAdapter("onClickAntiShake")
     //需要加JvmStatic才能创建使用java的静态对象
     @JvmStatic
     fun setOnClickAntiShake(view: View, listener: View.OnClickListener?) {

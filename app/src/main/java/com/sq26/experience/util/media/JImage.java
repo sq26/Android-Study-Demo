@@ -127,7 +127,7 @@ public class JImage {
                 permissions = new String[]{Manifest.permission.READ_EXTERNAL_STORAGE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE};
             //开始调用权限申请
-            new JPermissions(context,permissions)
+            new JPermissions(context)
                     .success(() -> {
                         //成功后去执行fragment,进去内容获取操作
                         startFragment();
@@ -137,7 +137,7 @@ public class JImage {
                         //失败后弹出提示(暂时没想好怎么提示)
                         return null;
                     })
-                    .start();
+                    .start(permissions);
         }
 
         private void startFragment() {

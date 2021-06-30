@@ -55,9 +55,9 @@ class CameraActivity : AppCompatActivity() {
             requestScanCode.launch(Intent(this, ScanCodeActivity::class.java))
         }
         //设置选择类型的方法
-        cameraViewModel.selectBarcodeFormatDialog = { array,int->
+        cameraViewModel.selectBarcodeFormatDialog = { array, int ->
             MaterialAlertDialogBuilder(this)
-                .setSingleChoiceItems(array,int){ _, i ->
+                .setSingleChoiceItems(array, int) { _, i ->
                     cameraViewModel.barcodeFormat = array[i]
                 }
                 .setPositiveButton(android.R.string.ok, null)
@@ -67,12 +67,12 @@ class CameraActivity : AppCompatActivity() {
 
     private fun requestPermissions() {
         //申请相机权限
-        JPermissions(this, arrayOf(Manifest.permission.CAMERA))
+        JPermissions(this)
             .success {
                 cameraViewModel.isPermission = true
             }.failure { _, _, _ ->
                 cameraViewModel.isPermission = false
-            }.start()
+            }.start(arrayOf(Manifest.permission.CAMERA))
     }
 
 }
