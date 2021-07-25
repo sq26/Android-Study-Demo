@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialKeyguardLayout="@layout/widget_wallpaper"
+    android:initialLayout="@layout/widget_wallpaper"
+    android:minWidth="40dp"
+    android:minHeight="40dp"
+    android:configure="com.sq26.experience.ui.activity.WallpaperWidgetActivity"
+    android:previewImage="@drawable/example_appwidget_preview"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />
+
+    <!--
+        minWidth 和 minHeight 属性的值指定应用微件默认情况下占用的最小空间。
+            默认的主屏幕根据定义了高度和宽度的单元格的网格在其窗口中放置应用微件。
+            如果应用微件的最小宽度或高度的值与单元格的尺寸不匹配，则应用微件的尺寸会向上舍入到最接近的单元格大小。
+        minResizeWidth 和 minResizeHeight 属性指定应用微件的绝对最小大小。
+            这些值应指定应用微件的大小低于多大就会难以辨认或无法使用。
+            使用这些属性，用户可以将微件的大小调整为可能小于由 minWidth 和 minHeight 属性定义的默认微件大小。
+            如果此字段的值大于 minHeight 和 minHeight 或未启用垂直大小调整（请参阅 resizeMode），则此字段不起作用。
+        updatePeriodMillis:更新周期频率,单位毫秒
+            如果设备在到了该更新的时候（由 updatePeriodMillis 定义）处于休眠状态，则设备会唤醒以执行更新。
+            如果您的更新频率不超过每小时一次，这样或许不会给电池续航时间造成严重问题。
+            不过，如果您需要更频繁地更新和/或不需要在设备处于休眠状态时进行更新，则可以改为基于不会唤醒设备的闹钟来执行更新。
+            为此，请使用 AlarmManager 设置一个具有 AppWidgetProvider 会接收的 Intent 的闹钟。
+            将闹钟类型设为 ELAPSED_REALTIME 或 RTC，这样只有在设备处于唤醒状态时，闹钟才会响起。
+            然后，将 updatePeriodMillis 设为零 ("0")。
+        initialLayout 属性指向用于定义应用微件布局的布局资源。
+        configure 属性定义要在用户添加应用微件时启动以便用户配置应用微件属性的 Activity。这是可选的
+        previewImage 属性指定预览来描绘应用微件经过配置后是什么样子的，用户在选择应用微件时会看到该预览。
+            如果未提供，则用户会看到应用的启动器图标。
+            此字段对应于 AndroidManifest.xml 文件的 <receiver> 元素中的 android:previewImage 属性。
+        resizeMode 属性指定可以按什么规则来调整微件的大小。
+            您可以使用此属性来让主屏幕微件在横轴上可调整大小、在纵轴上可调整大小，或者在这两个轴上均可调整大小。
+            用户可轻触并按住微件以显示其大小调整手柄，然后拖动水平和/或垂直手柄以更改布局网格上的大小。
+            resizeMode 属性的值包括“horizontal”、“vertical”和“none”。
+            要将微件声明为在水平和垂直方向上均可调整大小，请提供值“horizontal|vertical”。
+        widgetCategory 属性声明应用微件是否可以显示在主屏幕 (home_screen) 和/或锁定屏幕 (keyguard) 上。
+            只有低于 5.0 的 Android 版本才支持锁定屏幕微件。对于 Android 5.0 及更高版本，只有 home_screen 有效。
+    -->

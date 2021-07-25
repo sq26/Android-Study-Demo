@@ -78,7 +78,6 @@
 
     <style name="MaterialToolbarStyle" parent="Widget.MaterialComponents.Toolbar.PrimarySurface" />
 
-
     <!--    全屏dialog-->
     <style name="DialogFullscreen" parent="@android:style/Theme.Material.Light.DialogWhenLarge">
         <!--        不要窗口标题-->
