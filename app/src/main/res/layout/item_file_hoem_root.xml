@@ -10,7 +10,7 @@
 
         <variable
             name="item"
-            type="com.sq26.experience.data.FileRoot" />
+            type="java.io.File" />
     </data>
 
     <LinearLayout
@@ -28,12 +28,12 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{item.rom}" />
+            android:text="@{String.valueOf(item.length)}" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{item.uri}" />
+            android:text="@{item.absolutePath}" />
 
         <TextView
             android:layout_width="match_parent"
@@ -43,6 +43,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{String.valueOf(item.canWrite)}"/>
+            android:text="@{String.valueOf(item.canWrite)}" />
     </LinearLayout>
 </layout>

@@ -3,11 +3,9 @@ package com.sq26.experience.util.kotlin
 import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
-import android.view.View
+import android.net.Uri
 import android.widget.Toast
-import androidx.lifecycle.LifecycleOwner
 import com.sq26.experience.R
-import com.sq26.experience.util.i
 
 //往Context中加入Toast,isLong表示是否是长时间显示
 fun Context.toast(text: CharSequence, isLong: Boolean = false) =
@@ -27,4 +25,21 @@ fun Context.dialog(text: CharSequence, isDetermine: Boolean = false) {
         }
     alertDialog.show()
 }
-
+//链接类型
+enum class UriType(int: Int) {
+    Uri(0),
+    Url(1),
+    Path(2)
+}
+//获取链接类型
+fun String.uriType(): UriType {
+    val uri = Uri.parse(this)
+    return when (uri.scheme) {
+        "content" ->
+            UriType.Uri
+        "http", "https" ->
+            UriType.Uri
+        else ->
+            UriType.Uri
+    }
+}

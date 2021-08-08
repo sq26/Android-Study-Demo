@@ -23,12 +23,6 @@ class DatabaseModule {
         //在这里写提供实例的代码
         return AppDatabase.getInstance(context)
     }
-    //提供HomeMenuDao的实例
-    //这里我猜想上面的代码已经将AppDatabase实例化到ApplicationComponent中了,这里的AppDatabase参数应该会自动设置到初始化HomeMenuDao的方法中
-    @Provides
-    fun provideFileRootDao(appDatabase: AppDatabase): FileRootDao {
-        return appDatabase.fileRootDao()
-    }
 
     @Provides
     fun provideDownloadDao(appDatabase: AppDatabase): DownloadDao {

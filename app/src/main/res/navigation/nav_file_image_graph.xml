@@ -9,17 +9,19 @@
         android:id="@+id/fileImageDirectoryFragment"
         android:name="com.sq26.experience.ui.fragment.FileImageDirectoryFragment"
         android:label="fragment_file_image_directory"
-        tools:layout="@layout/fragment_file_image_directory" >
+        tools:layout="@layout/fragment_file_image_directory">
         <action
             android:id="@+id/action_fileImageDirectoryFragment_to_fileImageListFragment"
             app:destination="@id/fileImageListFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/fileImageListFragment"
         android:name="com.sq26.experience.ui.fragment.FileImageListFragment"
-        android:label="FileImageListFragment" >
+        android:label="FileImageListFragment">
         <argument
             android:name="index"
             app:argType="integer" />
     </fragment>
+
 </navigation>

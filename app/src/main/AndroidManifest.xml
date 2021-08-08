@@ -55,6 +55,7 @@
     <!--   程序可以读取设备外部存储空间-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission-sdk-23 android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <!-- 允许程序在手机屏幕关闭后后台进程仍然运行 -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- 允许程序开机自动运行 -->
@@ -68,18 +69,21 @@
     <!-- 允许程序读取系统底层日志 -->
     <uses-permission-sdk-23 android:name="android.permission.READ_LOGS" />
 
+    <!--    android:requestLegacyExternalStorage = true:用于给Android10设备停用强制分区储存-->
     <application
         android:name=".app.MyApp"
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
         <!--   时间微件的设置页面    -->
-        <activity android:name="com.sq26.experience.ui.activity.WallpaperWidgetActivity"
+        <activity
+            android:name="com.sq26.experience.ui.activity.WallpaperWidgetActivity"
             android:process=":widget">
             <intent-filter>
                 <action android:name="android.intent.action.APPWIDGET_CONFIGURE" />

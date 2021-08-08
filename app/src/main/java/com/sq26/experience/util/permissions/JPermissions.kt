@@ -1,5 +1,6 @@
 package com.sq26.experience.util.permissions
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,6 +30,25 @@ class JPermissions(
             val uri: Uri = Uri.fromParts("package", context.packageName, null)
             intent.data = uri
             context.startActivity(intent)
+        }
+
+        //判断是否有权限
+        fun whetherPermissions(context: Context, permissions: Array<String>): Boolean {
+            //无权限数量
+            var denied = 0
+            permissions.forEach {
+                //判断是否无权限
+                if (ContextCompat.checkSelfPermission(
+                        context,
+                        it
+                    ) == PackageManager.PERMISSION_DENIED
+                ) {
+                    //无权限加1
+                    denied++
+                }
+            }
+            //无权限数量不是0表示无权限
+            return denied == 0
         }
     }
 
@@ -105,12 +125,12 @@ class JPermissions(
         //申请权限
         //创建申请权限的fragment
         permissionsFragment = PermissionsFragment(
-            requestPermissions,{
+            requestPermissions, {
                 successCallback()
                 removeFragment()
             },
-            {successList, failure, refuse ->
-                failureCallback(successList,failure,refuse)
+            { successList, failure, refuse ->
+                failureCallback(successList, failure, refuse)
                 removeFragment()
             }
         )
@@ -118,7 +138,7 @@ class JPermissions(
         val fragmentTransaction =
             context.supportFragmentManager.beginTransaction()
         //将fragment加入到activity中
-        fragmentTransaction.add(permissionsFragment, "imageFragment")
+        fragmentTransaction.add(permissionsFragment, "permissionsFragment")
         //提交Fragment进行申请
         fragmentTransaction.commit()
     }

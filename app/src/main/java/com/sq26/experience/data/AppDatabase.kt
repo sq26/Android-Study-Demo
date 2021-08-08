@@ -15,13 +15,12 @@ import kotlin.concurrent.thread
  * exportSchema:是否将数据库导出到文件夹中
  */
 @Database(
-    entities = [FileRoot::class, DownloadEntity::class],
+    entities = [DownloadEntity::class],
     version = 3,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     //dao层会自动生产
-    abstract fun fileRootDao(): FileRootDao
     abstract fun downloadDao(): DownloadDao
 
     companion object {

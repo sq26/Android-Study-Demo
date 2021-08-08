@@ -59,6 +59,7 @@ class MainViewModel @Inject constructor(
 
     //获取菜单数据对应菜单数据
     val homeMenuList = MutableLiveData<List<HomeMenu>>()
+
     init {
         viewModelScope.launch(Dispatchers.IO) {
             homeMenuTypeList.postValue(menuAll.filter { it.type == 0 })
@@ -102,8 +103,7 @@ class MainViewModel @Inject constructor(
                 intent.setClass(context, AuthorizedOperationActivity::class.java)
             "fileManagement" ->
                 intent.setClass(context, FileHomeActivity::class.java)
-            "downloadManagement"
-            ->
+            "downloadManagement" ->
                 intent.setClass(context, DownloadManagementActivity::class.java)
             "network" ->
                 intent.setClass(context, NetworkActivity::class.java)

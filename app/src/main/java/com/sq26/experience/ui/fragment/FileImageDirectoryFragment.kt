@@ -1,12 +1,10 @@
 package com.sq26.experience.ui.fragment
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -17,7 +15,6 @@ import com.sq26.experience.adapter.CommonListViewHolder
 import com.sq26.experience.databinding.FragmentFileImageDirectoryBinding
 import com.sq26.experience.databinding.ItemFileImageTypeBinding
 import com.sq26.experience.databinding.LayoutFileImageHeaderBinding
-import com.sq26.experience.ui.activity.file.FileImageListActivity
 import com.sq26.experience.ui.activity.file.ImageType
 import com.sq26.experience.ui.activity.file.ImageTypeCallback
 import com.sq26.experience.util.Log
