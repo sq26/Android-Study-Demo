@@ -29,7 +29,13 @@ import java.util.Objects;
 //app工具类
 public class FileUtil {
     //计算文件大小并加上相应单位
-    //已弃用,Android 中提供的有单位转换类,可以使用Formatter.formatFileSize(Context context, long sizeBytes)方法获取
+
+    /** 计算文件大小并加上相应单位
+     * Android 中提供的有单位转换类,可以使用Formatter.formatFileSize(Context context, long sizeBytes)方法获取,
+     * 但需要Context,不够方便
+     * @param size 文件大小
+     * @return 文件格式化后的大小
+     */
     public static String getFileSizeStr(Long size) {
         DecimalFormat df = new DecimalFormat("0.00");//设置保留位数
         String str;

@@ -9,8 +9,6 @@ plugins {
     id 'dagger.hilt.android.plugin'
 //导航的插件,safeargs用于在fragment之间跳转传输少量数据,去掉后面的.kotlin就是适用于 Java 模块或 Java 和 Kotlin 混合模块的 Java 语言代码
     id 'androidx.navigation.safeargs.kotlin'
-//启用protobuf语言插件
-    id 'com.google.protobuf'
 }
 
 //控制台有乱码
@@ -20,12 +18,12 @@ plugins {
 //-Dfile.encoding=UTF-8
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     buildToolsVersion '30.0.3'
     defaultConfig {
         applicationId "com.sq26.experience"
         minSdkVersion 21
-        targetSdkVersion 30
+        targetSdkVersion 31
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -65,43 +63,19 @@ android {
     }
 }
 
-//protobuf的编译配置
-protobuf {
-    //在这查找最新版本
-    // https://mvnrepository.com/artifact/com.google.protobuf
-    protoc {
-        //编译器版本
-        artifact = 'com.google.protobuf:protoc:3.0.0'
-    }
-    plugins {
-        //编译javaLite的插件版本
-        javalite {
-            artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
-        }
-    }
-    generateProtoTasks {
-        all().each { task ->
-            task.plugins {
-                javalite {}
-            }
-        }
-    }
-}
-
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.3.1'
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.20'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.2'
     //Android ktx,KTX 扩展程序可以为 Jetpack、Android 平台及其他 API 提供简洁的惯用 Kotlin 代码。
-    implementation 'androidx.core:core-ktx:1.7.0-alpha01'
+    implementation 'androidx.core:core-ktx:1.8.0-alpha03'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //Google团队开发的Material风格的新组件支持库
-    implementation 'com.google.android.material:material:1.4.0'
+    implementation 'com.google.android.material:material:1.5.0'
     //constraintLayout布局控件
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
     //RecyclerView控件
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     //CardView控件,纸片布局
@@ -114,9 +88,9 @@ dependencies {
     //zxing框架核心
     implementation 'com.google.zxing:core:3.4.1'
     //Fresco框架
-    implementation 'com.facebook.fresco:fresco:2.3.0'
+    implementation 'com.facebook.fresco:fresco:2.6.0'
     //获取图片的属性标签
-    implementation 'androidx.exifinterface:exifinterface:1.3.2'
+    implementation 'androidx.exifinterface:exifinterface:1.3.3'
     //okHttp轻量级网络框架
     implementation 'com.squareup.okhttp3:okhttp:5.0.0-alpha.2'
     //android文件管理类
@@ -144,46 +118,39 @@ dependencies {
     //Kotlin扩展程序和协同程序对Room的支持
     implementation "androidx.room:room-ktx:$rootProject.roomVersion"
     // Paging 3 组件(数据分页)
-    implementation "androidx.paging:paging-runtime-ktx:3.1.0-alpha03"
+    implementation "androidx.paging:paging-runtime-ktx:3.1.0"
     //navigation组件(fragment管理)
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
     //activity的kotlin强化库
-    implementation "androidx.activity:activity-ktx:1.2.4"
+    implementation "androidx.activity:activity-ktx:1.4.0"
     //Fragment KTX 提供了一系列扩展程序以简化 Fragment API。
-    implementation "androidx.fragment:fragment-ktx:1.3.6"
+    implementation "androidx.fragment:fragment-ktx:1.4.1"
     //Android 上的 Kotlin 协程
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutinesVersion"
     //Collection 扩展程序包含在 Android 的节省内存的集合库中使用的实用函数，包括 ArrayMap、LongParseArray、LruCache 等等。
-    implementation "androidx.collection:collection-ktx:1.1.0"
+    implementation "androidx.collection:collection-ktx:1.2.0"
     //ViewModel KTX 库提供了一个 viewModelScope() 函数，可让您更轻松地从 ViewModel 启动协程。
     // CoroutineScope 绑定至 Dispatchers.Main，并且会在清除 ViewModel 后自动取消。
     //使用 Hilt 实现依赖项注入
     implementation "com.google.dagger:hilt-android:$rootProject.hiltVersion"
     kapt "com.google.dagger:hilt-android-compiler:$rootProject.hiltVersion"
     //添加 WorkManager 的依赖项Kotlin + coroutines
-    implementation "androidx.work:work-runtime-ktx:2.6.0-beta02"
+    implementation "androidx.work:work-runtime-ktx:2.7.1"
     //CameraX核心库
     implementation "androidx.camera:camera-core:$rootProject.cameraxVersion"
     implementation "androidx.camera:camera-camera2:$rootProject.cameraxVersion"
     // CameraX生命周期库
     implementation "androidx.camera:camera-lifecycle:$rootProject.cameraxVersion"
     // CameraX View类
-    implementation "androidx.camera:camera-view:1.0.0-alpha27"
+    implementation "androidx.camera:camera-view:1.1.0-beta01"
     // CameraX扩展库
-    implementation "androidx.camera:camera-extensions:1.0.0-alpha27"
-    //类型化数据储存,将数据作为自定义数据类型的实例进行存储。此实现要求您使用协议缓冲区来定义架构，但可以确保类型安全。
-    implementation "androidx.datastore:datastore:1.0.0-rc02"
+    implementation "androidx.camera:camera-extensions:1.1.0-beta01"
     //便捷数据储存,使用键存储和访问数据。此实现不需要预定义的架构，也不确保类型安全。
-    implementation "androidx.datastore:datastore-preferences:1.0.0-rc02"
-    //protobuf的使用依赖
-    implementation "com.google.protobuf:protobuf-lite:3.0.1"
+    implementation "androidx.datastore:datastore-preferences:1.0.0"
     //moshi是kotlin专为kotlin设计的json序列化和反序列化框架
-    implementation 'com.squareup.moshi:moshi:1.12.0'
-    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.12.0'
-    //自定义注解
-//    implementation project(path: ':libAnnotation')
-//    kapt project(path: ':libAnnotationProcessor')
+//    implementation 'com.squareup.moshi:moshi:1.12.0'
+//    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.12.0'
 
 }

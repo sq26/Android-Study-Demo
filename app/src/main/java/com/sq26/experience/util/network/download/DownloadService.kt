@@ -89,7 +89,7 @@ class DownloadService : Service() {
         val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
         //申明内存详情
         val memoryInfo = ActivityManager.MemoryInfo()
-        //互殴去内存详情
+        //获取内存详情
         activityManager.getMemoryInfo(memoryInfo)
         //获取jvm运行时状态
         val runtime = Runtime.getRuntime()

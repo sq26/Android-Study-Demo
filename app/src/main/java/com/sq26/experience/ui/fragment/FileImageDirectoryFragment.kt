@@ -5,8 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.FragmentNavigator
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.sq26.experience.R
@@ -65,10 +68,25 @@ class FileImageDirectoryFragment : Fragment() {
                                 v.item = item
                                 executePendingBindings()
                                 v.image.setImageURI(item.uri.toString())
+                                ViewCompat.setTransitionName(v.image,"hero_image")
                                 v.setOnClick {
+                                    val extras = FragmentNavigator.Extras.Builder().apply {
+
+                                        addSharedElement(v.root, "hero_image")
+                                    }.build()
+
+//                                        FragmentNavigatorExtras(v.root to "hero_image")
+//                                    val args = FileImageListFragmentArgs(position - 1)
+                                    val navDirections =
+                                        FileImageDirectoryFragmentDirections.actionFileImageDirectoryFragmentToFileImageListFragment(
+                                            position - 1
+                                        )
 
                                     findNavController().navigate(
-                                        FileImageDirectoryFragmentDirections.actionFileImageDirectoryFragmentToFileImageListFragment(position)
+                                        navDirections.actionId,
+                                        navDirections.arguments,
+                                        null,
+                                        extras
                                     )
                                 }
                             }

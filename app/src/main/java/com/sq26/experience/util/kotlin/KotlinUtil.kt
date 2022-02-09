@@ -4,8 +4,17 @@ import androidx.appcompat.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.annotation.MainThread
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelLazy
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import com.sq26.experience.R
+import java.text.DecimalFormat
+import kotlin.reflect.KClass
 
 //往Context中加入Toast,isLong表示是否是长时间显示
 fun Context.toast(text: CharSequence, isLong: Boolean = false) =
@@ -25,21 +34,69 @@ fun Context.dialog(text: CharSequence, isDetermine: Boolean = false) {
         }
     alertDialog.show()
 }
-//链接类型
-enum class UriType(int: Int) {
-    Uri(0),
-    Url(1),
-    Path(2)
-}
-//获取链接类型
-fun String.uriType(): UriType {
-    val uri = Uri.parse(this)
-    return when (uri.scheme) {
-        "content" ->
-            UriType.Uri
-        "http", "https" ->
-            UriType.Uri
-        else ->
-            UriType.Uri
+
+//计算文件大小并加上相应单位
+fun Long.getFileSizeStr(): String {
+    val df = DecimalFormat("0.00") //设置保留位数
+    //Android7.0以上是单位计算改为1000进一
+    val d: Long = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        1000
+    } else {
+        1024
     }
+    //获取位数长度
+    val ws: Int = this.toString().length
+    return when {
+        ws > 12 -> {
+            df.format((this.toFloat() / (d * d * d * d)).toDouble()) + "TB"
+        }
+        ws > 9 -> {
+            df.format((this.toFloat() / (d * d * d)).toDouble()) + "GB"
+        }
+        ws > 6 -> {
+            df.format((this.toFloat() / (d * d)).toDouble()) + "MB"
+        }
+        ws > 3 -> {
+            df.format((this.toFloat() / d).toDouble()) + "KB"
+        }
+        else -> {
+            this.toString() + "B"
+        }
+    }
+}
+
+
+@MainThread
+public inline fun <reified VM : ViewModel> ComponentActivity.applicationViewModel(
+    noinline factoryProducer: (() -> ViewModelProvider.Factory)? = null
+): Lazy<VM> {
+    val factoryPromise = factoryProducer ?: {
+        defaultViewModelProviderFactory
+    }
+
+    return ApplicationViewModelLazy(VM::class, { viewModelStore }, factoryPromise)
+}
+
+public class ApplicationViewModelLazy<VM : ViewModel> (
+    private val viewModelClass: KClass<VM>,
+    private val storeProducer: () -> ViewModelStore,
+    private val factoryProducer: () -> ViewModelProvider.Factory
+) : Lazy<VM> {
+    private var cached: VM? = null
+
+    override val value: VM
+        get() {
+            val viewModel = cached
+            return if (viewModel == null) {
+                val factory = factoryProducer()
+                val store = storeProducer()
+                ViewModelProvider(store, factory).get(viewModelClass.java).also {
+                    cached = it
+                }
+            } else {
+                viewModel
+            }
+        }
+
+    override fun isInitialized(): Boolean = cached != null
 }

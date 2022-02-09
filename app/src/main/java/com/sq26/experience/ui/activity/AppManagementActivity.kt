@@ -39,7 +39,7 @@ class AppManagementActivity() : AppCompatActivity() {
             val fileInputStream =
                 FileInputStream(File(appManagementViewModel.appInfo!!.packageInfo.applicationInfo.sourceDir))
             val bytes = ByteArray(4096)
-            var index: Int = 0
+            var index: Int
             while ((fileInputStream.read(bytes).also { i ->
                     index = i
                 }) != -1) {

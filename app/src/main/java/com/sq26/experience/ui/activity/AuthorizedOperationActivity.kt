@@ -97,7 +97,7 @@ class AuthorizedOperationActivity : AppCompatActivity() {
 //        requestMultiplePermissions.launch(arrayOf())
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
 //        menuInflater.inflate(R.menu.menu_determine, menu)
         return super.onCreateOptionsMenu(menu)
     }

@@ -1,15 +1,16 @@
 package com.sq26.experience.ui.activity.file
 
-import android.graphics.Color
+import android.content.ContentResolver
 import android.net.Uri
 import android.os.Bundle
-import android.text.format.Formatter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import androidx.databinding.DataBindingUtil
 import androidx.documentfile.provider.DocumentFile
 import androidx.recyclerview.widget.DiffUtil
@@ -21,22 +22,9 @@ import com.sq26.experience.databinding.ActivityFileManagementBinding
 import com.sq26.experience.databinding.ItemFileBinding
 import com.sq26.experience.databinding.ItemParentFileBinding
 import com.sq26.experience.util.FileUtil
-import java.text.SimpleDateFormat
 import java.util.*
 
 class FileOperateActivity : AppCompatActivity() {
-
-    //父文件夹列表适配器
-    private lateinit var parentFileListAdapter: CommonListAdapter<DocumentFile>
-
-    //父文件夹列表
-    private val parentFileList: MutableList<DocumentFile> = ArrayList()
-
-    //文件列表适配器
-    private lateinit var fileListAdapter: CommonListAdapter<DocumentFile>
-
-    //文件列表
-    private val fileList: MutableList<DocumentFile> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +33,10 @@ class FileOperateActivity : AppCompatActivity() {
             R.layout.activity_file_management
         )
             .apply {
+                lifecycleOwner = this@FileOperateActivity
+
+                //父文件夹列表
+                val parentFileList: MutableList<DocumentFile> = ArrayList()
                 //创建父文件夹目录适配器
                 val parentFileListAdapter =
                     object : CommonListAdapter<DocumentFile>(DocumentFileDiffCallback()) {
@@ -70,7 +62,7 @@ class FileOperateActivity : AppCompatActivity() {
                                         parentFileList.subList(position + 1, parentFileList.size)
                                             .clear()
                                         //刷新视图
-                                        submitList(parentFileList)
+                                        submitList(parentFileList.toList())
                                     }
                                     //强制绑定数据
                                     executePendingBindings()
@@ -82,8 +74,10 @@ class FileOperateActivity : AppCompatActivity() {
                 //绑定适配器
                 rootRecyclerView.adapter = parentFileListAdapter
 
+                //文件列表
+                val fileList: MutableList<DocumentFile> = ArrayList()
                 //创建文件适配器
-                fileListAdapter =
+                val fileListAdapter =
                     object : CommonListAdapter<DocumentFile>(DocumentFileDiffCallback()) {
                         override fun createView(
                             parent: ViewGroup,
@@ -96,99 +90,92 @@ class FileOperateActivity : AppCompatActivity() {
                                     false
                                 )
                             ) {
-                                override fun bind(position: Int) {
-                                    val documentFile = getItem(position)
-                                    //设置名称
-                                    v.name.text = documentFile.name
-                                    //设置颜色
-                                    v.name.setTextColor(if (documentFile.canWrite()) Color.GREEN else Color.RED)
-                                    //设置修改事件
-                                    v.dateTime.text = SimpleDateFormat.getDateTimeInstance()
-                                        .format(documentFile.lastModified())
-                                    //判断是文件还是文件夹
-                                    if (documentFile.isFile) {
-                                        v.simpleDraweeView.hierarchy.setPlaceholderImage(R.drawable.ic_insert_drive_file_black_24dp)
-                                        v.simpleDraweeView.setImageURI("")
-                                        //设置备注为大小
-                                        v.remark.text = Formatter.formatFileSize(
-                                            this@FileOperateActivity,
-                                            documentFile.length()
-                                        )
-                                    } else {
-                                        v.simpleDraweeView.hierarchy.setPlaceholderImage(R.drawable.ic_folder_open_black_24dp)
-                                        v.simpleDraweeView.setImageURI("")
-                                        //设置备注为子目录数
-                                        v.remark.text = "${documentFile.listFiles().size}个项目"
-                                    }
+                                init {
                                     //设置根目录的点击事件
                                     v.root.setOnClickListener {
-                                        if (documentFile.isFile) {
-                                            FileUtil.openFile(
-                                                this@FileOperateActivity,
-                                                documentFile.uri
-                                            )
-                                        } else {
-                                            parentFileList.add(documentFile)
-                                            parentFileListAdapter.submitList(parentFileList)
-
-                                            fileListAdapter.submitList(listOf(*documentFile.listFiles()))
+                                        v.item?.let {
+                                            if (it.isFile) {
+                                                FileUtil.openFile(
+                                                    this@FileOperateActivity,
+                                                    it.uri
+                                                )
+                                            } else {
+                                                parentFileList.add(it)
+                                                parentFileListAdapter.submitList(parentFileList.toList())
+                                                submitList(it.listFiles().toList())
+                                            }
                                         }
-
                                     }
                                     //设置根目录的长按事件
                                     v.root.setOnLongClickListener {
-                                        AlertDialog.Builder(this@FileOperateActivity)
-                                            .setMessage("是否删除")
-                                            .setPositiveButton("是") { _, _ ->
-                                                Log.d("删除", "有权限")
-                                                //删除数据
-                                                documentFile.delete()
-                                                //移除对应的documentFile对象
-                                                fileList.remove(documentFile)
-                                                //刷新视图
-                                                fileListAdapter.submitList(fileList)
-                                            }.show()
+                                        v.item?.let {
+                                            AlertDialog.Builder(this@FileOperateActivity)
+                                                .setMessage("是否删除")
+                                                .setPositiveButton("是") { _, _ ->
+                                                    Log.d("删除", "有权限")
+                                                    //删除数据
+                                                    it.delete()
+                                                    //移除对应的documentFile对象
+                                                    fileList.remove(it)
+                                                    //刷新视图
+                                                    submitList(fileList.toList())
+                                                }.show()
+                                        }
                                         true
                                     }
-//                                    executePendingBindings()
+                                }
+                                override fun bind(position: Int) {
+                                    v.item = getItem(position)
                                 }
                             }
                         }
 
                     }
                 //设置分割线
-                recyclerView.addItemDecoration(DividerItemDecoration(this@FileOperateActivity,DividerItemDecoration.VERTICAL))
+                recyclerView.addItemDecoration(
+                    DividerItemDecoration(
+                        this@FileOperateActivity,
+                        DividerItemDecoration.VERTICAL
+                    )
+                )
                 //绑定适配器
                 recyclerView.adapter = fileListAdapter
                 //获取根目录路径
-                val rootPath = intent.getStringExtra("rootPath")!!
+                val rootUri = intent.getStringExtra("rootUri").orEmpty()
                 //声明一个DocumentFile对象
-                val documentFile =
-                    DocumentFile.fromTreeUri(this@FileOperateActivity, Uri.parse(rootPath))!!
-                //加入父目录列表
-                parentFileList.add(documentFile)
-                //刷新视图
-                parentFileListAdapter.submitList(parentFileList)
-                //初始化数据
-                fileListAdapter.submitList(listOf(*documentFile.listFiles()))
+                val documentFile =if (rootUri.toUri().scheme == ContentResolver.SCHEME_FILE){
+                    DocumentFile.fromFile(rootUri.toUri().toFile())
+                }else{
+                    DocumentFile.fromTreeUri(this@FileOperateActivity, Uri.parse(rootUri))
+                }
+
+                documentFile?.let {
+                    //加入父目录列表
+                    parentFileList.add(it)
+                    //刷新父目录视图
+                    parentFileListAdapter.submitList(parentFileList.toList())
+                    //初始化数据
+                    fileListAdapter.submitList(it.listFiles().toList())
+                }
+                //添加返回键监听
+                onBackPressedDispatcher.addCallback {
+                    //parentFileList数量大于1说明不是根目录
+                    if (parentFileList.size > 1) {
+                        //移除最后一个目录
+                        parentFileList.removeAt(parentFileList.size - 1)
+                        //刷新父目录列表
+                        parentFileListAdapter.submitList(parentFileList.toList())
+                        //刷新文件列表
+                        fileListAdapter.submitList(listOf(*parentFileList[parentFileList.size - 1].listFiles()))
+                    } else {
+                        //关闭返回监听
+                        isEnabled = false
+                        //主动调用返回
+                        onBackPressedDispatcher.onBackPressed()
+                        onBackPressedDispatcher.hasEnabledCallbacks()
+                    }
+                }
             }
-        //添加返回键监听
-        onBackPressedDispatcher.addCallback {
-            //parentFileList数量大于1说明不是根目录
-            if (parentFileList.size > 1) {
-                //移除最后一个目录
-                parentFileList.removeAt(parentFileList.size - 1)
-                //刷新父目录列表
-                parentFileListAdapter.submitList(parentFileList)
-                //刷新文件列表
-                fileListAdapter.submitList(listOf(*parentFileList[parentFileList.size - 1].listFiles()))
-            } else {
-                //关闭返回监听
-                isEnabled = false
-                //主动调用返回
-                onBackPressedDispatcher.onBackPressed()
-            }
-        }
     }
 }
 

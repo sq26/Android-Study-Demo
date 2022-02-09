@@ -10,6 +10,8 @@ import com.sq26.experience.util.AntiShake
 import com.sq26.experience.util.Log
 import com.sq26.experience.util.OnClickAntiShakeListener
 import com.sq26.experience.util.i
+import com.sq26.experience.util.kotlin.getFileSizeStr
+import java.text.SimpleDateFormat
 
 //指定自定义方法名称
 //@BindingMethods(
@@ -81,4 +83,23 @@ object BaseBindingMethod {
         return string.toLong()
     }
 
+    //自定义类型转换
+    //这个自动转换用于将Long转成string类型
+    @BindingConversion
+    @JvmStatic
+    fun convertLongToString(long: Long): String {
+        return long.toString()
+    }
+
+}
+
+object StringUtil {
+    @JvmStatic
+    fun convertLongToDateTime(long: Long): String = SimpleDateFormat.getDateInstance().format(long)
+
+    @JvmStatic
+    fun getFileSizeStr(long: Long): String = long.getFileSizeStr()
+
+    @JvmStatic
+    fun size(array: Array<*>): String = array.size.toString()
 }

@@ -1,4 +1,2 @@
-include ':libAnnotation'
-include ':libAnnotationProcessor'
 include ':app'
 rootProject.name = "Android-Study-Demo"

@@ -50,7 +50,7 @@ class MediaOperatingActivity : AppCompatActivity() {
                 payload: Any
             ) {
                 viewHolder.setText(R.id.text, jsonObject.getString("name"))
-                viewHolder.itemView.setOnClickListener { view: View? ->
+                viewHolder.itemView.setOnClickListener {
                     SimpleDraweeViewUtils.setDraweeController(
                         jsonObject.getString("path"),
                         preview,

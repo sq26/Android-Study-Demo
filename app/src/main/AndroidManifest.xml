@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <!--位置-->
     <!--    允许程序通过GPS芯片接收卫星的定位信息-->
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--    麦克风-->
     <!--    允许程序录制声音通过手机或耳机的麦克-->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -54,6 +54,7 @@
     <!--    储存-->
     <!--   程序可以读取设备外部存储空间-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
     <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission-sdk-23 android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
     <!-- 允许程序在手机屏幕关闭后后台进程仍然运行 -->
@@ -84,6 +85,7 @@
         <!--   时间微件的设置页面    -->
         <activity
             android:name="com.sq26.experience.ui.activity.WallpaperWidgetActivity"
+            android:exported="false"
             android:process=":widget">
             <intent-filter>
                 <action android:name="android.intent.action.APPWIDGET_CONFIGURE" />
@@ -105,13 +107,17 @@
         <activity android:name=".ui.activity.WiFiDirectActivity" />
         <activity android:name=".ui.activity.PagingActivity" />
         <activity android:name="com.sq26.experience.ui.activity.WorkManagerActivity" />
-        <activity android:name=".ui.activity.NavigationActivity">
+        <activity
+            android:name=".ui.activity.NavigationActivity"
+            android:exported="false">
             <!--使用隐式深层链接必须将导航图添加到指向现有导航图的 Activity-->
             <!--构建项目时，Navigation 组件会将 <nav-graph> 元素替换为生成的 <intent-filter> 元素，以匹配导航图中的所有深层链接。-->
             <nav-graph android:value="@navigation/nav_navigation_graph" />
         </activity>
         <activity android:name=".ui.activity.file.FileImageListActivity" />
-        <activity android:name=".ui.util.PdfActivity">
+        <activity
+            android:name=".ui.util.PdfActivity"
+            android:exported="true">
             <!-- ignore忽略app链接错误 -->
             <intent-filter tools:ignore="AppLinkUrlError">
                 <!-- 设置为,显示数据给用户 -->
@@ -144,7 +150,9 @@
         <activity android:name=".ui.activity.PullToRefreshActivity" />
 
         <!-- 可以打开文本文件的activity -->
-        <activity android:name=".ui.util.TextActivity">
+        <activity
+            android:name=".ui.util.TextActivity"
+            android:exported="true">
 
             <!-- ignore忽略app链接错误 -->
             <intent-filter tools:ignore="AppLinkUrlError">
@@ -188,6 +196,7 @@
         <!--        主页-->
         <activity
             android:name=".ui.activity.MainActivity"
+            android:exported="true"
             android:theme="@style/HomeAppTheme">
             <intent-filter>
 
@@ -220,6 +229,7 @@
         <!-- 通知栏快捷开关 (未研究完) -->
         <service
             android:name=".service.QuickSwitchService"
+            android:exported="false"
             android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
@@ -257,6 +267,7 @@
                     -->
         <receiver
             android:name="com.sq26.experience.ui.widget.WallpaperWidget"
+            android:exported="false"
             android:process=":widget">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

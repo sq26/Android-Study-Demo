@@ -124,7 +124,7 @@ data class ImageType(
     //显示的图
     val uri: Uri,
     //子视图列表
-    val list: MutableList<ImageInfo>
+    val list: List<ImageInfo>
 ) {
     //数量
     val count: Int get() = list.count()

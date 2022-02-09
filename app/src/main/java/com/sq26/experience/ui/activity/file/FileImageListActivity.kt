@@ -74,7 +74,8 @@ data class ImageInfo(
     val height: Int,
     //文件uri
     val uri: Uri,
-    val bucketId: Long,
+    //父目录唯一标识
+    val bucketId: String,
     //父目录名称
     val bucketDisplayName: String
 ) {

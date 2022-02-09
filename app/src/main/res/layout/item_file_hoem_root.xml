@@ -10,7 +10,7 @@
 
         <variable
             name="item"
-            type="java.io.File" />
+            type="androidx.documentfile.provider.DocumentFile" />
     </data>
 
     <LinearLayout
@@ -33,7 +33,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{item.absolutePath}" />
+            android:text="@{item.uri.toString()}" />
 
         <TextView
             android:layout_width="match_parent"

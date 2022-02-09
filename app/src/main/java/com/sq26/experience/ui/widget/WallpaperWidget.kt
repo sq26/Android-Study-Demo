@@ -82,7 +82,7 @@ internal fun updateAppWidget(
     appWidgetId: String
 ) {
     CoroutineScope(Dispatchers.Main).launch {
-        context.clockWidgetDataStore.data.first().let { data ->
+        context.clockWidgetDataStore.data.first().let { _ ->
             RemoteViews(context.packageName, R.layout.widget_wallpaper).also {
 
                 AppWidgetManager.getInstance(context).updateAppWidget(appWidgetId.toInt(), it)

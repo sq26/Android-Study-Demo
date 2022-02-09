@@ -3,21 +3,20 @@ package com.sq26.experience.viewmodel
 import android.content.ContentUris
 import android.content.Context
 import android.provider.MediaStore
+import androidx.documentfile.provider.DocumentFile
 import androidx.lifecycle.*
 import com.sq26.experience.ui.activity.file.ImageInfo
 import com.sq26.experience.ui.activity.file.ImageType
 import com.sq26.experience.util.FileUtil
 import com.sq26.experience.util.Log
+import com.sq26.experience.util.i
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import java.io.File
 
 class FileImageViewModel : ViewModel() {
-
-    init {
-        Log.i(this,"viewmodel")
-    }
 
     val imagesTypeLiveData = MutableLiveData<List<ImageType>>()
     val imageListLiveData = MutableLiveData<List<ImageType>>()
@@ -57,24 +56,26 @@ class FileImageViewModel : ViewModel() {
                             cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.WIDTH))
                         val height =
                             cursor.getInt(cursor.getColumnIndex(MediaStore.Images.Media.HEIGHT))
-                        val bucketId =
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                        var bucketId = ""
+                        var bucketDisplayName = ""
+                        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                            bucketId =
                                 cursor.getLong(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID))
-                            } else {
-                                0
-                            }
-                        val bucketDisplayName =
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                                    .toString()
+                            bucketDisplayName =
                                 cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_DISPLAY_NAME))
-                            } else {
-                                FileUtil.getParentFileName(
-                                    cursor.getString(
-                                        cursor.getColumnIndex(
-                                            MediaStore.Images.Media.DATA
-                                        )
+                        } else {
+                            val file = File(
+                                cursor.getString(
+                                    cursor.getColumnIndex(
+                                        MediaStore.Images.Media.DATA
                                     )
                                 )
-                            }
+                            ).parentFile
+                            bucketId = file?.absolutePath.orEmpty()
+                            bucketDisplayName = file?.name.orEmpty()
+                        }
+                        val itemUri = ContentUris.withAppendedId(uri, id)
                         val item = ImageInfo(
                             id,
                             size,
@@ -85,7 +86,7 @@ class FileImageViewModel : ViewModel() {
                             dateModified,
                             width,
                             height,
-                            ContentUris.withAppendedId(uri, id),
+                            itemUri,
                             bucketId,
                             bucketDisplayName
                         )
@@ -95,24 +96,18 @@ class FileImageViewModel : ViewModel() {
                 }
 
                 val imagesTypeList = mutableListOf<ImageType>()
-                list.forEach { item ->
-                    val index = imagesTypeList.indexOfFirst {
-                        it.title == item.bucketDisplayName
-                    }
-                    if (index == -1) {
-                        //不存在,需要创建
-                        imagesTypeList.add(
-                            ImageType(
-                                item.bucketDisplayName,
-                                item.uri,
-                                mutableListOf(item)
-                            )
+
+                list.map { it.bucketId }.toSet().forEach { bucketId ->
+                    val list = list.filter { it.bucketId == bucketId }
+                    imagesTypeList.add(
+                        ImageType(
+                            list[0].bucketDisplayName,
+                            list[0].uri,
+                            list
                         )
-                    } else {
-                        //已存在加数据
-                        imagesTypeList[index].list.add(item)
-                    }
+                    )
                 }
+
                 Log.i(imagesTypeList.toString())
                 imagesTypeLiveData.postValue(imagesTypeList)
 
@@ -120,9 +115,11 @@ class FileImageViewModel : ViewModel() {
         }
     }
 
-    fun imageListFlow(index: Int) = flow<List<ImageInfo>> {
+    fun imageListFlow(index: Int) = flow {
         imagesTypeLiveData.value?.let {
             emit(it[index].list)
         }
     }.flowOn(Dispatchers.Default).asLiveData()
+
+
 }
