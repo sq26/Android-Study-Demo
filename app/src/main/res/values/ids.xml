@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 用于储存FloatingActionButtonLayout控件子元素的view的Visible,1是显示,0是隐藏-->
+    <item name="tag_floating_action_button_layout_visible" type="id" />
+</resources>

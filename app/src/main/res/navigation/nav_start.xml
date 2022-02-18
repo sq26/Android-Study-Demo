@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_start"
+    app:startDestination="@id/startFragment">
+
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="com.sq26.experience.ui.fragment.StartFragment"
+        android:label="fragment_start"
+        tools:layout="@layout/fragment_start">
+        <!--
+        从a界面跳转入b界面
+        enterAnim:进入动画,b界面的进入动画
+        exitAnim:退出动画,a界面的退出动画
+        popEnterAnim:弹出方式进入动画,返回时a界面的进入动画
+        popExitAnim:弹出方式退出动画,返回时b界面的退出动画
+        -->
+        <action
+            android:id="@+id/action_startFragment_to_mainFragment"
+            app:destination="@id/mainFragment"
+            app:enterAnim="@anim/nav_enter_anim"
+            app:exitAnim="@anim/nav_exit_anim"
+            app:popEnterAnim="@anim/nav_pop_enter_anim"
+            app:popExitAnim="@anim/nav_pop_exit_anim" />
+    </fragment>
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.sq26.experience.ui.fragment.MainFragment"
+        android:label="fragment_main"
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_mainFragment_to_moshiFragment"
+            app:destination="@id/moshiFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_languageFragment"
+            app:destination="@id/languageFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_floatingActionButtonLayoutFragment"
+            app:destination="@id/floatingActionButtonLayoutFragment"
+            app:enterAnim="@anim/nav_enter_anim"
+            app:popExitAnim="@anim/nav_pop_exit_anim" />
+        <action
+            android:id="@+id/action_mainFragment_to_permissionRequestFragment"
+            app:destination="@id/permissionRequestFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/moshiFragment"
+        android:name="com.sq26.experience.ui.fragment.MoshiFragment"
+        android:label="MoshiFragment"
+        tools:layout="@layout/fragment_moshi" />
+    <fragment
+        android:id="@+id/languageFragment"
+        android:name="com.sq26.experience.ui.fragment.LanguageFragment"
+        android:label="LanguageFragment"
+        tools:layout="@layout/fragment_language" />
+    <fragment
+        android:id="@+id/floatingActionButtonLayoutFragment"
+        android:name="com.sq26.experience.ui.fragment.FloatingActionButtonLayoutFragment"
+        android:label="fragment_floating_action_button_layout"
+        tools:layout="@layout/fragment_floating_action_button_layout" />
+    <fragment
+        android:id="@+id/permissionRequestFragment"
+        android:name="com.sq26.experience.ui.fragment.PermissionRequestFragment"
+        android:label="fragment_permission_request"
+        tools:layout="@layout/fragment_permission_request" />
+</navigation>

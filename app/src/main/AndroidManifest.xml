@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sq26.experience">
@@ -82,6 +81,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
+        <activity
+            android:name="com.sq26.experience.ui.navigation.StartActivity"
+            android:exported="true">
+            <intent-filter>
+                <!-- 应用程序入口 -->
+                <action android:name="android.intent.action.MAIN" />
+                <!-- 表示activity应该被列入系统的启动器(launcher)(允许用户启动它)。Launcher是安卓系统中的桌面启动器，是桌面UI的统称。 -->
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <!--   时间微件的设置页面    -->
         <activity
             android:name="com.sq26.experience.ui.activity.WallpaperWidgetActivity"
@@ -198,29 +207,22 @@
             android:name=".ui.activity.MainActivity"
             android:exported="true"
             android:theme="@style/HomeAppTheme">
-            <intent-filter>
 
-                <!-- 应用程序入口 -->
-                <action android:name="android.intent.action.MAIN" />
-
-                <!-- 表示activity应该被列入系统的启动器(launcher)(允许用户启动它)。Launcher是安卓系统中的桌面启动器，是桌面UI的统称。 -->
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
 
         <!--
-                        下载服务
-                        name :服务所在的位置
-                        process:指定服务运行的进程
-                    -->
+                            下载服务
+                            name :服务所在的位置
+                            process:指定服务运行的进程
+                        -->
         <service
             android:name=".util.network.download.DownloadService"
             android:process=":sq26" />
 
         <!--
-                        跨进程通信服务
-                        需要声明android:exported="true"，这样别的APP才能访问。
-                    -->
+                            跨进程通信服务
+                            需要声明android:exported="true"，这样别的APP才能访问。
+                        -->
         <service
             android:name=".service.AIDLService"
             android:exported="true"
@@ -237,12 +239,12 @@
         </service>
 
         <!--
-                        该provider用于本地文件访问
-                        authorities：是该项目的包名+provider
-                        grantUriPermissions：必须是true，表示授予 URI 临时访问权限
-                        exported：必须是false
-                        resource：中的@xml/file_paths是我们接下来要在资源文件目录下添加的文件
-                    -->
+                            该provider用于本地文件访问
+                            authorities：是该项目的包名+provider
+                            grantUriPermissions：必须是true，表示授予 URI 临时访问权限
+                            exported：必须是false
+                            resource：中的@xml/file_paths是我们接下来要在资源文件目录下添加的文件
+                        -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.sq26.experience.FileProvider"
@@ -254,17 +256,17 @@
         </provider>
 
         <!--
-                    时钟微件
-                    <receiver> 元素需要 android:name 属性，该属性指定应用微件使用的 AppWidgetProvider。
-                    <intent-filter> 元素必须包含一个具有 android:name 属性的 <action> 元素。
-                        此属性指定 AppWidgetProvider 接受 ACTION_APPWIDGET_UPDATE 广播。
-                        这是您必须明确声明的唯一一项广播。
-                        AppWidgetManager 会根据需要自动将其他所有应用微件广播发送到 AppWidgetProvider。
-                    <meta-data> 元素指定 AppWidgetProviderInfo 资源，并且需要以下属性：
-                        android:name - 指定元数据名称。
-                            使用 android.appwidget.provider 将数据标识为 AppWidgetProviderInfo 描述符。
-                        android:resource - 指定 AppWidgetProviderInfo 资源位置。
-                    -->
+                        时钟微件
+                        <receiver> 元素需要 android:name 属性，该属性指定应用微件使用的 AppWidgetProvider。
+                        <intent-filter> 元素必须包含一个具有 android:name 属性的 <action> 元素。
+                            此属性指定 AppWidgetProvider 接受 ACTION_APPWIDGET_UPDATE 广播。
+                            这是您必须明确声明的唯一一项广播。
+                            AppWidgetManager 会根据需要自动将其他所有应用微件广播发送到 AppWidgetProvider。
+                        <meta-data> 元素指定 AppWidgetProviderInfo 资源，并且需要以下属性：
+                            android:name - 指定元数据名称。
+                                使用 android.appwidget.provider 将数据标识为 AppWidgetProviderInfo 描述符。
+                            android:resource - 指定 AppWidgetProviderInfo 资源位置。
+                        -->
         <receiver
             android:name="com.sq26.experience.ui.widget.WallpaperWidget"
             android:exported="false"
@@ -280,3 +282,5 @@
 
     </application>
 </manifest>
+
+
