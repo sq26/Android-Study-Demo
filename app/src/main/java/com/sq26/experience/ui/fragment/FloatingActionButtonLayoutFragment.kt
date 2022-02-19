@@ -32,7 +32,7 @@ class FloatingActionButtonLayoutFragment : Fragment() {
 
             button2.setOnClickListener {
                 val view = Button(requireContext())
-                view.setText(menu.childCount)
+                view.text = menu.contextCount().toString()
                 view.setOnClickListener {
                     requireContext().toast(view.text)
                 }
@@ -40,7 +40,7 @@ class FloatingActionButtonLayoutFragment : Fragment() {
             }
 
             button3.setOnClickListener {
-                menu.removeViewAt(max(menu.childCount - 1, 0))
+                menu.removeViewAt(max(menu.contextCount() - 1, 0))
             }
 
         }.root

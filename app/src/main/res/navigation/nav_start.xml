@@ -40,6 +40,8 @@
             android:id="@+id/action_mainFragment_to_floatingActionButtonLayoutFragment"
             app:destination="@id/floatingActionButtonLayoutFragment"
             app:enterAnim="@anim/nav_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_enter_anim"
             app:popExitAnim="@anim/nav_pop_exit_anim" />
         <action
             android:id="@+id/action_mainFragment_to_permissionRequestFragment"

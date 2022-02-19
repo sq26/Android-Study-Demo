@@ -1,109 +1,13 @@
-package com.sq26.experience.ui.activity
+package com.sq26.experience.viewmodel
 
 import android.Manifest
-import android.content.Context
-import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
-import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
-import com.sq26.experience.R
-import com.sq26.experience.databinding.ActivityAuthorizedOperationBinding
-import com.sq26.experience.util.Log
 import com.sq26.experience.util.permissions.JPermissions
-import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ActivityContext
-import org.json.JSONObject
-import javax.inject.Inject
 
-@AndroidEntryPoint
-class AuthorizedOperationActivity : AppCompatActivity() {
-    private val authorizedOperationViewModel: AuthorizedOperationViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        DataBindingUtil.setContentView<ActivityAuthorizedOperationBinding>(
-            this,
-            R.layout.activity_authorized_operation
-        ).apply {
-            lifecycleOwner = this@AuthorizedOperationActivity
-            viewModel = authorizedOperationViewModel
-
-            toolbar.title = "权限申请"
-            //设置setSupportActionBar后就不能使用toolbar设置菜单了
-//            setSupportActionBar(toolbar)
-            //添加新的菜单
-            val menuItem = toolbar.menu.add("申请")
-            //设置如果还有空间就显示
-            menuItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM)
-            //设置菜单的点击事件
-            menuItem.setOnMenuItemClickListener {
-                authorizedOperationViewModel.startPermissions(this@AuthorizedOperationActivity)
-                true
-            }
-            //设置导航键的点击事件
-            toolbar.setNavigationOnClickListener {
-                //返回
-                onBackPressedDispatcher.onBackPressed()
-            }
-//            Log.i(menuItem.toString())
-//            Log.i(menuItem.isVisible().toString(), "isVisible")
-        }
-//        val requestPermission =
-//            (this as ComponentActivity).registerForActivityResult(
-//                RequestPermission()
-//            ) { isGranted: Boolean ->
-//                if (isGranted) {
-//                    //用户同意了权限
-//                } else {
-//                    //用户拒绝了权限
-//                }
-//            }
-//
-//        val requestMultiplePermissions =
-//            (this as ComponentActivity).registerForActivityResult(
-//                RequestMultiplePermissions()
-//            ) { result: Map<String, Boolean> ->
-//                //遍历result,
-//                //result的key是权限,
-//                //result的value是是否同意了权限
-//            }
-//        //判断是否已有权限
-//        if (ContextCompat.checkSelfPermission(
-//                this, Manifest.permission.READ_CALENDAR
-//            ) ==
-//            PackageManager.PERMISSION_GRANTED
-//        ) {
-//            // 已经有权限了
-////            performAction(...);
-//        }
-//        //需要Android6.0以上,判断权限是否被拒绝,且无法申请权限
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            if (shouldShowRequestPermissionRationale(Manifest.permission.READ_CALENDAR)) {
-//                //请求权限已经被拒绝了,需要解释
-//            }
-//        }
-//        // 申请单个权限
-//        requestPermission.launch(
-//            Manifest.permission.READ_CALENDAR
-//        )
-//        //多项权限申请
-//        requestMultiplePermissions.launch(arrayOf())
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-//        menuInflater.inflate(R.menu.menu_determine, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-}
-
-class AuthorizedOperationViewModel : ViewModel() {
+class PermissionRequestViewModel : ViewModel() {
     //日历数据
     var calendarData = false
 
@@ -132,7 +36,7 @@ class AuthorizedOperationViewModel : ViewModel() {
     var storage = false
 
     //申请权限
-    fun startPermissions(context: Context) {
+    fun startPermissions(context: FragmentActivity) {
         val requestPermissions = mutableListOf<String>()
         if (calendarData) {
             //允许程序读取用户的日程信息
@@ -204,7 +108,7 @@ class AuthorizedOperationViewModel : ViewModel() {
             requestPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
         }
 
-        JPermissions(context as FragmentActivity)
+        JPermissions(context)
             .success {
                 AlertDialog.Builder(context).setMessage("申请成功").setPositiveButton("确定", null).show()
             }

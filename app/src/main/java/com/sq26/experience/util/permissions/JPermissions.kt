@@ -1,6 +1,5 @@
 package com.sq26.experience.util.permissions
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -13,15 +12,13 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.*
-
 
 /**权限申请
  *
  */
 class JPermissions(
     private val context: FragmentActivity
-) : LifecycleObserver {
+) {
     companion object {
         //打开应用的系统设置
         fun openSettings(context: Context) {
@@ -159,7 +156,6 @@ class PermissionsFragment(
     private val success: () -> Unit,
     private val failure: (successList: List<String>, failure: List<String>, refuse: List<String>) -> Unit
 ) : Fragment() {
-
     //多权限声明权限的回调
     private val requestMultiplePermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->

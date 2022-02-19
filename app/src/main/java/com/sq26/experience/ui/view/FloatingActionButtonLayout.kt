@@ -183,6 +183,7 @@ class FloatingActionButtonLayout @JvmOverloads constructor(
         }
 
     }
+
     //展开动画
     private fun expandAnimate() {
         //设置内容的所有子元素的可点击状态跟随展开收起状态
@@ -207,6 +208,7 @@ class FloatingActionButtonLayout @JvmOverloads constructor(
                 .start()
         }
     }
+
     //设置布局参数为带有边距的MarginLayoutParams
     override fun generateLayoutParams(p: LayoutParams?): LayoutParams {
         return MarginLayoutParams(p)
@@ -220,8 +222,6 @@ class FloatingActionButtonLayout @JvmOverloads constructor(
         return MarginLayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
     }
 
-    override fun getChildCount(): Int {
-        return linearLayout.childCount
-    }
+    fun contextCount(): Int = linearLayout.childCount
 
 }

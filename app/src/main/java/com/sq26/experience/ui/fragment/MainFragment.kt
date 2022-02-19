@@ -45,7 +45,6 @@ class MainFragment : Fragment() {
                     ) {
                         init {
                             v.setClickListener {
-//                                it.transitionName.i("it")
                                 v.homeMenu?.let { item ->
                                     //设置要跳转的页面
                                     when (item.id) {
