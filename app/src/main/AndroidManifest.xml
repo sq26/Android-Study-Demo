@@ -70,7 +70,8 @@
     <uses-permission-sdk-23 android:name="android.permission.READ_FRAME_BUFFER" />
     <!-- 允许程序读取系统底层日志 -->
     <uses-permission-sdk-23 android:name="android.permission.READ_LOGS" />
-
+    <!-- 允许程序申请安装apk -->
+    <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!--
         android:requestLegacyExternalStorage = true:用于给Android10设备停用强制分区储存
         android:allowBackup="true":启动系统备份功能

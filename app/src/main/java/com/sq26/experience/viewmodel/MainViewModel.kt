@@ -99,8 +99,6 @@ class MainViewModel @Inject constructor(
                 intent.setClass(context, CameraActivity::class.java)
             "statusBar" ->
                 intent.setClass(context, StatusBarActivity::class.java)
-            "authorizedOperation" ->
-                intent.setClass(context, AuthorizedOperationActivity::class.java)
             "fileManagement" ->
                 intent.setClass(context, FileHomeActivity::class.java)
             "downloadManagement" ->

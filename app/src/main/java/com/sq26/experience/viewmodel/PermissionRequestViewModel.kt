@@ -1,39 +1,105 @@
 package com.sq26.experience.viewmodel
 
 import android.Manifest
+import android.content.Context
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModel
 import com.sq26.experience.util.permissions.JPermissions
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-
-class PermissionRequestViewModel : ViewModel() {
+@HiltViewModel
+class PermissionRequestViewModel @Inject constructor(
+    @ApplicationContext context: Context
+) : ViewModel() {
     //日历数据
-    var calendarData = false
+    var calendarData = JPermissions.whetherPermissions(
+        context,
+        arrayOf(Manifest.permission.READ_CALENDAR, Manifest.permission.WRITE_CALENDAR)
+    )
 
     //相机
-    var camera = false
+    var camera = JPermissions.whetherPermissions(
+        context,
+        arrayOf(Manifest.permission.CAMERA)
+    )
 
     //联系人
-    var contactPerson = false
+    var contactPerson = JPermissions.whetherPermissions(
+        context,
+        arrayOf(
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.GET_ACCOUNTS
+        )
+    )
 
     //位置
-    var position = false
+    var position = JPermissions.whetherPermissions(
+        context,
+        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION)
+    )
 
     //麦克风
-    var microphone = false
+    var microphone = JPermissions.whetherPermissions(
+        context,
+        arrayOf(Manifest.permission.RECORD_AUDIO)
+    )
 
     //电话
-    var phone = false
+    var phone = JPermissions.whetherPermissions(
+        context, if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)
+            arrayOf(
+                Manifest.permission.READ_PHONE_STATE,
+                Manifest.permission.CALL_PHONE,
+                Manifest.permission.READ_CALL_LOG,
+                Manifest.permission.WRITE_CALL_LOG,
+                Manifest.permission.ADD_VOICEMAIL,
+                Manifest.permission.USE_SIP,
+                Manifest.permission.READ_PHONE_NUMBERS,
+                Manifest.permission.ANSWER_PHONE_CALLS
+            )
+        else arrayOf(
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.CALL_PHONE,
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.WRITE_CALL_LOG,
+            Manifest.permission.ADD_VOICEMAIL,
+            Manifest.permission.USE_SIP
+        )
+    )
 
     //传感器
-    var sensor = false
+    var sensor = JPermissions.whetherPermissions(
+        context,
+        arrayOf(
+            Manifest.permission.BODY_SENSORS
+        )
+    )
 
     //短信
-    var SMS = false
+    var SMS = JPermissions.whetherPermissions(
+        context,
+        arrayOf(
+            Manifest.permission.SEND_SMS,
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.READ_SMS,
+            Manifest.permission.RECEIVE_WAP_PUSH,
+            Manifest.permission.RECEIVE_MMS
+        )
+    )
 
     //存储
-    var storage = false
+    var storage = JPermissions.whetherPermissions(
+        context,
+        arrayOf(
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+    )
 
     //申请权限
     fun startPermissions(context: FragmentActivity) {
