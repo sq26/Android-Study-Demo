@@ -2,17 +2,14 @@ package com.sq26.experience.util.network.download
 
 import android.app.ActivityManager
 import android.app.Service
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.net.*
 import android.os.IBinder
 import androidx.documentfile.provider.DocumentFile
 import com.sq26.experience.app.OkHttpUtil
 import com.sq26.experience.data.*
 import com.sq26.experience.data.DownloadDao
-import com.sq26.experience.data.DownloadEntity
 import com.sq26.experience.util.Log
 import com.sq26.experience.util.i
 import dagger.hilt.android.AndroidEntryPoint

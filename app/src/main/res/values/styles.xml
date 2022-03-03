@@ -36,7 +36,7 @@
         <!--        <item name="editTextColor"></item>-->
         <!--        <item name="android:editTextColor"></item>-->
         <!--        Button，textView的文字颜色-->
-        <!--        <item name="android:textColor"></item>-->
+                <item name="android:textColor">@color/black</item>
         <!--        RadioButton checkbox等控件的文字颜色-->
         <!--        <item name="android:textColorPrimaryDisableOnly"></item>-->
         <!--        应用的主要文字颜色，actionBar的标题文字默认使用该颜色-->

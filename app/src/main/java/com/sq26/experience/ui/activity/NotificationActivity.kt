@@ -1,21 +1,28 @@
 package com.sq26.experience.ui.activity
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.ProgressBar
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import com.sq26.experience.R
 import com.sq26.experience.databinding.ActivityNotificationBinding
+import com.sq26.experience.util.setOnClickAntiShake
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class NotificationActivity : AppCompatActivity() {
+    @SuppressLint("RemoteViewLayout")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DataBindingUtil.setContentView<ActivityNotificationBinding>(
@@ -29,7 +36,7 @@ class NotificationActivity : AppCompatActivity() {
                 getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                val channelId = "demo"
+                val channelId = "demo1"
                 val channelName = "测试"
 
                 /**
@@ -109,19 +116,30 @@ class NotificationActivity : AppCompatActivity() {
             }
 
             val remoteView = RemoteViews(packageName, R.layout.notification_download)
+            val notification = NotificationCompat.Builder(this@NotificationActivity, "demo")
+                .setSmallIcon(R.drawable.ic_arrow_drop_down_circle_black_24dp)
+                .setAutoCancel(false)
+                .setOngoing(true)
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setContent(remoteView)
+                .build()
 
             download.setOnClickListener {
-                val notification = NotificationCompat.Builder(this@NotificationActivity, "demo")
-                    .setSmallIcon(R.drawable.ic_arrow_drop_down_circle_black_24dp)
-                    .setAutoCancel(false)
-                    .setOngoing(true)
-                    .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                    .setContent(remoteView)
-//                    .setCustomBigContentView(remoteView)
-                    .build()
-
-
                 notificationManager.notify(10, notification)
+            }
+
+            sett.setOnClickAntiShake {
+                lifecycleScope.launch {
+                    repeat(100) {
+                        delay(100)
+                        remoteView.setProgressBar(R.id.progressBar, 100, it, false)
+                        remoteView.setTextViewText(R.id.title, "标题")
+                        remoteView.setTextViewText(R.id.percentage, "50%")
+                        remoteView.setTextViewText(R.id.size, "50MB")
+                        notificationManager.notify(10, notification)
+                    }
+                }
+
             }
 
         }

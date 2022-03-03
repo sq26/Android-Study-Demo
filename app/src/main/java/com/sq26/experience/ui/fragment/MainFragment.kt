@@ -1,5 +1,6 @@
 package com.sq26.experience.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ import com.sq26.experience.databinding.FragmentMainBinding
 import com.sq26.experience.databinding.ItemRecyclerviewBinding
 import com.sq26.experience.entity.HomeMenu
 import com.sq26.experience.entity.HomeMenuDiffCallback
+import com.sq26.experience.ui.activity.NotificationActivity
 import com.sq26.experience.util.i
 
 
@@ -65,6 +67,13 @@ class MainFragment : Fragment() {
                                         "PermissionRequest" -> findNavController().navigate(
                                             MainFragmentDirections.actionMainFragmentToPermissionRequestFragment()
                                         )
+                                        "Notification" ->
+                                            startActivity(
+                                                Intent(
+                                                    requireContext(),
+                                                    NotificationActivity::class.java
+                                                )
+                                            )
 
                                     }
 
@@ -102,6 +111,11 @@ class MainFragment : Fragment() {
                         HomeMenu(
                             "PermissionRequest",
                             "权限申请",
+                            1
+                        ),
+                        HomeMenu(
+                            "Notification",
+                            "通知",
                             1
                         )
                     )

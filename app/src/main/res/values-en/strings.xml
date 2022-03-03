@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">经验</string>
-    <string name="language">中文</string>
+    <string name="app_name">experience</string>
+    <string name="language">English</string>
     <string name="NavigationComponents">Navigation组件(管理Fragment的切换)</string>
     <string name="PagingComponents">Paging组件(RecyclerView分页库)</string>
     <string name="WorkMangerComponents">WorkManger组件(后台任务库)</string>
@@ -80,6 +81,4 @@
     <string name="start_page" translatable="false">启动页</string>
     <string name="globalization">国际化</string>
     <string name="menu">菜单</string>
-
-
 </resources>

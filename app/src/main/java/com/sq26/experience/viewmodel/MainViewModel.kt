@@ -35,11 +35,9 @@ class MainViewModel @Inject constructor(
         HomeMenu("Paging", "Paging框架(RecyclerView分页库)", 1, "1"),
         HomeMenu("WorkManger", "WorkManger框架(后台任务库)", 1, "1"),
         HomeMenu("DataBinding", "Data Binding框架(数据绑定)", 1, "1"),
-        HomeMenu("DataStore", "DataStore框架(数据储存)", 1, "1"),
         HomeMenu("2", "android功能", 0),
         HomeMenu("camera", context.getString(R.string.camera), 1, "2"),
         HomeMenu("statusBar", "侵入式体验(通知栏和导航栏控制)", 1, "2"),
-        HomeMenu("authorizedOperation", "授权操作", 1, "2"),
         HomeMenu("fileManagement", "文件管理", 1, "2"),
         HomeMenu("downloadManagement", "下载管理", 1, "2"),
         HomeMenu("network", "网络", 1, "2"),
@@ -115,8 +113,6 @@ class MainViewModel @Inject constructor(
                 intent.setClass(context, RecyclerViewActivity::class.java)
             "WorkManger" ->
                 intent.setClass(context, WorkManagerActivity::class.java)
-            "DataStore" ->
-                intent.setClass(context, DataStoreActivity::class.java)
             "MotionLayout" ->
                 intent.setClass(context, MotionLayoutActivity::class.java)
             "MediaOperating" ->

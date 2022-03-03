@@ -3,12 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/StudioProjects/Android-Study-Demo/app/src/main/res/layout/fragment_permission_request.xml" value="0.23697916666666666" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_authorized_operation.xml" value="0.13829787234042554" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_data_store.xml" value="0.1" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_file_image.xml" value="0.13829787234042554" />
+        <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_notification.xml" value="0.13829787234042554" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_scan_code.xml" value="0.13804457953394123" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_start.xml" value="0.13829787234042554" />
+        <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_storage_management.xml" value="0.13829787234042554" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/fragment_file_image_list.xml" value="0.13829787234042554" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/fragment_floating_action_button_layout.xml" value="0.25" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/fragment_language.xml" value="0.14719202898550723" />
@@ -20,6 +21,7 @@
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/item_file_hoem_root.xml" value="0.13829787234042554" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/item_file_image_type.xml" value="0.10052083333333334" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/item_recyclerview.xml" value="0.13829787234042554" />
+        <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/notification_download.xml" value="0.13829787234042554" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/sample_floating_action_button_layout.xml" value="0.13829787234042554" />
       </map>
     </option>

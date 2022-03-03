@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.sq26.experience.R
 import com.sq26.experience.databinding.FragmentPermissionRequestBinding
 import com.sq26.experience.util.kotlin.toast
@@ -54,6 +55,10 @@ class PermissionRequestFragment : Fragment() {
         return FragmentPermissionRequestBinding.inflate(inflater, container, false).apply {
             lifecycleOwner = viewLifecycleOwner
             main = viewModel
+
+            toolbar.setNavigationOnClickListener {
+                findNavController().navigateUp()
+            }
 
             request.setOnClickAntiShake {
                 viewModel.startPermissions(requireActivity())
