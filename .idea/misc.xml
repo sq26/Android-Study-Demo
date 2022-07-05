@@ -3,6 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_start.xml" value="0.5588541666666667" />
+        <entry key="..\:/StudioProjects/Android-Study-Demo/app/src/main/res/layout/fragment_moshi.xml" value="0.22644927536231885" />
+        <entry key="..\:/StudioProjects/Android-Study-Demo/app/src/main/res/layout/fragment_permission_request.xml" value="0.23697916666666666" />
+        <entry key="..\:/StudioProjects/Android-Study-Demo/app/src/main/res/layout/item_load_state.xml" value="0.3120471014492754" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_authorized_operation.xml" value="0.13829787234042554" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_data_store.xml" value="0.1" />
         <entry key="..\:/Users/sq26/Documents/StudioProjects/Android-Study-Demo/app/src/main/res/layout/activity_file_image.xml" value="0.13829787234042554" />

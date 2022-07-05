@@ -50,8 +50,8 @@ class MainFragment : Fragment() {
                                 v.homeMenu?.let { item ->
                                     //设置要跳转的页面
                                     when (item.id) {
-                                        "Moshi" -> {
-                                            findNavController().navigate(MainFragmentDirections.actionMainFragmentToMoshiFragment())
+                                        "Json" -> {
+                                            findNavController().navigate(MainFragmentDirections.actionMainFragmentToKotlinJsonFragment())
                                         }
                                         "Language" -> {
                                             val direction =
@@ -101,7 +101,7 @@ class MainFragment : Fragment() {
                 postponeEnterTransition()
                 adapter.submitList(
                     listOf(
-                        HomeMenu("Moshi", "Moshi Json解析框架", 1),
+                        HomeMenu("Json", "Kotlin Json解析方案", 1),
                         HomeMenu("Language", "多语言适配", 1),
                         HomeMenu(
                             "FloatingActionButtonLayout",

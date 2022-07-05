@@ -30,9 +30,7 @@
         android:name="com.sq26.experience.ui.fragment.MainFragment"
         android:label="fragment_main"
         tools:layout="@layout/fragment_main">
-        <action
-            android:id="@+id/action_mainFragment_to_moshiFragment"
-            app:destination="@id/moshiFragment" />
+
         <action
             android:id="@+id/action_mainFragment_to_languageFragment"
             app:destination="@id/languageFragment" />
@@ -46,12 +44,10 @@
         <action
             android:id="@+id/action_mainFragment_to_permissionRequestFragment"
             app:destination="@id/permissionRequestFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_kotlinJsonFragment"
+            app:destination="@id/kotlinJsonFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/moshiFragment"
-        android:name="com.sq26.experience.ui.fragment.MoshiFragment"
-        android:label="MoshiFragment"
-        tools:layout="@layout/fragment_moshi" />
     <fragment
         android:id="@+id/languageFragment"
         android:name="com.sq26.experience.ui.fragment.LanguageFragment"
@@ -67,4 +63,9 @@
         android:name="com.sq26.experience.ui.fragment.PermissionRequestFragment"
         android:label="fragment_permission_request"
         tools:layout="@layout/fragment_permission_request" />
+    <fragment
+        android:id="@+id/kotlinJsonFragment"
+        android:name="com.sq26.experience.ui.fragment.KotlinJsonFragment"
+        android:label="KotlinJsonFragment"
+        tools:layout="@layout/fragment_kotlin_json"/>
 </navigation>
