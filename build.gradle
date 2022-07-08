@@ -20,7 +20,7 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.2.1'
         //kotlin插件
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20'
         //Butter Knife需要的插件
         classpath 'com.jakewharton:butterknife-gradle-plugin:10.2.3'
         //使用 Safe Args 确保类型安全

@@ -3,21 +3,30 @@ package com.sq26.experience.ui.view
 import android.animation.Animator
 import android.animation.LayoutTransition
 import android.animation.ObjectAnimator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.Canvas
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.view.*
+import android.view.animation.LinearInterpolator
 import android.widget.LinearLayout
 import androidx.core.view.*
 import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.findViewTreeLifecycleOwner
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.liveData
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.sq26.experience.R
 import com.sq26.experience.util.i
 import com.sq26.experience.util.setOnClickAntiShake
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.math.*
 
 /**
@@ -88,15 +97,20 @@ class FloatingActionButtonLayout @JvmOverloads constructor(
         //右对齐
         linearLayout.gravity = GravityCompat.END
         //透明的设置为零
-        linearLayout.alpha = 0f
+//        linearLayout.alpha = 0f
         //延y轴缩放至零
-        linearLayout.scaleY = 0f
+//        linearLayout.scaleY = 0f
         //延y轴向下移动自身的高度
-        linearLayout.translationY = linearLayout.measuredHeight.toFloat()
+//        linearLayout.translationY = linearLayout.measuredHeight.toFloat()
         //创建容器动画
         val layoutTransition = LayoutTransition()
-        val objectAnimator = ObjectAnimator.ofFloat(null, "alpha", 1f, 0f)
-        layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, objectAnimator)
+        //显示动画
+//        val objectAnimator = ObjectAnimator.ofFloat(null, "alpha", 1f, 0f)
+//        layoutTransition.setAnimator(LayoutTransition.DISAPPEARING, objectAnimator)
+//        //隐藏动画
+//        val objectAnimator2 = ObjectAnimator.ofFloat(null, "alpha", 0f, 1f)
+//        layoutTransition.setAnimator(LayoutTransition.APPEARING, objectAnimator2)
+        layoutTransition.setDuration(100)
         //设置容器动画
         linearLayout.layoutTransition = layoutTransition
         //把容器添加进滚动视图
@@ -107,6 +121,7 @@ class FloatingActionButtonLayout @JvmOverloads constructor(
     override fun addView(child: View?, index: Int, params: LayoutParams?) {
         //前两个控件是容器内部的,调用默认的addView,其他的直接添加入内容视图
         if (childCount > 1) {
+            child?.isVisible = expand
             linearLayout.addView(child, index, params)
         } else {
             super.addView(child, index, params)
@@ -186,27 +201,55 @@ class FloatingActionButtonLayout @JvmOverloads constructor(
 
     //展开动画
     private fun expandAnimate() {
+//        val animator = if (expand) ValueAnimator.ofInt(0, linearLayout.childCount - 1)
+//        else ValueAnimator.ofInt(linearLayout.childCount - 1, 0)
+//        animator.duration = (linearLayout.childCount * 50).toLong()
+//        animator.addUpdateListener {
+//            linearLayout.getChildAt(it.animatedValue.toString().toInt()).isVisible = expand
+//        }
+//        animator.interpolator = LinearInterpolator()
+//        animator.start()
+        findViewTreeLifecycleOwner()?.lifecycleScope?.launch {
+            for (i in if (expand) 0 until linearLayout.childCount else (0 until linearLayout.childCount).reversed()) {
+                linearLayout.getChildAt(i)?.let { view ->
+                    if (view.isVisible != expand)
+                        delay(50)
+                    view.isVisible = expand
+                }
+            }
+//            repeat(linearLayout.childCount) {
+//                linearLayout.getChildAt(it)?.let { view ->
+//                    if (view.isVisible != expand)
+//                        delay(50)
+//                    view.isVisible = expand
+//                }
+//            }
+        }
+//        repeat(linearLayout.childCount) {
+//            linearLayout.getChildAt(it).isVisible = expand
+//        }
+
         //设置内容的所有子元素的可点击状态跟随展开收起状态
-        repeat(linearLayout.childCount) {
-            linearLayout.getChildAt(it).isClickable = expand
-        }
-        if (expand) {
-            //展开动画
-            linearLayout.animate()
-                .alpha(1f)
-                .scaleY(1f)
-                .translationY(0f)
-                .setDuration(300)
-                .start()
-        } else {
-            //收起动画
-            linearLayout.animate()
-                .alpha(0f)
-                .scaleY(0f)
-                .translationY(linearLayout.measuredHeight.toFloat())
-                .setDuration(300)
-                .start()
-        }
+//        repeat(linearLayout.childCount) {
+//            linearLayout.getChildAt(it).isClickable = expand
+//        }
+//        if (expand) {
+//            //展开动画
+//            linearLayout.animate()
+//                .alpha(1f)
+//                .scaleY(1f)
+//                .translationY(0f)
+//                .setDuration(300)
+//                .start()
+//        } else {
+//            //收起动画
+//            linearLayout.animate()
+//                .alpha(0f)
+//                .scaleY(0f)
+//                .translationY(linearLayout.measuredHeight.toFloat())
+//                .setDuration(300)
+//                .start()
+//        }
     }
 
     //设置布局参数为带有边距的MarginLayoutParams

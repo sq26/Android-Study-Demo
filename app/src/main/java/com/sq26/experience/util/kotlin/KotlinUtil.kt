@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.net.Uri
 import android.os.Build
+import android.util.DisplayMetrics
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.annotation.MainThread
@@ -64,6 +65,13 @@ fun Long.getFileSizeStr(): String {
         }
     }
 }
+/**
+ * dp转px
+ * 使用方法context.resources.displayMetrics.dpToPx(dp)
+ */
+fun DisplayMetrics.dpToPx(dp: Int): Int {
+    return (density * dp + 0.5f).toInt()
+}
 
 
 @MainThread
@@ -77,7 +85,7 @@ public inline fun <reified VM : ViewModel> ComponentActivity.applicationViewMode
     return ApplicationViewModelLazy(VM::class, { viewModelStore }, factoryPromise)
 }
 
-public class ApplicationViewModelLazy<VM : ViewModel> (
+public class ApplicationViewModelLazy<VM : ViewModel>(
     private val viewModelClass: KClass<VM>,
     private val storeProducer: () -> ViewModelStore,
     private val factoryProducer: () -> ViewModelProvider.Factory

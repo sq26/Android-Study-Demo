@@ -74,6 +74,18 @@ class MainFragment : Fragment() {
                                                     NotificationActivity::class.java
                                                 )
                                             )
+                                        "DNS" -> findNavController().navigate(
+                                            MainFragmentDirections.actionMainFragmentToDnsFragment()
+                                        )
+                                        "Sensors" -> findNavController().navigate(
+                                            MainFragmentDirections.actionMainFragmentToSensorsFragment()
+                                        )
+                                        "Biometric" -> findNavController().navigate(
+                                            MainFragmentDirections.actionMainFragmentToBiometricFragment()
+                                        )
+                                        "FileManage" -> findNavController().navigate(
+                                            MainFragmentDirections.actionMainFragmentToFileActivity()
+                                        )
 
                                     }
 
@@ -108,16 +120,13 @@ class MainFragment : Fragment() {
                             "自定义布局:FloatingActionButtonLayout",
                             1
                         ),
-                        HomeMenu(
-                            "PermissionRequest",
-                            "权限申请",
-                            1
-                        ),
-                        HomeMenu(
-                            "Notification",
-                            "通知",
-                            1
-                        )
+                        HomeMenu("PermissionRequest", "权限申请", 1),
+                        HomeMenu("Notification", "通知", 1),
+                        HomeMenu("DNS", "DNS域名解析", 1),
+                        HomeMenu("Sensors", "传感器", 1),
+                        HomeMenu("Biometric", "生物识别", 1),
+                        HomeMenu("FileManage", "文件管理", 1)
+
                     )
                 )
 

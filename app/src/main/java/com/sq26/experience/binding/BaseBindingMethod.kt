@@ -5,7 +5,9 @@ import android.widget.CompoundButton
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.databinding.BindingConversion
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.checkbox.MaterialCheckBox
+import com.sq26.experience.adapter.MarginItemDecoration
 import com.sq26.experience.util.AntiShake
 import com.sq26.experience.util.Log
 import com.sq26.experience.util.OnClickAntiShakeListener
@@ -62,6 +64,15 @@ object BaseBindingMethod {
                 if (!AntiShake.check(id))
                     l.onClick(it)
             }
+        }
+    }
+
+    //给RecyclerView的每个item设置间距
+    @BindingAdapter("itemMargin")
+    @JvmStatic
+    fun setItemMargin(view: RecyclerView, dp: Int?) {
+        dp?.let {
+            view.addItemDecoration(MarginItemDecoration(view.context, it))
         }
     }
 

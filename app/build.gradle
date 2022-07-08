@@ -105,16 +105,9 @@ dependencies {
     // ViewModel
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
     // Room 组件(数据库框架)
-    //Android官网依赖是这样的，java开发人员使用
-//    implementation "android.arch.persistence.room:runtime:$room_version"
-//    annotationProcessor 'android.arch.persistence.room:compiler:$room_version'
-    //对于那些使用Kotlin的人，请尝试在应用中更改annotationProcessor为kapt
-//    implementation "android.arch.persistence.room:runtime:$room_version"
-//    kapt "android.arch.persistence.room:compiler:$room_version"
-//如果您已迁移到androidx
-    implementation "androidx.room:room-runtime:$rootProject.roomVersion"
+//    implementation "androidx.room:room-runtime:$rootProject.roomVersion"
     kapt "androidx.room:room-compiler:$rootProject.roomVersion"
-    //Kotlin扩展程序和协同程序对Room的支持
+//    ksp "androidx.room:room-compiler:$rootProject.roomVersion"
     implementation "androidx.room:room-ktx:$rootProject.roomVersion"
     // Paging 3 组件(数据分页)
     implementation "androidx.paging:paging-runtime-ktx:3.1.1"
@@ -154,4 +147,6 @@ dependencies {
     implementation "com.squareup.moshi:moshi-kotlin:1.13.0"
 //    implementation "com.squareup.moshi:moshi:1.13.0"
     implementation 'com.google.code.gson:gson:2.9.0'
+
+    implementation("androidx.biometric:biometric:1.2.0-alpha04")
 }

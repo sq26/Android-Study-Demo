@@ -11,6 +11,7 @@ import android.os.Environment
 import android.os.storage.StorageManager
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Log
 import android.view.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -35,6 +36,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.*
+import kotlin.math.log
 
 class FileHomeActivity : AppCompatActivity() {
 
@@ -176,6 +178,17 @@ class FileHomeActivity : AppCompatActivity() {
                     startActivity(Intent(this@FileHomeActivity, FileImageActivity::class.java))
                 }
             }
-
+        test()
     }
+
+    private fun test() {
+
+        val storageManager = getSystemService(Context.STORAGE_SERVICE) as StorageManager
+        for (storageVolume in storageManager.storageVolumes) {
+            Log.i("directory", storageVolume.directory?.absolutePath.orEmpty())
+            Log.i("mediaStoreVolumeName", storageVolume.mediaStoreVolumeName.orEmpty())
+
+        }
+    }
+
 }

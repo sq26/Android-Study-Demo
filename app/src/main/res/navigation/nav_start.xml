@@ -47,6 +47,18 @@
         <action
             android:id="@+id/action_mainFragment_to_kotlinJsonFragment"
             app:destination="@id/kotlinJsonFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_dnsFragment"
+            app:destination="@id/dnsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_sensorsFragment"
+            app:destination="@id/sensorsFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_biometricFragment"
+            app:destination="@id/biometricFragment" />
+        <action
+            android:id="@+id/action_mainFragment_to_fileActivity"
+            app:destination="@id/fileActivity" />
     </fragment>
     <fragment
         android:id="@+id/languageFragment"
@@ -67,5 +79,25 @@
         android:id="@+id/kotlinJsonFragment"
         android:name="com.sq26.experience.ui.fragment.KotlinJsonFragment"
         android:label="KotlinJsonFragment"
-        tools:layout="@layout/fragment_kotlin_json"/>
+        tools:layout="@layout/fragment_kotlin_json" />
+    <fragment
+        android:id="@+id/dnsFragment"
+        android:name="com.sq26.experience.ui.fragment.DnsFragment"
+        android:label="fragment_dns"
+        tools:layout="@layout/fragment_dns" />
+    <fragment
+        android:id="@+id/sensorsFragment"
+        android:name="com.sq26.experience.ui.fragment.SensorsFragment"
+        android:label="fragment_sensors"
+        tools:layout="@layout/fragment_sensors" />
+    <fragment
+        android:id="@+id/biometricFragment"
+        android:name="com.sq26.experience.ui.fragment.BiometricFragment"
+        android:label="fragment_biometric"
+        tools:layout="@layout/fragment_biometric" />
+    <activity
+        android:id="@+id/fileActivity"
+        android:name="com.sq26.experience.ui.navigation.FileActivity"
+        android:label="activity_file"
+        tools:layout="@layout/activity_file" />
 </navigation>

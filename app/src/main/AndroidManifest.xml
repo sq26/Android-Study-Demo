@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.sq26.experience">
@@ -195,6 +196,9 @@
 
         <!-- 文件操作页 -->
         <activity android:name=".ui.activity.file.FileOperateActivity" />
+        <activity
+            android:name="com.sq26.experience.ui.navigation.FileActivity"
+            android:exported="false" />
 
         <!-- 通知栏管理页 -->
         <activity android:name=".ui.activity.StatusBarActivity" />

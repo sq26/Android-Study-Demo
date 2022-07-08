@@ -80,6 +80,7 @@
     <string name="start_page" translatable="false">启动页</string>
     <string name="globalization">国际化</string>
     <string name="menu">菜单</string>
+    <string name="domain_name">域名</string>
 
 
 </resources>
