@@ -64,17 +64,17 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     testImplementation 'junit:junit:4.13.2'
     //Android ktx,KTX 扩展程序可以为 Jetpack、Android 平台及其他 API 提供简洁的惯用 Kotlin 代码。
-    implementation 'androidx.core:core-ktx:1.9.0-alpha03'
+    implementation 'androidx.core:core-ktx:1.9.0-alpha05'
     androidTestImplementation 'androidx.test:runner:1.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     //Google团队开发的Material风格的新组件支持库
-    implementation 'com.google.android.material:material:1.6.0'
+    implementation 'com.google.android.material:material:1.6.1'
     //constraintLayout布局控件
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     //RecyclerView控件
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     //CardView控件,纸片布局
@@ -115,9 +115,9 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
     implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
     //activity的kotlin强化库
-    implementation "androidx.activity:activity-ktx:1.4.0"
+    implementation "androidx.activity:activity-ktx:1.5.0"
     //Fragment KTX 提供了一系列扩展程序以简化 Fragment API。
-    implementation "androidx.fragment:fragment-ktx:1.4.1"
+    implementation "androidx.fragment:fragment-ktx:1.5.0"
     //Android 上的 Kotlin 协程
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$rootProject.coroutinesVersion"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$rootProject.coroutinesVersion"
@@ -136,9 +136,9 @@ dependencies {
     // CameraX生命周期库
     implementation "androidx.camera:camera-lifecycle:$rootProject.cameraxVersion"
     // CameraX View类
-    implementation "androidx.camera:camera-view:1.1.0-rc01"
+    implementation "androidx.camera:camera-view:1.2.0-alpha03"
     // CameraX扩展库
-    implementation "androidx.camera:camera-extensions:1.1.0-rc01"
+    implementation "androidx.camera:camera-extensions:1.2.0-alpha03"
     //便捷数据储存,使用键存储和访问数据。此实现不需要预定义的架构，也不确保类型安全。
     implementation "androidx.datastore:datastore-preferences:1.0.0"
     //moshi是kotlin专为kotlin设计的json序列化和反序列化框架

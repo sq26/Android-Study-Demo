@@ -1,6 +1,7 @@
 package com.sq26.experience.ui.fragment
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +17,7 @@ import com.google.gson.stream.JsonWriter
 import com.sq26.experience.databinding.FragmentKotlinJsonBinding
 import com.sq26.experience.util.i
 import com.squareup.moshi.*
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlin.Exception
 import kotlin.math.round
 
 class KotlinJsonFragment : Fragment() {
@@ -55,19 +56,24 @@ class KotlinJsonFragment : Fragment() {
                 .registerTypeAdapterFactory(GsonDefaultAdapterFactory())
                 .create()
             (System.currentTimeMillis() - l1).i("l11")//18
-            val c1 =System.currentTimeMillis()
+            val c1 = System.currentTimeMillis()
             l1 = System.currentTimeMillis()
             //这个是完整的json解析
             text1.text = gson.fromJson(jsonString, TestData::class.java).toString()
             (System.currentTimeMillis() - l1).i("l12")//14
+            //解析出错返回新的对象
+            val s: String? = null
 
             l1 = System.currentTimeMillis()
-            text2.text = gson.fromJson<CharSequence?>(
+            text2.text = gson.fromJson<List<LinksItem>>(
                 jsonString2,
                 object : TypeToken<List<LinksItem>>() {}.type
             ).toString()
             (System.currentTimeMillis() - l1).i("l13")//2
             (System.currentTimeMillis() - c1).i("c1")//17
+
+            val NULLgson = gson.fromJsonOrEmptyList<LinksItem>(jsonString2)
+            Log.i("NULLgson", NULLgson.toString())
 
             //moshi
             var l2 = System.currentTimeMillis()
@@ -81,7 +87,7 @@ class KotlinJsonFragment : Fragment() {
 //            val adapter: JsonAdapter<TestData> = moshi.adapter(TestData::class.java)
 //            (System.currentTimeMillis() - l2).i("l22")//480
 
-            val c2 =System.currentTimeMillis()
+            val c2 = System.currentTimeMillis()
             l2 = System.currentTimeMillis()
             val adapter = TestDataJsonAdapter(moshi)
             (System.currentTimeMillis() - l2).i("l22")//21
@@ -100,12 +106,74 @@ class KotlinJsonFragment : Fragment() {
             text4.text = adapter2.fromJson(jsonString2).toString()
             (System.currentTimeMillis() - l2).i("l24")//1
             (System.currentTimeMillis() - c2).i("c2")//33
+
+            //解析出错后返回新对象
+            val NULLmoshi = adapter2.fromJsonListEmpty(jsonString2)
+            Log.i("NULLmoshi", NULLmoshi.toString())
+
             //moshi需要构建适配器,moshi的适配器构建耗时巨大,使用moshi-kotlin-codegen后效果有巨大提升
             //moshi的解析比gson快,但moshi需要构建适配器比gson繁琐,moshi的适配器构建耗时大,在Android开发中不可能把moshi的适配器设置成常量,
             //android内存是稀有资源,让cpu负载高一些可以接受,内存这种用完就该立刻回收
             //在Android环境下,综合性能和内存均衡考虑,应该用gson,要更好一些
         }.root
     }
+
+
+}
+
+//Gsom解析出错后返回不为null的新对象
+fun <T> Gson.fromJsonOrEmpty(json: String?, c: Class<T>): T {
+    return if (json.isNullOrEmpty())
+        c.newInstance()
+    else
+        try {
+            fromJson(json, c)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            c.newInstance()
+        }
+}
+
+fun <T> Gson.fromJsonOrEmptyList(json: String?): List<T> {
+    return if (json.isNullOrEmpty()) {
+        listOf()
+    } else {
+        try {
+            fromJson(
+                json,
+                object : TypeToken<List<T>>() {}.type
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            listOf()
+        }
+    }
+}
+
+//Moshi 对象解析出错后返回不为null的新对象
+fun <T> JsonAdapter<T>.fromJsonEmpty(json: String?, c: T): T {
+    return if (json.isNullOrEmpty())
+        c
+    else
+        try {
+            fromJson(json) ?: c
+        } catch (e: Exception) {
+            e.printStackTrace()
+            c
+        }
+}
+
+//Moshi 数组解析出错后返回空列表
+fun <T> JsonAdapter<List<T>>.fromJsonListEmpty(json: String?): List<T> {
+    return if (json.isNullOrEmpty())
+        listOf()
+    else
+        try {
+            fromJson(json) ?: listOf()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            listOf()
+        }
 }
 
 //gson自定义适配器工厂
